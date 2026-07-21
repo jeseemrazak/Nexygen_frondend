@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+@theme {
+  /* Nexygen Color Palette */
+  --color-primary: #0d9488;        /* Teal 600 */
+  --color-primary-hover: #0f766e;   /* Teal 700 */
+  --color-surface: #ffffff;
+  --color-background: #f8fafc;      /* Slate 50 */
+  --color-text-main: #1e293b;       /* Slate 800 */
+  --color-text-muted: #64748b;      /* Slate 500 */
+  
+  /* Standardized Border Radius */
+  --radius-xl: 1rem;
+  --radius-lg: 0.75rem;
+}
+
+/* Base Styles */
+@layer base {
+  body {
+    @apply bg-background text-text-main font-sans antialiased;
+  }
+}
+
+/* Standardized Button Components */
+@layer components {
+  /* Primary Action Button */
+  .btn-primary {
+    @apply bg-primary hover:bg-primary-hover text-white font-black py-3 px-6 rounded-xl transition-all shadow-sm disabled:bg-slate-300 disabled:cursor-not-allowed;
+  }
+
+  /* Secondary Action Button */
+  .btn-secondary {
+    @apply bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold py-3 px-6 rounded-xl transition-all shadow-sm;
+  }
+  
+  /* Card/Surface Container */
+  .card {
+    @apply bg-surface p-6 rounded-xl shadow-sm border border-slate-200;
+  }
+}
