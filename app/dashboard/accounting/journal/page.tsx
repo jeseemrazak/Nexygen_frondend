@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import * as XLSX from 'xlsx';
 import { API_BASE_URL, getClientToken } from '@/lib/config';
 
@@ -11,6 +12,18 @@ const formatDateTime = (dateString: string) => new Date(dateString).toLocaleDate
 const SOURCE_TYPES = ['MANUAL', 'SALES_INVOICE', 'SALES_PAYMENT', 'PURCHASE_INVOICE', 'PURCHASE_PAYMENT'];
 
 export default function JournalEntriesPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-gray-500">Loading...</div>}>
+      <JournalEntriesPageInner />
+    </Suspense>
+  );
+}
+
+function JournalEntriesPageInner() {
+  const searchParams = useSearchParams();
+  const journalIdParam = searchParams.get('journalId') || '';
+  const journalNameParam = searchParams.get('journalName') || '';
+
   const [entries, setEntries] = useState<any[]>([]);
   const [accounts, setAccounts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -32,7 +45,7 @@ export default function JournalEntriesPage() {
   useEffect(() => {
     fetchEntries();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters]);
+  }, [filters, journalIdParam]);
 
   const fetchAccounts = async () => {
     const token = getClientToken();
@@ -49,6 +62,7 @@ export default function JournalEntriesPage() {
     if (filters.accountId) params.set('accountId', filters.accountId);
     if (filters.sourceType) params.set('sourceType', filters.sourceType);
     if (filters.search) params.set('search', filters.search);
+    if (journalIdParam) params.set('journalId', journalIdParam);
 
     const res = await fetch(`${API_BASE_URL}/accounting/journal-entries?${params.toString()}`, { headers: { 'Authorization': `Bearer ${token}` } });
     if (res.ok) setEntries(await res.json());
@@ -134,6 +148,12 @@ export default function JournalEntriesPage() {
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
         <h1 className="text-2xl font-bold text-gray-800">Journal Entries</h1>
         <p className="text-sm text-gray-500 mt-1">Every posting — automatic or manual — lives here.</p>
+        {journalIdParam && (
+          <div className="mt-3 inline-flex items-center gap-2 bg-teal-50 text-teal-700 text-sm font-bold px-3 py-1.5 rounded-full">
+            Filtered to journal: {journalNameParam || `#${journalIdParam}`}
+            <Link href="/dashboard/accounting/journal" className="text-teal-500 hover:text-teal-800">✕</Link>
+          </div>
+        )}
       </div>
 
       {/* MANUAL ENTRY BUILDER */}

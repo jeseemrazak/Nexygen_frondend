@@ -456,8 +456,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               }`}
             >
               <Link
-                href="/dashboard/accounting/accounts"
+                href="/dashboard/accounting"
                 className={`block px-4 py-2 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm pl-[3.25rem] ${
+                  pathname === '/dashboard/accounting' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                }`}
+              >
+                Overview
+              </Link>
+
+              <Link
+                href="/dashboard/accounting/accounts"
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm pl-[3.25rem] ${
                   pathname === '/dashboard/accounting/accounts' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
                 }`}
               >
