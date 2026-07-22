@@ -1,4 +1,5 @@
 import { cookies } from 'next/headers';
+import Link from 'next/link';
 import { API_BASE_URL } from '@/lib/config';
 
 async function getTrialBalance(asOf?: string) {
@@ -31,10 +32,18 @@ export default async function TrialBalancePage({ searchParams }: { searchParams:
           <h1 className="text-2xl font-bold text-gray-800">Trial Balance</h1>
           <p className="text-sm text-gray-500 mt-1">Total debits and credits should always match.</p>
         </div>
-        <form action="/dashboard/accounting/trial-balance" className="flex items-center gap-3">
-          <input type="date" name="asOf" defaultValue={resolvedParams.asOf || ''} className="border border-gray-300 rounded-md px-3 py-2 text-sm text-black" />
-          <button type="submit" className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-md text-sm">As Of</button>
-        </form>
+        <div className="flex items-center gap-3">
+          <form action="/dashboard/accounting/trial-balance" className="flex items-center gap-3">
+            <input type="date" name="asOf" defaultValue={resolvedParams.asOf || ''} className="border border-gray-300 rounded-md px-3 py-2 text-sm text-black" />
+            <button type="submit" className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-md text-sm">As Of</button>
+          </form>
+          <Link
+            href={`/dashboard/accounting/trial-balance/print${resolvedParams.asOf ? `?asOf=${resolvedParams.asOf}` : ''}`}
+            className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-md text-sm whitespace-nowrap"
+          >
+            🖨️ Print
+          </Link>
+        </div>
       </div>
 
       <div className={`p-4 rounded-lg border font-bold text-center ${isBalanced ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-rose-50 border-rose-200 text-rose-700'}`}>

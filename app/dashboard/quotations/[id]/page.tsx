@@ -116,23 +116,33 @@ export default function QuotationDetailsPage() {
           </div>
         </div>
 
-        {quotation.status === 'DRAFT' && (
+        <div className="flex flex-col items-end gap-2">
           <div className="flex gap-2">
-            <button onClick={() => updateStatus('SENT')} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition-all">Mark Sent</button>
-            <button onClick={() => updateStatus('REJECTED')} className="bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold py-2.5 px-6 rounded-lg transition-all">Reject</button>
+            <Link
+              href={`/dashboard/quotations/${quotation.id}/print`}
+              className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 px-6 rounded-lg transition-all"
+            >
+              🖨️ Print
+            </Link>
+            {quotation.status === 'DRAFT' && (
+              <>
+                <button onClick={() => updateStatus('SENT')} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition-all">Mark Sent</button>
+                <button onClick={() => updateStatus('REJECTED')} className="bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold py-2.5 px-6 rounded-lg transition-all">Reject</button>
+              </>
+            )}
+            {quotation.status === 'SENT' && (
+              <>
+                <button onClick={() => updateStatus('ACCEPTED')} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition-all">Mark Accepted</button>
+                <button onClick={() => updateStatus('REJECTED')} className="bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold py-2.5 px-6 rounded-lg transition-all">Reject</button>
+              </>
+            )}
+            {quotation.status === 'CONVERTED' && quotation.convertedOrder && (
+              <Link href={`/dashboard/orders/${quotation.convertedOrder.id}`} className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition-all">
+                View Order #{quotation.convertedOrder.id}
+              </Link>
+            )}
           </div>
-        )}
-        {quotation.status === 'SENT' && (
-          <div className="flex gap-2">
-            <button onClick={() => updateStatus('ACCEPTED')} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition-all">Mark Accepted</button>
-            <button onClick={() => updateStatus('REJECTED')} className="bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold py-2.5 px-6 rounded-lg transition-all">Reject</button>
-          </div>
-        )}
-        {quotation.status === 'CONVERTED' && quotation.convertedOrder && (
-          <Link href={`/dashboard/orders/${quotation.convertedOrder.id}`} className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition-all">
-            View Order #{quotation.convertedOrder.id}
-          </Link>
-        )}
+        </div>
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">

@@ -70,9 +70,19 @@ function LedgerContent() {
 
       {!loading && ledger && (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-          <div className="bg-gray-50 border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+          <div className="bg-gray-50 border-b border-gray-200 px-6 py-4 flex justify-between items-center gap-4">
             <h2 className="text-lg font-bold text-gray-800">{ledger.account.code} - {ledger.account.name}</h2>
-            <span className="font-bold text-teal-700">Ending balance: {formatQAR(ledger.endingBalance)}</span>
+            <div className="flex items-center gap-4">
+              <span className="font-bold text-teal-700">Ending balance: {formatQAR(ledger.endingBalance)}</span>
+              <a
+                href={`/dashboard/accounting/ledger/print?accountId=${accountId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-1.5 px-4 rounded-md text-xs whitespace-nowrap"
+              >
+                🖨️ Print
+              </a>
+            </div>
           </div>
           {ledger.lines.length === 0 ? (
             <div className="p-8 text-center text-gray-500">No postings for this account yet.</div>

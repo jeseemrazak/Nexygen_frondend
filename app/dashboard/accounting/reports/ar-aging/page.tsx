@@ -65,6 +65,9 @@ export default function ArAgingPage() {
           <button onClick={exportCsv} disabled={!data || data.rows.length === 0} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-md text-sm disabled:bg-gray-300">
             📊 Export
           </button>
+          <Link href={`/dashboard/accounting/reports/ar-aging/print${asOf ? `?asOf=${asOf}` : ''}`} className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-md text-sm whitespace-nowrap">
+            🖨️ Print
+          </Link>
         </div>
       </div>
 

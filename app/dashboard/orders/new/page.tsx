@@ -9,6 +9,8 @@ export default function NewSalesOrderPage() {
 
   const [warehouses, setWarehouses] = useState([]);
   const [selectedWarehouse, setSelectedWarehouse] = useState('');
+  const [customers, setCustomers] = useState([]);
+  const [selectedCustomerId, setSelectedCustomerId] = useState('');
   const [clientName, setClientName] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -26,6 +28,8 @@ export default function NewSalesOrderPage() {
       const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` };
       const whRes = await fetch(`${API_BASE_URL}/warehouses`, { headers });
       if (whRes.ok) setWarehouses(await whRes.json());
+      const custRes = await fetch(`${API_BASE_URL}/customers`, { headers });
+      if (custRes.ok) setCustomers(await custRes.json());
     };
     fetchInitialData();
   }, []);
@@ -85,6 +89,7 @@ export default function NewSalesOrderPage() {
       body: JSON.stringify({
         warehouseId: Number(selectedWarehouse),
         clientName: clientName || undefined,
+        customerId: selectedCustomerId ? Number(selectedCustomerId) : undefined,
         items,
       }),
     });
@@ -152,14 +157,19 @@ export default function NewSalesOrderPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Client / Shop Name</label>
-            <input
-              type="text"
-              value={clientName}
-              onChange={(e) => setClientName(e.target.value)}
-              placeholder="e.g. City Center Mall"
-              className="w-full border border-gray-300 rounded-md p-3 text-black"
-            />
+            <label className="block text-sm font-bold text-gray-700 mb-2">Customer</label>
+            <select
+              value={selectedCustomerId}
+              onChange={(e) => {
+                const customer: any = customers.find((c: any) => String(c.id) === e.target.value);
+                setSelectedCustomerId(e.target.value);
+                setClientName(customer ? customer.name : '');
+              }}
+              className="w-full border border-gray-300 rounded-md p-3 text-black bg-white"
+            >
+              <option value="">Select customer...</option>
+              {customers.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
           </div>
         </div>
 

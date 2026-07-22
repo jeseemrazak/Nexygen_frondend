@@ -11,6 +11,7 @@ export default function RegisterPaymentPage() {
   const router = useRouter();
   const [partyType, setPartyType] = useState<'CUSTOMER' | 'SUPPLIER'>('CUSTOMER');
   const [suppliers, setSuppliers] = useState<any[]>([]);
+  const [customers, setCustomers] = useState<any[]>([]);
   const [journals, setJournals] = useState<any[]>([]);
   const [partyName, setPartyName] = useState('');
   const [openDocs, setOpenDocs] = useState<any[]>([]);
@@ -28,12 +29,18 @@ export default function RegisterPaymentPage() {
       const res = await fetch(`${API_BASE_URL}/suppliers`, { headers: { 'Authorization': `Bearer ${token}` } });
       if (res.ok) setSuppliers(await res.json());
     };
+    const loadCustomers = async () => {
+      const token = getClientToken();
+      const res = await fetch(`${API_BASE_URL}/customers`, { headers: { 'Authorization': `Bearer ${token}` } });
+      if (res.ok) setCustomers(await res.json());
+    };
     const loadJournals = async () => {
       const token = getClientToken();
       const res = await fetch(`${API_BASE_URL}/accounting/journals?activeOnly=true`, { headers: { 'Authorization': `Bearer ${token}` } });
       if (res.ok) setJournals(await res.json());
     };
     loadSuppliers();
+    loadCustomers();
     loadJournals();
   }, []);
 
@@ -134,16 +141,16 @@ export default function RegisterPaymentPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-bold text-gray-700 mb-2">{partyType === 'CUSTOMER' ? 'Customer / Client Name' : 'Supplier'}</label>
+          <label className="block text-sm font-bold text-gray-700 mb-2">{partyType === 'CUSTOMER' ? 'Customer' : 'Supplier'}</label>
           {partyType === 'CUSTOMER' ? (
-            <input
-              type="text"
+            <select
               value={partyName}
-              onChange={(e) => setPartyName(e.target.value)}
-              onBlur={() => loadOpenDocs(partyName)}
-              placeholder="Type the client name exactly as on their invoices"
-              className="w-full border border-gray-300 rounded-md p-3 text-black"
-            />
+              onChange={(e) => { setPartyName(e.target.value); loadOpenDocs(e.target.value); }}
+              className="w-full border border-gray-300 rounded-md p-3 text-black bg-white"
+            >
+              <option value="">Select customer...</option>
+              {customers.map((c: any) => <option key={c.id} value={c.name}>{c.name}</option>)}
+            </select>
           ) : (
             <select
               value={partyName}
@@ -155,17 +162,6 @@ export default function RegisterPaymentPage() {
             </select>
           )}
         </div>
-
-        {partyType === 'CUSTOMER' && (
-          <button
-            type="button"
-            onClick={() => loadOpenDocs(partyName)}
-            disabled={!partyName.trim()}
-            className="text-teal-600 hover:text-teal-800 text-sm font-bold disabled:text-gray-300"
-          >
-            🔍 Load Open Invoices
-          </button>
-        )}
       </div>
 
       {isLoadingDocs && <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-center text-gray-500">Loading open documents...</div>}

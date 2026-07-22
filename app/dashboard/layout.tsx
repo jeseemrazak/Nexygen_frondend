@@ -10,7 +10,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const isWarehouseSectionActive = pathname?.includes('/dashboard/warehouses') || pathname?.includes('/dashboard/inventory');
   const [isWarehouseOpen, setIsWarehouseOpen] = useState(isWarehouseSectionActive);
 
-  const isSalesSectionActive = pathname?.includes('/dashboard/orders') || pathname?.includes('/dashboard/deliveries') || pathname?.includes('/dashboard/quotations') || pathname?.includes('/dashboard/sales-invoices');
+  const isSalesSectionActive = pathname?.includes('/dashboard/orders') || pathname?.includes('/dashboard/deliveries') || pathname?.includes('/dashboard/quotations') || pathname?.includes('/dashboard/sales-invoices') || pathname?.includes('/dashboard/customers');
   const [isSalesOpen, setIsSalesOpen] = useState(isSalesSectionActive);
 
   const isPurchasesSectionActive = pathname?.includes('/dashboard/purchases') || pathname?.includes('/dashboard/suppliers') || pathname?.includes('/dashboard/rfqs') || pathname?.includes('/dashboard/receipts') || pathname?.includes('/dashboard/bills');
@@ -27,6 +27,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const isExpensesSectionActive = pathname?.includes('/dashboard/expenses');
   const [isExpensesOpen, setIsExpensesOpen] = useState(isExpensesSectionActive);
+
+  const isSettingsSectionActive = pathname?.includes('/dashboard/settings');
+  const [isSettingsOpen, setIsSettingsOpen] = useState(isSettingsSectionActive);
 
   // 🔥 THE EXACT MENU STYLE YOU REQUESTED
   const linkStyle = "flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-teal-50 hover:text-teal-700 rounded-lg font-semibold transition-colors";
@@ -114,6 +117,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 }`}
               >
                 Sales Invoices
+              </Link>
+
+              <Link
+                href="/dashboard/customers"
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
+                  pathname?.startsWith('/dashboard/customers') ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                }`}
+              >
+                Customers
               </Link>
             </div>
 
@@ -609,6 +621,55 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 }`}
               >
                 Categories
+              </Link>
+            </div>
+
+          </div>
+
+          {/* SETTINGS COLLAPSIBLE GROUP */}
+          <div className="pt-2">
+
+            <button
+              onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+              className="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-teal-50 transition font-semibold text-gray-600 hover:text-teal-700"
+            >
+              <div className="flex items-center gap-3">
+                <svg className={iconStyle} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span>Settings</span>
+              </div>
+
+              <svg
+                className={`w-4 h-4 transition-transform duration-300 ${isSettingsOpen ? 'rotate-180 text-teal-600' : 'text-gray-400'}`}
+                fill="none" viewBox="0 0 24 24" stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            <div
+              className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                isSettingsOpen ? 'max-h-48 opacity-100 mt-1' : 'max-h-0 opacity-0'
+              }`}
+            >
+              <Link
+                href="/dashboard/settings/company"
+                className={`block px-4 py-2 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm pl-[3.25rem] ${
+                  pathname === '/dashboard/settings/company' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                }`}
+              >
+                Company Profile
+              </Link>
+
+              <Link
+                href="/dashboard/settings/reports"
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/settings/reports' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                }`}
+              >
+                Report Designer
               </Link>
             </div>
 

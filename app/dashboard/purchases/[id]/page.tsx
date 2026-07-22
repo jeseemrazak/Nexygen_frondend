@@ -84,17 +84,25 @@ export default async function PurchaseOrderDetailPage({
           </div>
         </div>
 
-        {po.status === 'DRAFT' && (
-          <form action={markOrdered}>
-            <input type="hidden" name="poId" value={po.id} />
-            <button
-              type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition-all mt-2 md:mt-0"
-            >
-              Mark as Ordered
-            </button>
-          </form>
-        )}
+        <div className="flex gap-2 mt-2 md:mt-0">
+          <Link
+            href={`/dashboard/purchases/${po.id}/print`}
+            className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 px-6 rounded-lg transition-all"
+          >
+            🖨️ Print
+          </Link>
+          {po.status === 'DRAFT' && (
+            <form action={markOrdered}>
+              <input type="hidden" name="poId" value={po.id} />
+              <button
+                type="submit"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition-all"
+              >
+                Mark as Ordered
+              </button>
+            </form>
+          )}
+        </div>
       </div>
 
       {hasError && (

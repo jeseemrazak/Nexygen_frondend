@@ -1,10 +1,56 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { API_BASE_URL, getClientToken } from '@/lib/config';
 
 const formatQAR = (amount: number) => new Intl.NumberFormat('en-QA', { style: 'currency', currency: 'QAR' }).format(amount);
+
+type CartLine = {
+  productId: number;
+  batchNumber: string;
+  name: string;
+  price: number;
+  quantity: number;
+  available: number;
+};
+
+function QtyBtn({ symbol, color, onClick }: { symbol: '+' | '-'; color: string; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`w-7 h-7 rounded-md flex items-center justify-center font-bold text-sm transition-colors ${color}`}
+    >
+      {symbol}
+    </button>
+  );
+}
+
+function ProductCard({ product, stock, onPick }: { product: any; stock: number; onPick: () => void }) {
+  const outOfStock = stock <= 0;
+  return (
+    <button
+      type="button"
+      onClick={onPick}
+      disabled={outOfStock}
+      className={`text-left bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm transition-all ${
+        outOfStock ? 'opacity-40 cursor-not-allowed' : 'hover:shadow-md hover:border-teal-300 hover:-translate-y-0.5'
+      }`}
+    >
+      <div className="h-24 bg-teal-50 flex items-center justify-center text-3xl">📦</div>
+      <div className="p-2.5">
+        <p className="font-bold text-gray-800 text-xs leading-tight line-clamp-2 h-8">{product.name}</p>
+        <div className="flex items-center justify-between mt-2">
+          <span className="text-teal-700 font-bold text-sm">{formatQAR(product.price)}</span>
+          <span className={`text-[11px] font-bold ${outOfStock ? 'text-rose-500' : stock < 10 ? 'text-amber-600' : 'text-gray-400'}`}>
+            {outOfStock ? 'Out' : stock}
+          </span>
+        </div>
+      </div>
+    </button>
+  );
+}
 
 export default function PosCheckoutPage() {
   const [warehouses, setWarehouses] = useState<any[]>([]);
@@ -17,9 +63,11 @@ export default function PosCheckoutPage() {
   const [staffList, setStaffList] = useState<any[]>([]);
   const [clientName, setClientName] = useState('');
 
+  const [products, setProducts] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<any[]>([]);
-  const [cart, setCart] = useState<any[]>([]);
+  const [cart, setCart] = useState<CartLine[]>([]);
+
+  const [batchPicker, setBatchPicker] = useState<{ product: any; batches: any[] } | null>(null);
 
   const [showPinPad, setShowPinPad] = useState(false);
   const [pinStaffId, setPinStaffId] = useState('');
@@ -35,14 +83,16 @@ export default function PosCheckoutPage() {
     const load = async () => {
       const token = getClientToken();
       const headers = { 'Authorization': `Bearer ${token}` };
-      const [whRes, pmRes, staffRes] = await Promise.all([
+      const [whRes, pmRes, staffRes, prodRes] = await Promise.all([
         fetch(`${API_BASE_URL}/warehouses`, { headers }),
         fetch(`${API_BASE_URL}/accounting/payment-methods?activeOnly=true`, { headers }),
         fetch(`${API_BASE_URL}/pos-staff?activeOnly=true`, { headers }),
+        fetch(`${API_BASE_URL}/products`, { headers }),
       ]);
       if (whRes.ok) setWarehouses(await whRes.json());
       if (pmRes.ok) setPaymentMethods(await pmRes.json());
       if (staffRes.ok) setStaffList(await staffRes.json());
+      if (prodRes.ok) setProducts(await prodRes.json());
     };
     load();
   }, []);
@@ -55,34 +105,75 @@ export default function PosCheckoutPage() {
     const loadSession = async () => {
       setSessionLoading(true);
       const token = getClientToken();
-      const res = await fetch(`${API_BASE_URL}/pos-sessions/open?warehouseId=${selectedWarehouse}`, { headers: { 'Authorization': `Bearer ${token}` } });
-      setSession(res.ok ? await res.json() : null);
+      try {
+        const res = await fetch(`${API_BASE_URL}/pos-sessions/open?warehouseId=${selectedWarehouse}`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const text = await res.text();
+        setSession(res.ok && text ? JSON.parse(text) : null);
+      } catch (error) {
+        setSession(null);
+      }
       setSessionLoading(false);
     };
     loadSession();
   }, [selectedWarehouse]);
 
-  useEffect(() => {
-    if (searchQuery.length < 2 || !selectedWarehouse) {
-      setSearchResults([]);
+  const stockFor = (product: any) =>
+    (product.inventories || [])
+      .filter((inv: any) => inv.warehouseId === Number(selectedWarehouse))
+      .reduce((sum: number, inv: any) => sum + inv.quantity, 0);
+
+  const batchesFor = (product: any) =>
+    (product.inventories || []).filter((inv: any) => inv.warehouseId === Number(selectedWarehouse) && inv.quantity > 0);
+
+  const filteredProducts = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return products;
+    return products.filter(
+      (p: any) =>
+        p.name.toLowerCase().includes(q) ||
+        p.sku?.toLowerCase().includes(q) ||
+        p.barcodePcs?.toLowerCase().includes(q) ||
+        p.barcodeBox?.toLowerCase().includes(q),
+    );
+  }, [products, searchQuery]);
+
+  const addLine = (product: any, batchNumber: string, available: number) => {
+    setCart((prev) => {
+      const existing = prev.find((l) => l.productId === product.id && l.batchNumber === batchNumber);
+      if (existing) {
+        if (existing.quantity >= available) return prev;
+        return prev.map((l) => (l === existing ? { ...l, quantity: l.quantity + 1 } : l));
+      }
+      return [...prev, { productId: product.id, batchNumber, name: product.name, price: product.price, quantity: 1, available }];
+    });
+  };
+
+  const handlePickProduct = (product: any) => {
+    const batches = batchesFor(product);
+    if (batches.length === 0) return;
+    if (batches.length === 1) {
+      addLine(product, batches[0].batchNumber, batches[0].quantity);
       return;
     }
-    const delayDebounceFn = setTimeout(async () => {
-      const token = getClientToken();
-      const res = await fetch(`${API_BASE_URL}/products/search?q=${searchQuery}`, { headers: { 'Authorization': `Bearer ${token}` } });
-      if (res.ok) setSearchResults(await res.json());
-    }, 300);
-    return () => clearTimeout(delayDebounceFn);
-  }, [searchQuery, selectedWarehouse]);
+    setBatchPicker({ product, batches });
+  };
 
-  const addToCart = (product: any, batchNumber: string, available: number) => {
-    if (cart.find((i) => i.productId === product.id && i.batchNumber === batchNumber)) return;
-    setCart([...cart, { productId: product.id, name: product.name, price: product.price, quantity: 1, batchNumber, available }]);
-    setSearchQuery('');
-    setSearchResults([]);
+  const incrementLine = (productId: number, batchNumber: string) => {
+    setCart((prev) =>
+      prev.map((l) => (l.productId === productId && l.batchNumber === batchNumber && l.quantity < l.available ? { ...l, quantity: l.quantity + 1 } : l)),
+    );
+  };
+
+  const decrementLine = (productId: number, batchNumber: string) => {
+    setCart((prev) =>
+      prev
+        .map((l) => (l.productId === productId && l.batchNumber === batchNumber ? { ...l, quantity: l.quantity - 1 } : l))
+        .filter((l) => l.quantity > 0),
+    );
   };
 
   const totalAmount = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleVerifyPin = async () => {
     setPinError('');
@@ -138,7 +229,7 @@ export default function PosCheckoutPage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 relative">
+    <div className="h-[calc(100vh-4rem)] flex flex-col rounded-xl overflow-hidden border border-gray-200 shadow-sm">
 
       {/* PIN PAD MODAL */}
       {showPinPad && (
@@ -175,6 +266,32 @@ export default function PosCheckoutPage() {
         </div>
       )}
 
+      {/* BATCH PICKER MODAL */}
+      {batchPicker && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 border border-gray-100">
+            <h3 className="text-lg font-bold text-gray-900 mb-1">{batchPicker.product.name}</h3>
+            <p className="text-sm text-gray-500 mb-4">Multiple batches available — pick one</p>
+            <div className="space-y-2 max-h-72 overflow-y-auto">
+              {batchPicker.batches.map((inv: any) => (
+                <button
+                  key={inv.id}
+                  type="button"
+                  onClick={() => { addLine(batchPicker.product, inv.batchNumber, inv.quantity); setBatchPicker(null); }}
+                  className="w-full flex justify-between items-center gap-6 px-4 py-2.5 border border-teal-200 bg-teal-50 hover:bg-teal-600 hover:text-white hover:border-teal-600 transition rounded-md text-teal-900"
+                >
+                  <span className="font-mono font-bold">Batch {inv.batchNumber}</span>
+                  <span className="font-bold">Qty: {inv.quantity}</span>
+                </button>
+              ))}
+            </div>
+            <button onClick={() => setBatchPicker(null)} className="mt-4 w-full px-4 py-2 rounded-md font-bold text-gray-600 hover:bg-gray-100">
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* LAST SALE RECEIPT MODAL */}
       {lastSale && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
@@ -190,150 +307,134 @@ export default function PosCheckoutPage() {
         </div>
       )}
 
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 flex flex-wrap justify-between items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">POS Checkout</h1>
-          <p className="text-sm text-gray-500 mt-1">Walk-in sale — pick a warehouse with an open session to begin.</p>
-        </div>
-        <select value={selectedWarehouse} onChange={(e) => { setSelectedWarehouse(e.target.value); setCart([]); }} className="border border-gray-300 rounded-md p-3 text-black bg-white">
-          <option value="">Select warehouse...</option>
-          {warehouses.map((w: any) => <option key={w.id} value={w.id}>{w.name}</option>)}
+      {/* HEADER BAR */}
+      <div className="bg-teal-600 px-5 py-3 flex items-center gap-4 shrink-0">
+        <span className="text-xl">🛒</span>
+        <span className="text-white font-bold text-lg">POS</span>
+        <select
+          value={selectedWarehouse}
+          onChange={(e) => { setSelectedWarehouse(e.target.value); setCart([]); }}
+          className="bg-white/15 text-white text-sm font-semibold rounded-md px-3 py-1.5 border border-white/20 [&>option]:text-black"
+        >
+          <option value="" className="text-black">Select warehouse...</option>
+          {warehouses.map((w: any) => <option key={w.id} value={w.id} className="text-black">{w.name}</option>)}
         </select>
+        <div className="flex-1" />
+        {servedBy ? (
+          <button onClick={() => setServedBy(null)} className="flex items-center gap-2 text-white/80 hover:text-white text-sm font-semibold">
+            👤 {servedBy.name} (Logout)
+          </button>
+        ) : (
+          <button onClick={() => setShowPinPad(true)} className="flex items-center gap-2 text-white text-sm font-semibold">
+            Staff Login
+          </button>
+        )}
       </div>
 
-      {selectedWarehouse && !sessionLoading && !session && (
-        <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-md flex justify-between items-center">
-          <p className="text-sm text-amber-800 font-medium">No open session for this warehouse.</p>
-          <Link href="/dashboard/pos/sessions" className="text-teal-700 font-bold text-sm underline whitespace-nowrap">
-            Open one →
-          </Link>
+      {!selectedWarehouse ? (
+        <div className="flex-1 flex items-center justify-center bg-gray-50 text-gray-400 font-semibold">
+          Select a warehouse above to start a sale.
         </div>
-      )}
+      ) : sessionLoading ? (
+        <div className="flex-1 flex items-center justify-center bg-gray-50 text-gray-400 font-semibold">Loading...</div>
+      ) : !session ? (
+        <div className="flex-1 flex flex-col items-center justify-center bg-gray-50 gap-3">
+          <p className="text-amber-800 font-medium">No open session for this warehouse.</p>
+          <Link href="/dashboard/pos/sessions" className="text-teal-700 font-bold text-sm underline">Open one →</Link>
+        </div>
+      ) : (
+        <div className="flex-1 flex min-h-0">
 
-      {session && (
-        <>
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 relative">
-            <label className="block text-sm font-bold text-gray-700 mb-2">Search Product (Name/SKU/Barcode)</label>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Type to search products..."
-              className="w-full border border-teal-500 rounded-md p-3 text-black shadow-inner"
-              autoFocus
-            />
-            {searchResults.length > 0 && (
-              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 shadow-xl rounded-md max-h-96 overflow-y-auto left-0">
-                {searchResults.map((product: any) => {
-                  const availableBatches = (product.inventories || []).filter((inv: any) => inv.warehouseId === Number(selectedWarehouse) && inv.quantity > 0);
-                  if (availableBatches.length === 0) return null;
-                  return (
-                    <div key={product.id} className="p-4 border-b border-gray-100 flex flex-col md:flex-row md:justify-between md:items-start gap-4">
-                      <div>
-                        <p className="font-bold text-gray-800">{product.name}</p>
-                        <p className="text-sm text-gray-500">{formatQAR(product.price)}</p>
-                      </div>
-                      <div className="flex flex-col gap-2 w-full md:w-auto">
-                        {availableBatches.map((inv: any) => (
-                          <button
-                            key={inv.id}
-                            type="button"
-                            onClick={() => addToCart(product, inv.batchNumber, inv.quantity)}
-                            className="flex justify-between items-center gap-6 px-4 py-2 border border-teal-200 bg-teal-50 hover:bg-teal-600 hover:text-white hover:border-teal-600 transition rounded-md text-teal-900"
-                          >
-                            <span className="font-mono font-bold">Batch {inv.batchNumber}</span>
-                            <span className="font-bold">Qty: {inv.quantity}</span>
-                          </button>
-                        ))}
-                      </div>
+          {/* LEFT: PRODUCT GRID */}
+          <div className="flex-1 flex flex-col min-w-0 bg-gray-50">
+            <div className="p-3 shrink-0">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search by name, SKU, or barcode..."
+                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-black bg-white shadow-sm"
+                autoFocus
+              />
+            </div>
+            <div className="flex-1 overflow-y-auto p-3 pt-0">
+              <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))' }}>
+                {filteredProducts.map((product: any) => (
+                  <ProductCard key={product.id} product={product} stock={stockFor(product)} onPick={() => handlePickProduct(product)} />
+                ))}
+              </div>
+              {filteredProducts.length === 0 && (
+                <div className="p-12 text-center text-gray-400">No products match &quot;{searchQuery}&quot;.</div>
+              )}
+            </div>
+          </div>
+
+          {/* RIGHT: CART PANEL */}
+          <div className="w-[340px] shrink-0 bg-[#E8F4FD] border-l border-[#BBDEFB] flex flex-col">
+            <div className="p-4 border-b border-[#D8E9F5] flex items-center gap-2">
+              <span className="text-teal-700">🛒</span>
+              <span className="font-bold text-gray-800 text-sm">Cart ({totalItems} item{totalItems === 1 ? '' : 's'})</span>
+            </div>
+
+            <div className="px-4 py-2.5 border-b border-[#D8E9F5] flex items-center gap-2">
+              <span className="text-teal-700 text-sm">👤</span>
+              <input
+                type="text"
+                value={clientName}
+                onChange={(e) => setClientName(e.target.value)}
+                placeholder="Walk-in Customer"
+                className="flex-1 bg-transparent text-sm text-gray-800 placeholder:text-gray-500 focus:outline-none"
+              />
+            </div>
+
+            <div className="flex-1 overflow-y-auto">
+              {cart.length === 0 ? (
+                <div className="h-full flex flex-col items-center justify-center gap-2 text-gray-400">
+                  <span className="text-5xl">🛒</span>
+                  <span className="font-semibold text-sm">Cart is empty</span>
+                </div>
+              ) : (
+                cart.map((item) => (
+                  <div key={`${item.productId}-${item.batchNumber}`} className="px-4 py-2.5 border-b border-[#F0F0F0] flex items-center gap-2 bg-white/40">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-gray-800 text-sm truncate">{item.name}</p>
+                      <p className="text-gray-500 text-xs">
+                        <span className="font-mono">{item.batchNumber}</span> · {formatQAR(item.price)} × {item.quantity} = <span className="font-bold text-gray-700">{formatQAR(item.price * item.quantity)}</span>
+                      </p>
                     </div>
-                  );
-                })}
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <QtyBtn symbol="-" color="bg-rose-100 text-rose-600 hover:bg-rose-200" onClick={() => decrementLine(item.productId, item.batchNumber)} />
+                      <span className="w-6 text-center font-bold text-sm text-gray-800">{item.quantity}</span>
+                      <QtyBtn symbol="+" color="bg-teal-100 text-teal-700 hover:bg-teal-200" onClick={() => incrementLine(item.productId, item.batchNumber)} />
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="p-4 border-t border-[#D8E9F5] bg-white/60 space-y-3 shrink-0">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-700 font-bold">Total:</span>
+                <span className="text-teal-700 font-bold text-xl">{formatQAR(totalAmount)}</span>
               </div>
-            )}
+
+              <select value={selectedPaymentMethodId} onChange={(e) => setSelectedPaymentMethodId(e.target.value)} className="w-full border border-gray-300 rounded-md p-2 text-sm text-black bg-white">
+                <option value="">Payment method...</option>
+                {paymentMethods.map((m: any) => <option key={m.id} value={m.id}>{m.name}</option>)}
+              </select>
+
+              {submitError && <p className="text-rose-600 text-xs font-semibold">{submitError}</p>}
+
+              <button
+                onClick={handleCompleteSale}
+                disabled={isSubmitting || cart.length === 0}
+                className="w-full h-12 rounded-lg font-bold text-white bg-teal-600 hover:bg-teal-700 disabled:bg-gray-300 transition-colors flex items-center justify-center gap-2"
+              >
+                💳 {isSubmitting ? 'Processing...' : 'Charge Payment'}
+              </button>
+            </div>
           </div>
-
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-            {cart.length === 0 ? (
-              <div className="p-12 text-center text-gray-400">Cart is empty — search for a product above.</div>
-            ) : (
-              <table className="w-full text-left">
-                <thead className="bg-gray-50 border-b border-gray-200">
-                  <tr>
-                    <th className="p-4 text-sm text-gray-600">Product</th>
-                    <th className="p-4 text-sm text-gray-600">Batch</th>
-                    <th className="p-4 text-sm text-gray-600">Qty</th>
-                    <th className="p-4 text-sm text-gray-600 text-right">Unit Price</th>
-                    <th className="p-4 text-sm text-gray-600 text-right">Total</th>
-                    <th className="p-4"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {cart.map((item, index) => (
-                    <tr key={`${item.productId}-${item.batchNumber}`} className="border-b border-gray-50 text-black">
-                      <td className="p-4 font-medium">{item.name}</td>
-                      <td className="p-4 font-mono text-sm text-teal-700 bg-teal-50 rounded px-2 inline-block font-bold">{item.batchNumber}</td>
-                      <td className="p-4">
-                        <input
-                          type="number" min="1" max={item.available} value={item.quantity}
-                          onChange={(e) => { const newCart = [...cart]; newCart[index].quantity = Number(e.target.value); setCart(newCart); }}
-                          className="w-20 border border-gray-300 rounded p-1"
-                        />
-                      </td>
-                      <td className="p-4 text-right text-gray-600">{formatQAR(item.price)}</td>
-                      <td className="p-4 text-right font-bold">{formatQAR(item.price * item.quantity)}</td>
-                      <td className="p-4 text-right">
-                        <button type="button" onClick={() => setCart(cart.filter((c) => !(c.productId === item.productId && c.batchNumber === item.batchNumber)))} className="text-red-500 text-sm font-bold hover:underline">
-                          Remove
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-
-            {cart.length > 0 && (
-              <div className="p-6 bg-gray-50 border-t border-gray-200 space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Client (optional)</label>
-                    <input type="text" value={clientName} onChange={(e) => setClientName(e.target.value)} placeholder="Walk-in" className="w-full border border-gray-300 rounded-md p-2 text-black" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Payment Method</label>
-                    <select value={selectedPaymentMethodId} onChange={(e) => setSelectedPaymentMethodId(e.target.value)} className="w-full border border-gray-300 rounded-md p-2 text-black bg-white">
-                      <option value="">Select...</option>
-                      {paymentMethods.map((m: any) => <option key={m.id} value={m.id}>{m.name}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Served By</label>
-                    <button type="button" onClick={() => setShowPinPad(true)} className="w-full border border-gray-300 rounded-md p-2 text-left text-black bg-white hover:bg-gray-50">
-                      {servedBy ? `👤 ${servedBy.name}` : 'Tap to enter PIN...'}
-                    </button>
-                  </div>
-                </div>
-
-                {submitError && <p className="text-rose-600 text-sm font-semibold">{submitError}</p>}
-
-                <div className="flex justify-between items-center pt-2">
-                  <div>
-                    <p className="text-sm text-gray-500 uppercase tracking-wide">Total</p>
-                    <p className="text-3xl font-bold text-teal-700 mt-1">{formatQAR(totalAmount)}</p>
-                  </div>
-                  <button
-                    onClick={handleCompleteSale}
-                    disabled={isSubmitting}
-                    className="bg-gray-900 hover:bg-black text-white px-8 py-4 rounded-md font-bold transition shadow-md disabled:bg-gray-400"
-                  >
-                    {isSubmitting ? 'Processing...' : 'Complete Sale'}
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        </>
+        </div>
       )}
     </div>
   );

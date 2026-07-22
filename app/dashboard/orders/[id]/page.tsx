@@ -244,14 +244,22 @@ export default function SalesOrderDetailsPage() {
           </div>
         </div>
 
-        {canCancel && (
-          <button
-            onClick={handleCancel}
-            className="bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold py-2.5 px-6 rounded-lg border border-rose-200 transition-all"
+        <div className="flex gap-2">
+          <Link
+            href={`/dashboard/orders/${order.id}/print`}
+            className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 px-6 rounded-lg transition-all"
           >
-            Cancel Order
-          </button>
-        )}
+            🖨️ Print
+          </Link>
+          {canCancel && (
+            <button
+              onClick={handleCancel}
+              className="bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold py-2.5 px-6 rounded-lg border border-rose-200 transition-all"
+            >
+              Cancel Order
+            </button>
+          )}
+        </div>
       </div>
 
       {/* MERCHANDISER / CONFIRM CARD */}

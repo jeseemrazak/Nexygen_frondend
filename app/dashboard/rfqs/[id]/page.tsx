@@ -114,15 +114,25 @@ export default function RfqDetailsPage() {
     <div className="max-w-5xl mx-auto space-y-6 p-6 font-sans">
 
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-        <Link href="/dashboard/rfqs" className="text-teal-600 hover:text-teal-800 text-sm font-bold flex items-center gap-1 mb-3 transition-colors">
-          ← Back to RFQs
-        </Link>
-        <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
-          RFQ-{rfq.id.toString().padStart(4, '0')}
-          <span className="bg-slate-100 text-slate-600 text-xs font-bold px-3 py-1 rounded-full ring-1 ring-inset ring-slate-200">
-            {rfq.status}
-          </span>
-        </h1>
+        <div className="flex justify-between items-start gap-4">
+          <div>
+            <Link href="/dashboard/rfqs" className="text-teal-600 hover:text-teal-800 text-sm font-bold flex items-center gap-1 mb-3 transition-colors">
+              ← Back to RFQs
+            </Link>
+            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
+              RFQ-{rfq.id.toString().padStart(4, '0')}
+              <span className="bg-slate-100 text-slate-600 text-xs font-bold px-3 py-1 rounded-full ring-1 ring-inset ring-slate-200">
+                {rfq.status}
+              </span>
+            </h1>
+          </div>
+          <Link
+            href={`/dashboard/rfqs/${rfq.id}/print`}
+            className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 px-6 rounded-lg transition-all whitespace-nowrap"
+          >
+            🖨️ Print
+          </Link>
+        </div>
         <div className="flex flex-wrap gap-x-6 gap-y-2 mt-4 text-sm">
           <p className="flex items-center gap-1.5 text-slate-600 font-medium">
             <span className="text-slate-400">📅</span> {formatDateTime(rfq.createdAt)}

@@ -7,6 +7,13 @@ import { API_BASE_URL, getClientToken } from '@/lib/config';
 const formatQAR = (amount: number) => new Intl.NumberFormat('en-QA', { style: 'currency', currency: 'QAR' }).format(amount);
 const formatDateTime = (dateString: string) => new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
 
+const SOURCE_LABELS: Record<string, string> = { PARTY: 'Register Payment', SALES_INVOICE: 'Invoice Payment', PURCHASE_BILL: 'Bill Payment' };
+const SOURCE_COLORS: Record<string, string> = {
+  PARTY: 'bg-purple-50 text-purple-700',
+  SALES_INVOICE: 'bg-emerald-50 text-emerald-700',
+  PURCHASE_BILL: 'bg-amber-50 text-amber-700',
+};
+
 export default function PaymentsPage() {
   const [payments, setPayments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -43,17 +50,23 @@ export default function PaymentsPage() {
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
                 <th className="py-3 px-6 text-xs font-semibold text-gray-600 uppercase">Payment #</th>
+                <th className="py-3 px-6 text-xs font-semibold text-gray-600 uppercase">Source</th>
                 <th className="py-3 px-6 text-xs font-semibold text-gray-600 uppercase">Date</th>
                 <th className="py-3 px-6 text-xs font-semibold text-gray-600 uppercase">Party</th>
                 <th className="py-3 px-6 text-xs font-semibold text-gray-600 uppercase">Method</th>
                 <th className="py-3 px-6 text-xs font-semibold text-gray-600 uppercase text-right">Amount</th>
-                <th className="py-3 px-6 text-xs font-semibold text-gray-600 uppercase text-right">Allocations</th>
+                <th className="py-3 px-6 text-xs font-semibold text-gray-600 uppercase text-right">Documents</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 text-black">
               {payments.map((p: any) => (
-                <tr key={p.id} className="hover:bg-gray-50">
+                <tr key={`${p.source}-${p.id}`} className="hover:bg-gray-50">
                   <td className="py-4 px-6 font-bold text-teal-700 font-mono">{p.paymentNumber || `#${p.id}`}</td>
+                  <td className="py-4 px-6 text-sm">
+                    <span className={`px-2 py-1 rounded-full text-xs font-bold whitespace-nowrap ${SOURCE_COLORS[p.source] || 'bg-gray-50 text-gray-700'}`}>
+                      {SOURCE_LABELS[p.source] || p.source}
+                    </span>
+                  </td>
                   <td className="py-4 px-6 text-sm text-gray-600">{formatDateTime(p.createdAt)}</td>
                   <td className="py-4 px-6 text-sm">
                     <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase mr-2 ${p.partyType === 'CUSTOMER' ? 'bg-blue-50 text-blue-700' : 'bg-orange-50 text-orange-700'}`}>
@@ -63,7 +76,7 @@ export default function PaymentsPage() {
                   </td>
                   <td className="py-4 px-6 text-sm text-gray-600">{p.method || '--'}</td>
                   <td className="py-4 px-6 text-right font-bold text-sm">{formatQAR(p.amount)}</td>
-                  <td className="py-4 px-6 text-right text-sm text-gray-500">{p.allocations.length} document(s)</td>
+                  <td className="py-4 px-6 text-right text-sm text-gray-500">{p.documentCount} document(s)</td>
                 </tr>
               ))}
             </tbody>

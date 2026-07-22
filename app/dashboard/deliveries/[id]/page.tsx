@@ -113,6 +113,12 @@ export default function DeliveryDetailsPage() {
 
         <div className="flex flex-col items-end gap-2">
           <div className="flex gap-2">
+            <Link
+              href={`/dashboard/deliveries/${delivery.id}/print`}
+              className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 px-6 rounded-lg transition-all"
+            >
+              🖨️ Print
+            </Link>
             {delivery.status === 'PENDING' && (
               <button
                 onClick={() => updateStatus('SHIPPED')}

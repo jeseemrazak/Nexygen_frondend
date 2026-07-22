@@ -124,6 +124,12 @@ export default function SalesInvoiceDetailsPage() {
           <p className="flex items-center gap-1.5 text-slate-600 font-medium">
             <span className="text-slate-400">📦</span> <Link href={`/dashboard/orders/${invoice.salesOrderId}`} className="text-teal-600 hover:underline font-bold">View Sales Order #{invoice.salesOrderId}</Link>
           </p>
+          <Link
+            href={`/dashboard/sales-invoices/${invoice.id}/print`}
+            className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-1.5 px-4 rounded-lg text-xs transition-all"
+          >
+            🖨️ Print
+          </Link>
         </div>
       </div>
 

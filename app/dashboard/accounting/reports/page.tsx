@@ -1,4 +1,5 @@
 import { cookies } from 'next/headers';
+import Link from 'next/link';
 import { API_BASE_URL } from '@/lib/config';
 
 async function getReports(from?: string, to?: string) {
@@ -32,6 +33,10 @@ const formatQAR = (amount: number) => new Intl.NumberFormat('en-QA', { style: 'c
 export default async function ReportsPage({ searchParams }: { searchParams: Promise<{ from?: string; to?: string }> }) {
   const resolvedParams = await searchParams;
   const { pl, bs } = await getReports(resolvedParams.from, resolvedParams.to);
+  const rangeQuery = new URLSearchParams();
+  if (resolvedParams.from) rangeQuery.set('from', resolvedParams.from);
+  if (resolvedParams.to) rangeQuery.set('to', resolvedParams.to);
+  const asOfQuery = resolvedParams.to ? `?asOf=${resolvedParams.to}` : '';
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
@@ -50,8 +55,9 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* PROFIT & LOSS */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-          <div className="bg-gray-50 border-b border-gray-200 px-6 py-4">
+          <div className="bg-gray-50 border-b border-gray-200 px-6 py-4 flex justify-between items-center">
             <h2 className="text-lg font-bold text-gray-800">Profit &amp; Loss</h2>
+            <Link href={`/dashboard/accounting/reports/profit-loss/print?${rangeQuery.toString()}`} className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-1.5 px-3 rounded-md text-xs">🖨️ Print</Link>
           </div>
           <div className="p-6 space-y-4">
             <div>
@@ -83,8 +89,9 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
 
         {/* BALANCE SHEET */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-          <div className="bg-gray-50 border-b border-gray-200 px-6 py-4">
+          <div className="bg-gray-50 border-b border-gray-200 px-6 py-4 flex justify-between items-center">
             <h2 className="text-lg font-bold text-gray-800">Balance Sheet</h2>
+            <Link href={`/dashboard/accounting/reports/balance-sheet/print${asOfQuery}`} className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-1.5 px-3 rounded-md text-xs">🖨️ Print</Link>
           </div>
           <div className="p-6 space-y-4">
             <div>

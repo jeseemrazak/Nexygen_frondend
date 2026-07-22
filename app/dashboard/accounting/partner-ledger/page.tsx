@@ -9,6 +9,7 @@ const formatDate = (dateString: string) => new Date(dateString).toLocaleDateStri
 export default function PartnerLedgerPage() {
   const [partyType, setPartyType] = useState<'CUSTOMER' | 'SUPPLIER'>('CUSTOMER');
   const [suppliers, setSuppliers] = useState<any[]>([]);
+  const [customers, setCustomers] = useState<any[]>([]);
   const [partyName, setPartyName] = useState('');
   const [ledger, setLedger] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -19,7 +20,13 @@ export default function PartnerLedgerPage() {
       const res = await fetch(`${API_BASE_URL}/suppliers`, { headers: { 'Authorization': `Bearer ${token}` } });
       if (res.ok) setSuppliers(await res.json());
     };
+    const loadCustomers = async () => {
+      const token = getClientToken();
+      const res = await fetch(`${API_BASE_URL}/customers`, { headers: { 'Authorization': `Bearer ${token}` } });
+      if (res.ok) setCustomers(await res.json());
+    };
     loadSuppliers();
+    loadCustomers();
   }, []);
 
   const handlePartyTypeChange = (type: 'CUSTOMER' | 'SUPPLIER') => {
@@ -68,14 +75,14 @@ export default function PartnerLedgerPage() {
 
         <div className="mt-4 flex gap-3 max-w-lg">
           {partyType === 'CUSTOMER' ? (
-            <input
-              type="text"
+            <select
               value={partyName}
-              onChange={(e) => setPartyName(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') loadLedger(partyName); }}
-              placeholder="Type the client name exactly as on their invoices"
-              className="flex-1 border border-gray-300 rounded-md p-3 text-black"
-            />
+              onChange={(e) => { setPartyName(e.target.value); loadLedger(e.target.value); }}
+              className="flex-1 border border-gray-300 rounded-md p-3 text-black bg-white"
+            >
+              <option value="">Select customer...</option>
+              {customers.map((c: any) => <option key={c.id} value={c.name}>{c.name}</option>)}
+            </select>
           ) : (
             <select
               value={partyName}
@@ -86,15 +93,6 @@ export default function PartnerLedgerPage() {
               {suppliers.map((s: any) => <option key={s.id} value={s.name}>{s.name}</option>)}
             </select>
           )}
-          {partyType === 'CUSTOMER' && (
-            <button
-              onClick={() => loadLedger(partyName)}
-              disabled={!partyName.trim()}
-              className="bg-teal-600 hover:bg-teal-700 text-white font-bold px-6 rounded-md disabled:bg-gray-300"
-            >
-              Load
-            </button>
-          )}
         </div>
       </div>
 
@@ -102,9 +100,19 @@ export default function PartnerLedgerPage() {
 
       {!loading && ledger && (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-          <div className="bg-gray-50 border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+          <div className="bg-gray-50 border-b border-gray-200 px-6 py-4 flex justify-between items-center gap-4">
             <h2 className="text-lg font-bold text-gray-800">{ledger.partyName}</h2>
-            <span className="font-bold text-teal-700">Ending balance: {formatQAR(ledger.endingBalance)}</span>
+            <div className="flex items-center gap-4">
+              <span className="font-bold text-teal-700">Ending balance: {formatQAR(ledger.endingBalance)}</span>
+              <a
+                href={`/dashboard/accounting/partner-ledger/print?partyType=${partyType}&partyName=${encodeURIComponent(partyName)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-1.5 px-4 rounded-md text-xs whitespace-nowrap"
+              >
+                🖨️ Print
+              </a>
+            </div>
           </div>
           {ledger.lines.length === 0 ? (
             <div className="p-8 text-center text-gray-500">No postings for this {partyType === 'CUSTOMER' ? 'customer' : 'supplier'} yet.</div>

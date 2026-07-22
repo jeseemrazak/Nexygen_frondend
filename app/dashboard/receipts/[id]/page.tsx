@@ -72,6 +72,12 @@ export default function ReceiptDetailsPage() {
             </p>
           </div>
         </div>
+        <Link
+          href={`/dashboard/receipts/${receipt.id}/print`}
+          className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 px-6 rounded-lg transition-all whitespace-nowrap"
+        >
+          🖨️ Print
+        </Link>
       </div>
 
       {/* BATCH MANIFEST */}

@@ -124,6 +124,12 @@ export default function BillDetailsPage() {
           <p className="flex items-center gap-1.5 text-slate-600 font-medium">
             <span className="text-slate-400">📦</span> <Link href={`/dashboard/purchases/${bill.purchaseOrderId}`} className="text-teal-600 hover:underline font-bold">View Purchase Order #{bill.purchaseOrderId}</Link>
           </p>
+          <Link
+            href={`/dashboard/bills/${bill.id}/print`}
+            className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-1.5 px-4 rounded-lg text-xs transition-all"
+          >
+            🖨️ Print
+          </Link>
         </div>
       </div>
 
