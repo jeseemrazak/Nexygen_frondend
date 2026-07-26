@@ -1,6 +1,9 @@
 import { cookies } from 'next/headers';
+import Link from 'next/link';
 import { API_BASE_URL } from '@/lib/config';
-import { openSession, closeSession } from './actions';
+import { getCompanySettings } from '@/lib/companySettings';
+import OpenSessionForm from './OpenSessionForm';
+import CloseSessionButton from './CloseSessionButton';
 
 async function getSessions() {
   const cookieStore = await cookies();
@@ -40,10 +43,9 @@ async function getPosStaff() {
 
 const formatDateTime = (dateString: string) => new Date(dateString).toLocaleString('en-QA', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
 
-export default async function PosSessionsPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
-  const resolvedSearchParams = await searchParams;
-  const [sessions, warehouses, staff] = await Promise.all([getSessions(), getWarehouses(), getPosStaff()]);
-  const hasError = resolvedSearchParams.error === 'true';
+export default async function PosSessionsPage() {
+  const [sessions, warehouses, staff, settings] = await Promise.all([getSessions(), getWarehouses(), getPosStaff(), getCompanySettings()]);
+  const requireCashCount = settings?.posRequireCashCount ?? false;
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -54,20 +56,7 @@ export default async function PosSessionsPage({ searchParams }: { searchParams: 
 
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
         <h2 className="font-bold text-gray-800 mb-4">Open a Session</h2>
-        {hasError && <p className="text-rose-600 text-sm font-semibold mb-3">Failed to open session — that warehouse may already have one open.</p>}
-        <form action={openSession} className="flex gap-3">
-          <select name="warehouseId" required className="w-full border border-gray-300 rounded-md p-3 text-black bg-white">
-            <option value="">Select warehouse...</option>
-            {warehouses.map((w: any) => <option key={w.id} value={w.id}>{w.name}</option>)}
-          </select>
-          <select name="openedById" className="w-full border border-gray-300 rounded-md p-3 text-black bg-white">
-            <option value="">Opened by (optional)...</option>
-            {staff.map((s: any) => <option key={s.id} value={s.id}>{s.name}</option>)}
-          </select>
-          <button type="submit" className="bg-teal-600 hover:bg-teal-700 text-white font-bold px-6 rounded-md shadow-sm whitespace-nowrap">
-            Open Session
-          </button>
-        </form>
+        <OpenSessionForm warehouses={warehouses} staff={staff} />
       </div>
 
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
@@ -100,18 +89,12 @@ export default async function PosSessionsPage({ searchParams }: { searchParams: 
                     </span>
                   </td>
                   <td className="py-4 px-6 text-right">
-                    {s.status === 'OPEN' && (
-                      <form action={closeSession} className="inline-flex items-center gap-2">
-                        <input type="hidden" name="id" value={s.id} />
-                        <select name="closedById" className="border border-gray-300 rounded p-1 text-xs text-black bg-white">
-                          <option value="">Closed by...</option>
-                          {staff.map((st: any) => <option key={st.id} value={st.id}>{st.name}</option>)}
-                        </select>
-                        <button type="submit" className="text-slate-500 hover:text-slate-700 font-semibold text-sm underline">
-                          Close
-                        </button>
-                      </form>
-                    )}
+                    <div className="flex items-center justify-end gap-3">
+                      <Link href={`/dashboard/pos/sessions/${s.id}`} className="text-teal-600 hover:text-teal-800 font-semibold text-sm">
+                        View
+                      </Link>
+                      {s.status === 'OPEN' && <CloseSessionButton sessionId={s.id} staff={staff} requireCashCount={requireCashCount} />}
+                    </div>
                   </td>
                 </tr>
               ))}

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { API_BASE_URL, getClientToken } from '@/lib/config';
+import { API_BASE_URL, getClientToken, safeJson } from '@/lib/config';
 
 const formatQAR = (amount: number) => new Intl.NumberFormat('en-QA', { style: 'currency', currency: 'QAR' }).format(amount);
 
@@ -13,6 +13,7 @@ type CartLine = {
   price: number;
   quantity: number;
   available: number;
+  isService?: boolean;
 };
 
 function QtyBtn({ symbol, color, onClick }: { symbol: '+' | '-'; color: string; onClick: () => void }) {
@@ -28,7 +29,8 @@ function QtyBtn({ symbol, color, onClick }: { symbol: '+' | '-'; color: string; 
 }
 
 function ProductCard({ product, stock, onPick }: { product: any; stock: number; onPick: () => void }) {
-  const outOfStock = stock <= 0;
+  const isService = product.type === 'SERVICE';
+  const outOfStock = !isService && stock <= 0;
   return (
     <button
       type="button"
@@ -38,14 +40,18 @@ function ProductCard({ product, stock, onPick }: { product: any; stock: number; 
         outOfStock ? 'opacity-40 cursor-not-allowed' : 'hover:shadow-md hover:border-teal-300 hover:-translate-y-0.5'
       }`}
     >
-      <div className="h-24 bg-teal-50 flex items-center justify-center text-3xl">📦</div>
+      <div className="h-24 bg-teal-50 flex items-center justify-center text-3xl">{isService ? '🛠️' : '📦'}</div>
       <div className="p-2.5">
         <p className="font-bold text-gray-800 text-xs leading-tight line-clamp-2 h-8">{product.name}</p>
         <div className="flex items-center justify-between mt-2">
           <span className="text-teal-700 font-bold text-sm">{formatQAR(product.price)}</span>
-          <span className={`text-[11px] font-bold ${outOfStock ? 'text-rose-500' : stock < 10 ? 'text-amber-600' : 'text-gray-400'}`}>
-            {outOfStock ? 'Out' : stock}
-          </span>
+          {isService ? (
+            <span className="text-[11px] font-bold text-purple-600">Service</span>
+          ) : (
+            <span className={`text-[11px] font-bold ${outOfStock ? 'text-rose-500' : stock < 10 ? 'text-amber-600' : 'text-gray-400'}`}>
+              {outOfStock ? 'Out' : stock}
+            </span>
+          )}
         </div>
       </div>
     </button>
@@ -61,41 +67,123 @@ export default function PosCheckoutPage() {
   const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
   const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState('');
   const [staffList, setStaffList] = useState<any[]>([]);
-  const [clientName, setClientName] = useState('');
+  const [customers, setCustomers] = useState<any[]>([]);
+  const [selectedCustomerId, setSelectedCustomerId] = useState('');
+  const [discountInput, setDiscountInput] = useState('');
 
   const [products, setProducts] = useState<any[]>([]);
+  const [posCategories, setPosCategories] = useState<any[]>([]);
+  const [selectedCategoryId, setSelectedCategoryId] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [cart, setCart] = useState<CartLine[]>([]);
 
   const [batchPicker, setBatchPicker] = useState<{ product: any; batches: any[] } | null>(null);
 
+  type HeldSale = { id: string; label: string; cart: CartLine[]; selectedCustomerId: string; discountInput: string; heldAt: string };
+  const [heldSales, setHeldSales] = useState<HeldSale[]>([]);
+  const [showHeldSales, setShowHeldSales] = useState(false);
+
   const [showPinPad, setShowPinPad] = useState(false);
   const [pinStaffId, setPinStaffId] = useState('');
   const [pin, setPin] = useState('');
   const [pinError, setPinError] = useState('');
-  const [servedBy, setServedBy] = useState<{ id: number; name: string } | null>(null);
+  const [servedBy, setServedBy] = useState<{ id: number; name: string; staffToken: string } | null>(null);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [lastSale, setLastSale] = useState<any>(null);
+  const [settings, setSettings] = useState<any>(null);
+
+  const [loyaltyActive, setLoyaltyActive] = useState(false);
+  const [loyaltyConfig, setLoyaltyConfig] = useState<any>({});
+  const [loyaltyBalance, setLoyaltyBalance] = useState<number | null>(null);
+  const [redeemPointsInput, setRedeemPointsInput] = useState('');
+  const [redeeming, setRedeeming] = useState(false);
+  const [redeemError, setRedeemError] = useState('');
 
   useEffect(() => {
     const load = async () => {
       const token = getClientToken();
       const headers = { 'Authorization': `Bearer ${token}` };
-      const [whRes, pmRes, staffRes, prodRes] = await Promise.all([
+      const [whRes, pmRes, staffRes, prodRes, custRes, posCatRes, settingsRes, loyaltyRes] = await Promise.all([
         fetch(`${API_BASE_URL}/warehouses`, { headers }),
         fetch(`${API_BASE_URL}/accounting/payment-methods?activeOnly=true`, { headers }),
         fetch(`${API_BASE_URL}/pos-staff?activeOnly=true`, { headers }),
-        fetch(`${API_BASE_URL}/products`, { headers }),
+        fetch(`${API_BASE_URL}/products?posActiveOnly=true`, { headers }),
+        fetch(`${API_BASE_URL}/customers`, { headers }),
+        fetch(`${API_BASE_URL}/pos-categories?activeOnly=true`, { headers }),
+        fetch(`${API_BASE_URL}/settings/company`, { headers }),
+        fetch(`${API_BASE_URL}/app-modules/loyalty-rewards`, { headers }),
       ]);
-      if (whRes.ok) setWarehouses(await whRes.json());
-      if (pmRes.ok) setPaymentMethods(await pmRes.json());
+      const [whData, pmData] = await Promise.all([
+        whRes.ok ? whRes.json() : [],
+        pmRes.ok ? pmRes.json() : [],
+      ]);
+      setWarehouses(whData);
+      setPaymentMethods(pmData);
       if (staffRes.ok) setStaffList(await staffRes.json());
       if (prodRes.ok) setProducts(await prodRes.json());
+      if (custRes.ok) setCustomers(await custRes.json());
+      if (posCatRes.ok) setPosCategories(await posCatRes.json());
+      if (settingsRes.ok) {
+        const settingsData = await settingsRes.json();
+        setSettings(settingsData);
+        if (settingsData.posDefaultWarehouseId && whData.some((w: any) => w.id === settingsData.posDefaultWarehouseId)) {
+          setSelectedWarehouse(String(settingsData.posDefaultWarehouseId));
+        }
+        if (settingsData.posDefaultPaymentMethodId && pmData.some((m: any) => m.id === settingsData.posDefaultPaymentMethodId)) {
+          setSelectedPaymentMethodId(String(settingsData.posDefaultPaymentMethodId));
+        }
+      }
+      if (loyaltyRes.ok) {
+        const loyaltyMod = await loyaltyRes.json();
+        setLoyaltyActive(loyaltyMod.isActive);
+        setLoyaltyConfig(loyaltyMod.config || {});
+      }
     };
     load();
   }, []);
+
+  useEffect(() => {
+    if (!loyaltyActive || !selectedCustomerId) {
+      setLoyaltyBalance(null);
+      return;
+    }
+    const loadBalance = async () => {
+      const token = getClientToken();
+      const res = await fetch(`${API_BASE_URL}/loyalty/customers/${selectedCustomerId}`, { headers: { Authorization: `Bearer ${token}` } });
+      if (res.ok) {
+        const data = await res.json();
+        setLoyaltyBalance(data.balance);
+      } else {
+        setLoyaltyBalance(null);
+      }
+    };
+    loadBalance();
+  }, [loyaltyActive, selectedCustomerId]);
+
+  const redeemLoyaltyPoints = async () => {
+    const points = Number(redeemPointsInput);
+    if (!selectedCustomerId || !points || points <= 0) return;
+    setRedeeming(true);
+    setRedeemError('');
+    const token = getClientToken();
+    const res = await fetch(`${API_BASE_URL}/loyalty/redeem`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ customerId: Number(selectedCustomerId), points }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setDiscountInput((prev) => String((Number(prev) || 0) + data.discountAmount));
+      setLoyaltyBalance(data.newBalance);
+      setRedeemPointsInput('');
+    } else {
+      const err = await safeJson(res);
+      setRedeemError(err?.message || 'Failed to redeem points.');
+    }
+    setRedeeming(false);
+  };
 
   useEffect(() => {
     if (!selectedWarehouse) {
@@ -127,32 +215,42 @@ export default function PosCheckoutPage() {
 
   const filteredProducts = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
-    if (!q) return products;
-    return products.filter(
-      (p: any) =>
-        p.name.toLowerCase().includes(q) ||
-        p.sku?.toLowerCase().includes(q) ||
-        p.barcodePcs?.toLowerCase().includes(q) ||
-        p.barcodeBox?.toLowerCase().includes(q),
-    );
-  }, [products, searchQuery]);
+    return products.filter((p: any) => {
+      // Search matches across every category (a category tab is just a starting filter, not a
+      // hard boundary) — only apply the category filter when there's no active search.
+      if (q) {
+        return (
+          p.name.toLowerCase().includes(q) ||
+          p.sku?.toLowerCase().includes(q) ||
+          p.barcodePcs?.toLowerCase().includes(q) ||
+          p.barcodeBox?.toLowerCase().includes(q)
+        );
+      }
+      if (selectedCategoryId) return String(p.posCategoryId) === selectedCategoryId;
+      return true;
+    });
+  }, [products, searchQuery, selectedCategoryId]);
 
-  const addLine = (product: any, batchNumber: string, available: number) => {
+  const addLine = (product: any, batchNumber: string, available: number, isService: boolean) => {
     setCart((prev) => {
       const existing = prev.find((l) => l.productId === product.id && l.batchNumber === batchNumber);
       if (existing) {
-        if (existing.quantity >= available) return prev;
+        if (!isService && existing.quantity >= available) return prev;
         return prev.map((l) => (l === existing ? { ...l, quantity: l.quantity + 1 } : l));
       }
-      return [...prev, { productId: product.id, batchNumber, name: product.name, price: product.price, quantity: 1, available }];
+      return [...prev, { productId: product.id, batchNumber, name: product.name, price: product.price, quantity: 1, available, isService }];
     });
   };
 
   const handlePickProduct = (product: any) => {
+    if (product.type === 'SERVICE') {
+      addLine(product, 'SERVICE', Infinity, true);
+      return;
+    }
     const batches = batchesFor(product);
     if (batches.length === 0) return;
     if (batches.length === 1) {
-      addLine(product, batches[0].batchNumber, batches[0].quantity);
+      addLine(product, batches[0].batchNumber, batches[0].quantity, false);
       return;
     }
     setBatchPicker({ product, batches });
@@ -160,7 +258,7 @@ export default function PosCheckoutPage() {
 
   const incrementLine = (productId: number, batchNumber: string) => {
     setCart((prev) =>
-      prev.map((l) => (l.productId === productId && l.batchNumber === batchNumber && l.quantity < l.available ? { ...l, quantity: l.quantity + 1 } : l)),
+      prev.map((l) => (l.productId === productId && l.batchNumber === batchNumber && (l.isService || l.quantity < l.available) ? { ...l, quantity: l.quantity + 1 } : l)),
     );
   };
 
@@ -172,8 +270,31 @@ export default function PosCheckoutPage() {
     );
   };
 
-  const totalAmount = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const discountAmount = Math.min(Math.max(Number(discountInput) || 0, 0), subtotal);
+  const totalAmount = subtotal - discountAmount;
+
+  const holdSale = () => {
+    if (cart.length === 0) return;
+    const label = customers.find((c: any) => String(c.id) === selectedCustomerId)?.name || `Sale @ ${new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
+    setHeldSales((prev) => [...prev, { id: `${Date.now()}`, label, cart, selectedCustomerId, discountInput, heldAt: new Date().toISOString() }]);
+    setCart([]);
+    setSelectedCustomerId('');
+    setDiscountInput('');
+  };
+
+  const resumeHeldSale = (held: HeldSale) => {
+    setCart(held.cart);
+    setSelectedCustomerId(held.selectedCustomerId);
+    setDiscountInput(held.discountInput);
+    setHeldSales((prev) => prev.filter((h) => h.id !== held.id));
+    setShowHeldSales(false);
+  };
+
+  const discardHeldSale = (id: string) => {
+    setHeldSales((prev) => prev.filter((h) => h.id !== id));
+  };
 
   const handleVerifyPin = async () => {
     setPinError('');
@@ -189,7 +310,7 @@ export default function PosCheckoutPage() {
     });
     if (res.ok) {
       const data = await res.json();
-      setServedBy({ id: data.id, name: data.name });
+      setServedBy({ id: data.id, name: data.name, staffToken: data.staffToken });
       setShowPinPad(false);
       setPin('');
     } else {
@@ -202,6 +323,13 @@ export default function PosCheckoutPage() {
     if (cart.length === 0) return setSubmitError('Cart is empty.');
     if (!selectedPaymentMethodId) return setSubmitError('Select a payment method.');
     if (!session) return setSubmitError('No open session for this warehouse.');
+    if (settings?.posRequireCustomer && !selectedCustomerId) return setSubmitError('Select a customer to continue.');
+    if (settings?.posMaxDiscountPercent != null && subtotal > 0) {
+      const discountPercent = (discountAmount / subtotal) * 100;
+      if (discountPercent > settings.posMaxDiscountPercent) {
+        return setSubmitError(`Discount exceeds the maximum allowed (${settings.posMaxDiscountPercent}%). Get manager approval.`);
+      }
+    }
 
     setIsSubmitting(true);
     const token = getClientToken();
@@ -211,19 +339,25 @@ export default function PosCheckoutPage() {
       body: JSON.stringify({
         sessionId: session.id,
         paymentMethodId: Number(selectedPaymentMethodId),
-        servedById: servedBy?.id,
-        clientName: clientName || undefined,
+        servedByToken: servedBy?.staffToken,
+        customerId: selectedCustomerId ? Number(selectedCustomerId) : undefined,
+        discountAmount: discountAmount || undefined,
         items: cart.map((i) => ({ productId: i.productId, quantity: i.quantity, batchNumber: i.batchNumber })),
       }),
     });
     if (res.ok) {
-      setLastSale(await res.json());
+      const sale = await res.json();
+      setLastSale(sale);
       setCart([]);
-      setClientName('');
-      setSelectedPaymentMethodId('');
+      setSelectedCustomerId('');
+      setDiscountInput('');
+      setSelectedPaymentMethodId(settings?.posDefaultPaymentMethodId ? String(settings.posDefaultPaymentMethodId) : '');
+      if (settings?.posAutoPrintReceipt) {
+        window.open(`/dashboard/pos/sales/${sale.id}/print`, '_blank', 'noopener,noreferrer');
+      }
     } else {
-      const err = await res.json();
-      setSubmitError(err.message || 'Failed to complete sale.');
+      const err = await safeJson(res);
+      setSubmitError(err?.message || `Failed to complete sale (HTTP ${res.status}).`);
     }
     setIsSubmitting(false);
   };
@@ -277,7 +411,7 @@ export default function PosCheckoutPage() {
                 <button
                   key={inv.id}
                   type="button"
-                  onClick={() => { addLine(batchPicker.product, inv.batchNumber, inv.quantity); setBatchPicker(null); }}
+                  onClick={() => { addLine(batchPicker.product, inv.batchNumber, inv.quantity, false); setBatchPicker(null); }}
                   className="w-full flex justify-between items-center gap-6 px-4 py-2.5 border border-teal-200 bg-teal-50 hover:bg-teal-600 hover:text-white hover:border-teal-600 transition rounded-md text-teal-900"
                 >
                   <span className="font-mono font-bold">Batch {inv.batchNumber}</span>
@@ -295,13 +429,75 @@ export default function PosCheckoutPage() {
       {/* LAST SALE RECEIPT MODAL */}
       {lastSale && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 border border-gray-100 text-center">
-            <span className="text-4xl">✅</span>
-            <h3 className="text-xl font-bold text-gray-900 mt-2">Sale Complete</h3>
-            <p className="font-mono text-teal-700 font-bold mt-1">{lastSale.invoiceNumber}</p>
-            <p className="text-2xl font-bold text-gray-900 mt-2">{formatQAR(lastSale.totalAmount)}</p>
-            <button onClick={() => setLastSale(null)} className="mt-4 px-6 py-2 rounded-md font-bold text-white bg-teal-600 hover:bg-teal-700">
-              New Sale
+          <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 border border-gray-100">
+            <div className="text-center">
+              <span className="text-4xl">✅</span>
+              <h3 className="text-xl font-bold text-gray-900 mt-2">Sale Complete</h3>
+              <p className="font-mono text-teal-700 font-bold mt-1">{lastSale.invoiceNumber}</p>
+            </div>
+            <div className="mt-4 border-t border-b border-gray-100 divide-y divide-gray-50 max-h-48 overflow-y-auto">
+              {lastSale.items?.map((item: any) => (
+                <div key={item.id} className="py-2 flex justify-between text-sm">
+                  <span className="text-gray-700">{item.product?.name || `#${item.productId}`} × {item.quantity}</span>
+                  <span className="font-bold text-gray-800">{formatQAR(item.price * item.quantity)}</span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-3 space-y-1 text-sm">
+              {lastSale.discountAmount > 0 && (
+                <div className="flex justify-between text-gray-500">
+                  <span>Discount</span>
+                  <span>-{formatQAR(lastSale.discountAmount)}</span>
+                </div>
+              )}
+              <div className="flex justify-between text-lg">
+                <span className="font-bold text-gray-800">Total</span>
+                <span className="font-bold text-teal-700">{formatQAR(lastSale.totalAmount)}</span>
+              </div>
+            </div>
+            <div className="flex gap-3 mt-5">
+              <a
+                href={`/dashboard/pos/sales/${lastSale.id}/print`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 text-center px-4 py-2.5 rounded-md font-bold text-gray-700 bg-gray-100 hover:bg-gray-200"
+              >
+                🖨️ Print Receipt
+              </a>
+              <button onClick={() => setLastSale(null)} className="flex-1 px-4 py-2.5 rounded-md font-bold text-white bg-teal-600 hover:bg-teal-700">
+                New Sale
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* HELD SALES MODAL */}
+      {showHeldSales && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 border border-gray-100">
+            <h3 className="text-lg font-bold text-gray-900 mb-1">Held Sales</h3>
+            <p className="text-sm text-gray-500 mb-4">Resume a parked cart, or discard it.</p>
+            {heldSales.length === 0 ? (
+              <p className="text-center text-gray-400 py-6">No held sales.</p>
+            ) : (
+              <div className="space-y-2 max-h-72 overflow-y-auto">
+                {heldSales.map((h) => (
+                  <div key={h.id} className="flex items-center justify-between gap-2 px-4 py-2.5 border border-gray-200 rounded-md">
+                    <div className="min-w-0">
+                      <p className="font-bold text-gray-800 text-sm truncate">{h.label}</p>
+                      <p className="text-xs text-gray-500">{h.cart.length} item(s) · {formatQAR(h.cart.reduce((s, l) => s + l.price * l.quantity, 0))}</p>
+                    </div>
+                    <div className="flex gap-2 shrink-0">
+                      <button onClick={() => resumeHeldSale(h)} className="text-teal-600 hover:text-teal-800 text-xs font-bold">Resume</button>
+                      <button onClick={() => discardHeldSale(h.id)} className="text-rose-500 hover:text-rose-700 text-xs font-bold">Discard</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            <button onClick={() => setShowHeldSales(false)} className="mt-4 w-full px-4 py-2 rounded-md font-bold text-gray-600 hover:bg-gray-100">
+              Close
             </button>
           </div>
         </div>
@@ -320,6 +516,9 @@ export default function PosCheckoutPage() {
           {warehouses.map((w: any) => <option key={w.id} value={w.id} className="text-black">{w.name}</option>)}
         </select>
         <div className="flex-1" />
+        <button onClick={() => setShowHeldSales(true)} className="flex items-center gap-1.5 text-white/90 hover:text-white text-sm font-semibold">
+          ⏸️ Held{heldSales.length > 0 ? ` (${heldSales.length})` : ''}
+        </button>
         {servedBy ? (
           <button onClick={() => setServedBy(null)} className="flex items-center gap-2 text-white/80 hover:text-white text-sm font-semibold">
             👤 {servedBy.name} (Logout)
@@ -347,7 +546,7 @@ export default function PosCheckoutPage() {
 
           {/* LEFT: PRODUCT GRID */}
           <div className="flex-1 flex flex-col min-w-0 bg-gray-50">
-            <div className="p-3 shrink-0">
+            <div className="p-3 shrink-0 space-y-2">
               <input
                 type="text"
                 value={searchQuery}
@@ -356,6 +555,31 @@ export default function PosCheckoutPage() {
                 className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-black bg-white shadow-sm"
                 autoFocus
               />
+              {posCategories.length > 0 && (
+                <div className="flex gap-2 overflow-x-auto pb-1">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedCategoryId('')}
+                    className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-colors ${
+                      selectedCategoryId === '' ? 'bg-teal-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:border-teal-300'
+                    }`}
+                  >
+                    All
+                  </button>
+                  {posCategories.map((c: any) => (
+                    <button
+                      key={c.id}
+                      type="button"
+                      onClick={() => setSelectedCategoryId(String(c.id))}
+                      className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-colors ${
+                        selectedCategoryId === String(c.id) ? 'bg-teal-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:border-teal-300'
+                      }`}
+                    >
+                      {c.name}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="flex-1 overflow-y-auto p-3 pt-0">
               <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))' }}>
@@ -378,14 +602,45 @@ export default function PosCheckoutPage() {
 
             <div className="px-4 py-2.5 border-b border-[#D8E9F5] flex items-center gap-2">
               <span className="text-teal-700 text-sm">👤</span>
-              <input
-                type="text"
-                value={clientName}
-                onChange={(e) => setClientName(e.target.value)}
-                placeholder="Walk-in Customer"
-                className="flex-1 bg-transparent text-sm text-gray-800 placeholder:text-gray-500 focus:outline-none"
-              />
+              <select
+                value={selectedCustomerId}
+                onChange={(e) => { setSelectedCustomerId(e.target.value); setRedeemPointsInput(''); setRedeemError(''); }}
+                className="flex-1 bg-transparent text-sm text-gray-800 focus:outline-none"
+              >
+                <option value="">Walk-in Customer</option>
+                {customers.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
             </div>
+
+            {loyaltyActive && selectedCustomerId && loyaltyBalance !== null && (
+              <div className="px-4 py-2.5 border-b border-[#D8E9F5] bg-white/40">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-gray-600">🎁 Loyalty Points</span>
+                  <span className="font-bold text-gray-800">{loyaltyBalance}</span>
+                </div>
+                {loyaltyConfig.enableRedemption !== false && loyaltyBalance > 0 && (
+                  <div className="flex items-center gap-1.5 mt-1.5">
+                    <input
+                      type="number"
+                      min={1}
+                      max={loyaltyBalance}
+                      value={redeemPointsInput}
+                      onChange={(e) => setRedeemPointsInput(e.target.value)}
+                      placeholder="Points"
+                      className="w-20 border border-gray-300 rounded-md p-1 text-xs text-black"
+                    />
+                    <button
+                      onClick={redeemLoyaltyPoints}
+                      disabled={redeeming || !redeemPointsInput}
+                      className="text-teal-700 hover:text-teal-900 font-bold text-xs underline disabled:opacity-40"
+                    >
+                      {redeeming ? 'Redeeming...' : 'Redeem for discount'}
+                    </button>
+                  </div>
+                )}
+                {redeemError && <p className="text-rose-600 text-[11px] font-semibold mt-1">{redeemError}</p>}
+              </div>
+            )}
 
             <div className="flex-1 overflow-y-auto">
               {cart.length === 0 ? (
@@ -399,7 +654,7 @@ export default function PosCheckoutPage() {
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-gray-800 text-sm truncate">{item.name}</p>
                       <p className="text-gray-500 text-xs">
-                        <span className="font-mono">{item.batchNumber}</span> · {formatQAR(item.price)} × {item.quantity} = <span className="font-bold text-gray-700">{formatQAR(item.price * item.quantity)}</span>
+                        {item.isService ? <span className="text-purple-600 font-bold">Service</span> : <span className="font-mono">{item.batchNumber}</span>} · {formatQAR(item.price)} × {item.quantity} = <span className="font-bold text-gray-700">{formatQAR(item.price * item.quantity)}</span>
                       </p>
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
@@ -413,6 +668,32 @@ export default function PosCheckoutPage() {
             </div>
 
             <div className="p-4 border-t border-[#D8E9F5] bg-white/60 space-y-3 shrink-0">
+              <div className="flex items-center gap-2">
+                <span className="text-gray-500 text-sm">Discount (QAR)</span>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={discountInput}
+                  onChange={(e) => setDiscountInput(e.target.value)}
+                  placeholder="0.00"
+                  className="w-24 border border-gray-300 rounded-md p-1.5 text-sm text-black text-right ml-auto"
+                />
+              </div>
+
+              {discountAmount > 0 && (
+                <>
+                  <div className="flex justify-between items-center text-sm text-gray-500">
+                    <span>Subtotal:</span>
+                    <span>{formatQAR(subtotal)}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm text-rose-500">
+                    <span>Discount:</span>
+                    <span>-{formatQAR(discountAmount)}</span>
+                  </div>
+                </>
+              )}
+
               <div className="flex justify-between items-center">
                 <span className="text-gray-700 font-bold">Total:</span>
                 <span className="text-teal-700 font-bold text-xl">{formatQAR(totalAmount)}</span>
@@ -425,13 +706,22 @@ export default function PosCheckoutPage() {
 
               {submitError && <p className="text-rose-600 text-xs font-semibold">{submitError}</p>}
 
-              <button
-                onClick={handleCompleteSale}
-                disabled={isSubmitting || cart.length === 0}
-                className="w-full h-12 rounded-lg font-bold text-white bg-teal-600 hover:bg-teal-700 disabled:bg-gray-300 transition-colors flex items-center justify-center gap-2"
-              >
-                💳 {isSubmitting ? 'Processing...' : 'Charge Payment'}
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={holdSale}
+                  disabled={cart.length === 0}
+                  className="px-4 h-12 rounded-lg font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 disabled:opacity-40 transition-colors"
+                >
+                  ⏸️ Hold
+                </button>
+                <button
+                  onClick={handleCompleteSale}
+                  disabled={isSubmitting || cart.length === 0}
+                  className="flex-1 h-12 rounded-lg font-bold text-white bg-teal-600 hover:bg-teal-700 disabled:bg-gray-300 transition-colors flex items-center justify-center gap-2"
+                >
+                  💳 {isSubmitting ? 'Processing...' : 'Charge Payment'}
+                </button>
+              </div>
             </div>
           </div>
         </div>

@@ -64,6 +64,26 @@ export const REPORT_FIELD_CATALOG: Record<string, ReportFieldDef[]> = {
     { key: 'daysOverdue', label: 'Days Overdue' },
     { key: 'bucket', label: 'Bucket' },
   ],
+  posSessionReport: [
+    { key: 'time', label: 'Time' },
+    { key: 'invoiceNumber', label: 'Sale #' },
+    { key: 'staffName', label: 'Staff' },
+    { key: 'paymentMethod', label: 'Payment Method' },
+    { key: 'subtotal', label: 'Subtotal' },
+    { key: 'discount', label: 'Discount' },
+    { key: 'total', label: 'Total' },
+    { key: 'status', label: 'Status' },
+  ],
+  posZReport: [
+    { key: 'method', label: 'Payment Method' },
+    { key: 'count', label: 'Transactions' },
+    { key: 'total', label: 'Total' },
+  ],
+  posByProduct: [
+    { key: 'productName', label: 'Product' },
+    { key: 'quantity', label: 'Qty Sold' },
+    { key: 'total', label: 'Total' },
+  ],
 };
 
 // Matches current on-screen behavior — nothing changes until the user customizes it in Report Designer.
@@ -75,6 +95,9 @@ export const REPORT_FIELD_DEFAULTS: Record<string, string[]> = {
   partnerLedger: ['date', 'entryNo', 'description', 'debit', 'credit', 'balance'],
   agedReceivables: ['invoiceNumber', 'party', 'invoiceDate', 'totalAmount', 'outstanding', 'bucket'],
   agedPayables: ['invoiceNumber', 'party', 'invoiceDate', 'totalAmount', 'outstanding', 'bucket'],
+  posSessionReport: ['time', 'invoiceNumber', 'staffName', 'paymentMethod', 'total', 'status'],
+  posZReport: ['method', 'count', 'total'],
+  posByProduct: ['productName', 'quantity', 'total'],
 };
 
 export const REPORT_TYPE_LABELS: Record<string, string> = {
@@ -85,6 +108,9 @@ export const REPORT_TYPE_LABELS: Record<string, string> = {
   partnerLedger: 'Partner Ledger',
   agedReceivables: 'Aged Receivables (AR)',
   agedPayables: 'Aged Payables (AP)',
+  posSessionReport: 'POS Session Report',
+  posZReport: 'POS Z-Report',
+  posByProduct: 'POS Sales by Product',
 };
 
 export const REPORT_ORIENTATIONS = ['portrait', 'landscape'] as const;

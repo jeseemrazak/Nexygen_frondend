@@ -24,6 +24,14 @@ export type CompanySettings = {
   reportDensity: string;
   reportBorderStyle: string;
   reportFieldsJson: Record<string, string[]>;
+
+  posDefaultWarehouseId: number | null;
+  posDefaultPaymentMethodId: number | null;
+  posRequireCustomer: boolean;
+  posReceiptFooter: string | null;
+  posAutoPrintReceipt: boolean;
+  posMaxDiscountPercent: number | null;
+  posRequireCashCount: boolean;
 };
 
 // Server-side fetch of the single company-settings row — used by every print page (letterhead)

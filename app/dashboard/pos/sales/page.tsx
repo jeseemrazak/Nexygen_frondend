@@ -1,4 +1,5 @@
 import { cookies } from 'next/headers';
+import Link from 'next/link';
 import { API_BASE_URL } from '@/lib/config';
 import CancelSaleButton from './CancelSaleButton';
 
@@ -46,8 +47,11 @@ export default async function PosSalesPage() {
             </thead>
             <tbody className="divide-y divide-gray-100 text-black">
               {sales.map((s: any) => (
-                <tr key={s.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="py-4 px-6 font-mono font-bold text-teal-700">{s.invoiceNumber}</td>
+                <tr key={s.id} className={`hover:bg-gray-50 transition-colors ${s.cancelledAt ? 'opacity-50' : ''}`}>
+                  <td className="py-4 px-6 font-mono font-bold text-teal-700">
+                    <Link href={`/dashboard/pos/sales/${s.id}`} className="hover:underline">{s.invoiceNumber}</Link>
+                    {s.cancelledAt && <span className="ml-2 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-rose-50 text-rose-700">Cancelled</span>}
+                  </td>
                   <td className="py-4 px-6 text-sm text-gray-600">{formatDateTime(s.createdAt)}</td>
                   <td className="py-4 px-6 text-sm">{s.session?.warehouse?.name || '--'}</td>
                   <td className="py-4 px-6 text-sm font-bold">{s.clientName || 'Walk-in'}</td>
@@ -55,7 +59,7 @@ export default async function PosSalesPage() {
                   <td className="py-4 px-6 text-sm text-gray-600">{s.paymentMethod?.name}</td>
                   <td className="py-4 px-6 text-right font-bold text-sm">{formatQAR(s.totalAmount)}</td>
                   <td className="py-4 px-6 text-right">
-                    <CancelSaleButton saleId={s.id} />
+                    {!s.cancelledAt && <CancelSaleButton saleId={s.id} />}
                   </td>
                 </tr>
               ))}

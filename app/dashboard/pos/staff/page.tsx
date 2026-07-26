@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import { API_BASE_URL } from '@/lib/config';
 import { createPosStaff, togglePosStaffActive } from './actions';
+import ResetPinButton from './ResetPinButton';
 
 async function getPosStaff() {
   const cookieStore = await cookies();
@@ -72,13 +73,16 @@ export default async function PosStaffPage({ searchParams }: { searchParams: Pro
                     </span>
                   </td>
                   <td className="py-4 px-6 text-right">
-                    <form action={togglePosStaffActive}>
-                      <input type="hidden" name="id" value={s.id} />
-                      <input type="hidden" name="isActive" value={String(s.isActive)} />
-                      <button type="submit" className="text-slate-500 hover:text-slate-700 font-semibold text-sm underline">
-                        {s.isActive ? 'Deactivate' : 'Activate'}
-                      </button>
-                    </form>
+                    <div className="flex items-center justify-end gap-3">
+                      <ResetPinButton staffId={s.id} />
+                      <form action={togglePosStaffActive}>
+                        <input type="hidden" name="id" value={s.id} />
+                        <input type="hidden" name="isActive" value={String(s.isActive)} />
+                        <button type="submit" className="text-slate-500 hover:text-slate-700 font-semibold text-sm underline">
+                          {s.isActive ? 'Deactivate' : 'Activate'}
+                        </button>
+                      </form>
+                    </div>
                   </td>
                 </tr>
               ))}
