@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { API_BASE_URL, getClientToken } from '@/lib/config';
+import { API_BASE_URL, getClientToken, safeJson } from '@/lib/config';
 
 export default function ExpenseCategoriesPage() {
   const [categories, setCategories] = useState<any[]>([]);
@@ -46,19 +46,23 @@ export default function ExpenseCategoriesPage() {
       setAccountId('');
       fetchAll();
     } else {
-      const err = await res.json();
-      setError(err.message || 'Failed to create category.');
+      const err = await safeJson(res);
+      setError(err?.message || 'Failed to create category.');
     }
     setIsSubmitting(false);
   };
 
   const toggleActive = async (cat: any) => {
     const token = getClientToken();
-    await fetch(`${API_BASE_URL}/expense-categories/${cat.id}`, {
+    const res = await fetch(`${API_BASE_URL}/expense-categories/${cat.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({ isActive: !cat.isActive }),
     });
+    if (!res.ok) {
+      const err = await safeJson(res);
+      alert(err?.message || 'Failed to update category.');
+    }
     fetchAll();
   };
 
@@ -72,8 +76,8 @@ export default function ExpenseCategoriesPage() {
     if (res.ok) {
       fetchAll();
     } else {
-      const err = await res.json();
-      alert(err.message || 'Failed to delete category.');
+      const err = await safeJson(res);
+      alert(err?.message || 'Failed to delete category.');
     }
   };
 

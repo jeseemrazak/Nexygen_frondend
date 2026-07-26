@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { API_BASE_URL, getClientToken } from '@/lib/config';
+import { API_BASE_URL, getClientToken, safeJson } from '@/lib/config';
 
 const TYPES = ['ASSET', 'LIABILITY', 'EQUITY', 'INCOME', 'EXPENSE'];
 
@@ -28,8 +28,8 @@ export default function AccountRowActions({ account }: { account: any }) {
       setIsEditing(false);
       router.refresh();
     } else {
-      const err = await res.json();
-      setError(err.message || 'Update failed.');
+      const err = await safeJson(res);
+      setError(err?.message || 'Update failed.');
     }
     return res.ok;
   };
@@ -45,8 +45,8 @@ export default function AccountRowActions({ account }: { account: any }) {
     if (res.ok) {
       router.refresh();
     } else {
-      const err = await res.json();
-      setError(err.message || 'Delete failed.');
+      const err = await safeJson(res);
+      setError(err?.message || 'Delete failed.');
     }
   };
 

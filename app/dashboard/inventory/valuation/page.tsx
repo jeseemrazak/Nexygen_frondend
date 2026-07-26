@@ -1,4 +1,6 @@
 import { cookies } from 'next/headers';
+import Link from 'next/link';
+import Form from 'next/form';
 import { API_BASE_URL } from '@/lib/config';
 
 async function getValuation() {
@@ -6,22 +8,44 @@ async function getValuation() {
   const token = cookieStore.get('nexygen_token')?.value;
 
   try {
-    const res = await fetch(`${API_BASE_URL}/inventory/valuation`, {
-      headers: { 'Authorization': `Bearer ${token}` },
-      cache: 'no-store',
-    });
-    if (!res.ok) return { warehouses: [], grandTotal: 0 };
-    return await res.json();
+    const [valuationRes, warehousesRes] = await Promise.all([
+      fetch(`${API_BASE_URL}/inventory/valuation`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+        cache: 'no-store',
+      }),
+      fetch(`${API_BASE_URL}/warehouses`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+        cache: 'no-store',
+      }),
+    ]);
+
+    const valuation = valuationRes.ok ? await valuationRes.json() : { warehouses: [], grandTotal: 0 };
+    const allWarehouses = warehousesRes.ok ? await warehousesRes.json() : [];
+    return { ...valuation, allWarehouses };
   } catch (error) {
-    return { warehouses: [], grandTotal: 0 };
+    return { warehouses: [], grandTotal: 0, allWarehouses: [] };
   }
 }
 
 const formatQAR = (amount: number) => new Intl.NumberFormat('en-QA', { style: 'currency', currency: 'QAR' }).format(amount);
 
-export default async function StockValuationPage() {
+export default async function StockValuationPage({
+  searchParams
+}: {
+  searchParams: Promise<{ warehouseId?: string }>
+}) {
+  const resolvedParams = await searchParams;
+  const warehouseFilter = resolvedParams.warehouseId || 'all';
+
   const data = await getValuation();
-  const warehouses = data.warehouses || [];
+  const allWarehouses = data.allWarehouses || [];
+  const warehouses = warehouseFilter === 'all'
+    ? (data.warehouses || [])
+    : (data.warehouses || []).filter((wh: any) => String(wh.warehouseId) === warehouseFilter);
+
+  const displayTotal = warehouseFilter === 'all'
+    ? (data.grandTotal || 0)
+    : warehouses.reduce((sum: number, wh: any) => sum + wh.total, 0);
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
@@ -30,15 +54,31 @@ export default async function StockValuationPage() {
           <h1 className="text-2xl font-bold text-gray-800">Stock Value by Warehouse</h1>
           <p className="text-sm text-gray-500 mt-1">Quantity × cost price, per warehouse. Rows marked "est." fall back to the sale price because no cost price has been set yet.</p>
         </div>
-        <div className="bg-slate-900 rounded-lg px-6 py-3 text-center">
-          <p className="text-xs font-bold text-slate-300 uppercase">Grand Total</p>
-          <p className="text-2xl font-bold text-white mt-1">{formatQAR(data.grandTotal || 0)}</p>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <Form action="/dashboard/inventory/valuation" className="flex items-center gap-2">
+            <select name="warehouseId" defaultValue={warehouseFilter} className="border border-gray-300 rounded-md px-3 py-2 text-sm text-black bg-white">
+              <option value="all">All Warehouses</option>
+              {allWarehouses.map((w: any) => (
+                <option key={w.id} value={w.id}>{w.name}</option>
+              ))}
+            </select>
+            <button type="submit" className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-md text-sm">
+              Filter
+            </button>
+            {warehouseFilter !== 'all' && (
+              <Link href="/dashboard/inventory/valuation" className="text-gray-500 underline text-sm whitespace-nowrap">Clear</Link>
+            )}
+          </Form>
+          <div className="bg-slate-900 rounded-lg px-6 py-3 text-center">
+            <p className="text-xs font-bold text-slate-300 uppercase">{warehouseFilter === 'all' ? 'Grand Total' : 'Total'}</p>
+            <p className="text-2xl font-bold text-white mt-1">{formatQAR(displayTotal)}</p>
+          </div>
         </div>
       </div>
 
       {warehouses.length === 0 ? (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center text-gray-500">
-          No stock on hand.
+          No stock on hand{warehouseFilter !== 'all' ? ' in this warehouse' : ''}.
         </div>
       ) : (
         warehouses.map((wh: any) => (

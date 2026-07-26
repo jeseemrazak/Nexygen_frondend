@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { API_BASE_URL } from '@/lib/config';
+import CustomersTable from './CustomersTable';
 
 async function getCustomers() {
   const cookieStore = await cookies();
@@ -40,32 +41,7 @@ export default async function CustomersListPage() {
       </div>
 
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        {customers.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">
-            No customers found. Click "Add Customer" to get started.
-          </div>
-        ) : (
-          <table className="w-full text-left border-collapse">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="py-3 px-6 text-xs font-semibold text-gray-600 uppercase tracking-wider">Name</th>
-                <th className="py-3 px-6 text-xs font-semibold text-gray-600 uppercase tracking-wider">Contact Person</th>
-                <th className="py-3 px-6 text-xs font-semibold text-gray-600 uppercase tracking-wider">Phone</th>
-                <th className="py-3 px-6 text-xs font-semibold text-gray-600 uppercase tracking-wider">Email</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 text-black">
-              {customers.map((customer: any) => (
-                <tr key={customer.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="py-4 px-6 font-bold text-gray-800">{customer.name}</td>
-                  <td className="py-4 px-6 text-sm text-gray-500">{customer.contactPerson || <span className="italic text-gray-400">--</span>}</td>
-                  <td className="py-4 px-6 text-sm text-gray-500">{customer.phone || <span className="italic text-gray-400">--</span>}</td>
-                  <td className="py-4 px-6 text-sm text-gray-500">{customer.email || <span className="italic text-gray-400">--</span>}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+        <CustomersTable initialCustomers={customers} />
       </div>
     </div>
   );

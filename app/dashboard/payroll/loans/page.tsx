@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { API_BASE_URL, getClientToken } from '@/lib/config';
+import { API_BASE_URL, getClientToken, safeJson } from '@/lib/config';
 
 const formatQAR = (amount: number) => new Intl.NumberFormat('en-QA', { style: 'currency', currency: 'QAR' }).format(amount);
 const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString('en-QA', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -19,6 +19,7 @@ export default function EmployeeLoansPage() {
   const [issueError, setIssueError] = useState('');
 
   const [repayAmounts, setRepayAmounts] = useState<Record<number, string>>({});
+  const [repayError, setRepayError] = useState('');
 
   const load = async () => {
     const token = getClientToken();
@@ -67,14 +68,20 @@ export default function EmployeeLoansPage() {
   const handleRepay = async (loanId: number) => {
     const amount = repayAmounts[loanId];
     if (!amount || Number(amount) <= 0) return;
+    setRepayError('');
     const token = getClientToken();
-    await fetch(`${API_BASE_URL}/employee-loans/${loanId}/manual-repayment`, {
+    const res = await fetch(`${API_BASE_URL}/employee-loans/${loanId}/manual-repayment`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({ amount: Number(amount) }),
     });
-    setRepayAmounts({ ...repayAmounts, [loanId]: '' });
-    await load();
+    if (res.ok) {
+      setRepayAmounts({ ...repayAmounts, [loanId]: '' });
+      await load();
+    } else {
+      const err = await safeJson(res);
+      setRepayError(err?.message || `Failed to record repayment (HTTP ${res.status}).`);
+    }
   };
 
   return (
@@ -103,6 +110,12 @@ export default function EmployeeLoansPage() {
           {isIssuing ? 'Issuing...' : 'Issue Loan'}
         </button>
       </form>
+
+      {repayError && (
+        <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
+          <p className="text-sm text-red-700 font-medium">{repayError}</p>
+        </div>
+      )}
 
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         {loans.length === 0 ? (

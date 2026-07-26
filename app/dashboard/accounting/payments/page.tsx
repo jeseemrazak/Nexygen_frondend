@@ -61,7 +61,11 @@ export default function PaymentsPage() {
             <tbody className="divide-y divide-gray-100 text-black">
               {payments.map((p: any) => (
                 <tr key={`${p.source}-${p.id}`} className="hover:bg-gray-50">
-                  <td className="py-4 px-6 font-bold text-teal-700 font-mono">{p.paymentNumber || `#${p.id}`}</td>
+                  <td className="py-4 px-6 font-bold text-teal-700 font-mono">
+                    <Link href={`/dashboard/accounting/payments/${p.id}?source=${p.source}`} className="hover:underline">
+                      {p.paymentNumber || `#${p.id}`}
+                    </Link>
+                  </td>
                   <td className="py-4 px-6 text-sm">
                     <span className={`px-2 py-1 rounded-full text-xs font-bold whitespace-nowrap ${SOURCE_COLORS[p.source] || 'bg-gray-50 text-gray-700'}`}>
                       {SOURCE_LABELS[p.source] || p.source}

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { API_BASE_URL, getClientToken } from '@/lib/config';
+import { API_BASE_URL, getClientToken, safeJson } from '@/lib/config';
 
 const formatQAR = (amount: number) => new Intl.NumberFormat('en-QA', { style: 'currency', currency: 'QAR' }).format(amount);
 const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -43,8 +43,8 @@ export default function ExpensesPage() {
     if (res.ok) {
       fetchExpenses();
     } else {
-      const err = await res.json();
-      alert(err.message || `Failed to ${action} expense.`);
+      const err = await safeJson(res);
+      alert(err?.message || `Failed to ${action} expense.`);
     }
     setBusyId(null);
   };
@@ -56,7 +56,12 @@ export default function ExpensesPage() {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` },
     });
-    if (res.ok) fetchExpenses();
+    if (res.ok) {
+      fetchExpenses();
+    } else {
+      const err = await safeJson(res);
+      alert(err?.message || 'Failed to delete expense.');
+    }
   };
 
   return (

@@ -31,16 +31,21 @@ async function getInventoryData(query: string, status: string) {
   }
 }
 
-export default async function InventoryReportPage({ 
-  searchParams 
-}: { 
-  searchParams: Promise<{ q?: string; status?: string }> 
+export default async function InventoryReportPage({
+  searchParams
+}: {
+  searchParams: Promise<{ q?: string; status?: string; warehouseId?: string }>
 }) {
   const resolvedParams = await searchParams;
   const searchQuery = resolvedParams.q || '';
   const statusFilter = resolvedParams.status || 'all';
+  const warehouseFilter = resolvedParams.warehouseId || 'all';
 
   const { warehouses, products } = await getInventoryData(searchQuery, statusFilter);
+
+  const warehousesToShow = warehouseFilter === 'all'
+    ? warehouses
+    : warehouses.filter((w: any) => String(w.id) === warehouseFilter);
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
@@ -58,6 +63,12 @@ export default async function InventoryReportPage({
             placeholder="Search..." 
             className="border border-gray-300 rounded-md px-3 py-2 text-sm text-black w-full md:w-64"
           />
+          <select name="warehouseId" defaultValue={warehouseFilter} className="border border-gray-300 rounded-md px-3 py-2 text-sm text-black bg-white">
+            <option value="all">All Warehouses</option>
+            {warehouses.map((w: any) => (
+              <option key={w.id} value={w.id}>{w.name}</option>
+            ))}
+          </select>
           <select name="status" defaultValue={statusFilter} className="border border-gray-300 rounded-md px-3 py-2 text-sm text-black bg-white">
             <option value="all">All Products</option>
             <option value="inStock">Available</option>
@@ -66,13 +77,19 @@ export default async function InventoryReportPage({
           <button type="submit" className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-md text-sm">
             Filter
           </button>
-          {searchQuery && (
+          {(searchQuery || statusFilter !== 'all' || warehouseFilter !== 'all') && (
             <Link href="/dashboard/inventory" className="text-gray-500 underline text-sm">Clear</Link>
           )}
         </Form>
       </div>
 
-      {warehouses.map((warehouse: any) => (
+      {warehousesToShow.length === 0 && (
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center text-gray-500">
+          No warehouse matches this filter.
+        </div>
+      )}
+
+      {warehousesToShow.map((warehouse: any) => (
         <div key={warehouse.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mb-6">
           <div className="bg-gray-800 text-white px-6 py-4">
             <h2 className="text-lg font-bold">{warehouse.name}</h2>

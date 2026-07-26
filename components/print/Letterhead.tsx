@@ -1,5 +1,5 @@
 import { CompanySettings } from '@/lib/companySettings';
-import { API_BASE_URL } from '@/lib/config';
+import { uploadUrl } from '@/lib/config';
 
 export default function Letterhead({
   settings,
@@ -21,7 +21,7 @@ export default function Letterhead({
         <div className="flex items-center gap-4">
           {showLogo && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={`${API_BASE_URL}${settings!.logoUrl}`} alt="Company logo" className="h-16 w-16 object-contain" />
+            <img src={uploadUrl(settings!.logoUrl)} alt="Company logo" className="h-16 w-16 object-contain" />
           )}
           <div>
             <p className="font-black text-xl text-gray-900">{settings?.name || 'Company Name'}</p>

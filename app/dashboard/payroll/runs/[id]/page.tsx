@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { API_BASE_URL, getClientToken } from '@/lib/config';
+import { API_BASE_URL, getClientToken, safeJson } from '@/lib/config';
 
 const formatQAR = (amount: number) => new Intl.NumberFormat('en-QA', { style: 'currency', currency: 'QAR' }).format(amount);
 const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString('en-QA', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -50,13 +50,19 @@ export default function PayrollRunDetailPage() {
   const saveManualInputs = async (payslipId: number) => {
     const values = editValues[payslipId];
     if (!values) return;
+    setError('');
     const token = getClientToken();
-    await fetch(`${API_BASE_URL}/payroll/payslips/${payslipId}/manual-inputs`, {
+    const res = await fetch(`${API_BASE_URL}/payroll/payslips/${payslipId}/manual-inputs`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify(values),
     });
-    await fetchRun();
+    if (res.ok) {
+      await fetchRun();
+    } else {
+      const err = await safeJson(res);
+      setError(err?.message || `Failed to save changes (HTTP ${res.status}).`);
+    }
   };
 
   const handleProcess = async () => {

@@ -2,7 +2,7 @@ import Letterhead from './Letterhead';
 import { CompanySettings } from '@/lib/companySettings';
 import { getVisibleFields, getReportDensityStyle } from '@/lib/reportDesign';
 
-const NUMERIC_KEYS = new Set(['debit', 'credit', 'balance', 'amount', 'totalAmount', 'amountPaid', 'outstanding', 'daysOverdue']);
+const NUMERIC_KEYS = new Set(['debit', 'credit', 'balance', 'amount', 'totalAmount', 'amountPaid', 'outstanding', 'daysOverdue', 'subtotal', 'discount', 'total']);
 
 function formatCell(key: string, value: any) {
   if (value === null || value === undefined || value === '') return '';

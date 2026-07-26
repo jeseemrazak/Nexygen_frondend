@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { API_BASE_URL, getClientToken } from '@/lib/config';
+import { API_BASE_URL, getClientToken, safeJson } from '@/lib/config';
 
 const formatQAR = (amount: number) => new Intl.NumberFormat('en-QA', { style: 'currency', currency: 'QAR' }).format(amount);
 const formatDateTime = (dateString: string) => new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
@@ -46,8 +46,8 @@ export default function JournalEntryDetailPage() {
       const reversal = await res.json();
       router.push(`/dashboard/accounting/journal/${reversal.id}`);
     } else {
-      const err = await res.json();
-      setError(err.message || 'Failed to void entry.');
+      const err = await safeJson(res);
+      setError(err?.message || 'Failed to void entry.');
       setIsVoiding(false);
     }
   };
@@ -63,9 +63,19 @@ export default function JournalEntryDetailPage() {
     <div className="max-w-3xl mx-auto space-y-6 p-6 font-sans">
 
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-        <Link href="/dashboard/accounting/journal" className="text-teal-600 hover:text-teal-800 text-sm font-bold flex items-center gap-1 mb-3 transition-colors">
-          ← Back to Journal
-        </Link>
+        <div className="flex justify-between items-start gap-4">
+          <Link href="/dashboard/accounting/journal" className="text-teal-600 hover:text-teal-800 text-sm font-bold flex items-center gap-1 mb-3 transition-colors">
+            ← Back to Journal
+          </Link>
+          <a
+            href={`/dashboard/accounting/journal/${entry.id}/print`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-1.5 px-4 rounded-md text-xs whitespace-nowrap"
+          >
+            🖨️ Print
+          </a>
+        </div>
         <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3 flex-wrap">
           Entry #{entry.id}
           <span className="bg-slate-100 text-slate-600 text-xs font-bold px-3 py-1 rounded-full">{entry.sourceType}</span>

@@ -1,5 +1,5 @@
 import { getCompanySettings } from '@/lib/companySettings';
-import { API_BASE_URL } from '@/lib/config';
+import { uploadUrl } from '@/lib/config';
 import { updateCompanyProfile, uploadCompanyLogo } from './actions';
 
 export default async function CompanySettingsPage({ searchParams }: { searchParams: Promise<{ error?: string; saved?: string }> }) {
@@ -27,13 +27,13 @@ export default async function CompanySettingsPage({ searchParams }: { searchPara
           <div className="w-24 h-24 rounded-lg border border-gray-200 bg-gray-50 flex items-center justify-center overflow-hidden shrink-0">
             {settings.logoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={`${API_BASE_URL}${settings.logoUrl}`} alt="Company logo" className="w-full h-full object-contain" />
+              <img src={uploadUrl(settings.logoUrl)} alt="Company logo" className="w-full h-full object-contain" />
             ) : (
               <span className="text-gray-300 text-3xl">🏢</span>
             )}
           </div>
           <form action={uploadCompanyLogo} className="flex-1 flex items-center gap-3">
-            <input type="file" name="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" required className="text-sm text-black" />
+            <input type="file" name="file" accept="image/png,image/jpeg,image/webp" required className="text-sm text-black" />
             <button type="submit" className="bg-gray-900 hover:bg-black text-white font-bold py-2 px-5 rounded-md text-sm whitespace-nowrap">
               Upload
             </button>

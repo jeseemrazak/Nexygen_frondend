@@ -1,4 +1,5 @@
 import { cookies } from 'next/headers';
+import Link from 'next/link';
 import { API_BASE_URL } from '@/lib/config';
 import { seedDefaultJournals, toggleJournalActive } from './actions';
 
@@ -36,13 +37,21 @@ export default async function JournalsPage() {
           <h1 className="text-2xl font-bold text-gray-800">Journals</h1>
           <p className="text-sm text-gray-500 mt-1">Cash/Bank/Sales/Purchase journals — pick one when recording a payment to control which account it hits.</p>
         </div>
-        {journals.length === 0 && (
-          <form action={seedDefaultJournals}>
-            <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition-colors shadow-sm">
-              Seed Default Journals
-            </button>
-          </form>
-        )}
+        <div className="flex gap-3">
+          {journals.length === 0 && (
+            <form action={seedDefaultJournals}>
+              <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition-colors shadow-sm">
+                Seed Default Journals
+              </button>
+            </form>
+          )}
+          <Link
+            href="/dashboard/accounting/journals/new"
+            className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-md transition-colors shadow-sm flex items-center gap-2"
+          >
+            <span>➕</span> Add Journal
+          </Link>
+        </div>
       </div>
 
       {journals.length === 0 && (
