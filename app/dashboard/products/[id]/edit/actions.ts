@@ -15,6 +15,11 @@ export async function updateProduct(formData: FormData) {
   const sku = formData.get('sku') as string;
   const barcodePcs = formData.get('barcodePcs') as string;
   const barcodeBox = formData.get('barcodeBox') as string;
+  const type = formData.get('type') as string;
+  const categoryIdRaw = formData.get('categoryId') as string;
+  const posCategoryIdRaw = formData.get('posCategoryId') as string;
+  const unitIdRaw = formData.get('unitId') as string;
+  const posActive = formData.get('posActive') === 'on';
 
   const cookieStore = await cookies();
   const token = cookieStore.get('nexygen_token')?.value;
@@ -32,7 +37,12 @@ export async function updateProduct(formData: FormData) {
       description: description || null,
       sku: sku || null,
       barcodePcs: barcodePcs || null,
-      barcodeBox: barcodeBox || null
+      barcodeBox: barcodeBox || null,
+      type: type || undefined,
+      categoryId: categoryIdRaw ? Number(categoryIdRaw) : null,
+      posCategoryId: posCategoryIdRaw ? Number(posCategoryIdRaw) : null,
+      unitId: unitIdRaw ? Number(unitIdRaw) : null,
+      posActive,
     }),
   });
 

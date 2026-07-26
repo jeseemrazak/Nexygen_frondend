@@ -38,9 +38,13 @@ export default async function InvoicePrintPage({ params }: { params: Promise<{ i
         date={formatDate(invoice.createdAt)}
         party={invoice.salesOrder?.clientName || 'Walk-in'}
         partyLabel="Bill To"
-        meta={[{ label: 'Sales Order', value: `SO-${String(invoice.salesOrderId).padStart(4, '0')}` }]}
+        meta={[
+          { label: 'Sales Order', value: `SO-${String(invoice.salesOrderId).padStart(4, '0')}` },
+          ...(invoice.salesOrder?.customerReference ? [{ label: 'Customer Ref', value: invoice.salesOrder.customerReference }] : []),
+        ]}
         statusBadge={invoice.paymentStatus}
         totalAmount={invoice.totalAmount}
+        terms={invoice.salesOrder?.termsAndConditions}
         columns={[
           { key: 'qty', label: 'Qty' },
           { key: 'unitPrice', label: 'Unit Price' },

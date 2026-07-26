@@ -15,6 +15,26 @@ async function getProduct(id: string) {
   return res.json();
 }
 
+async function getCategories() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('nexygen_token')?.value;
+  const headers = { 'Authorization': `Bearer ${token}` };
+  try {
+    const [catRes, posCatRes, unitRes] = await Promise.all([
+      fetch(`${API_BASE_URL}/product-categories?activeOnly=true`, { headers, cache: 'no-store' }),
+      fetch(`${API_BASE_URL}/pos-categories?activeOnly=true`, { headers, cache: 'no-store' }),
+      fetch(`${API_BASE_URL}/units-of-measurement?activeOnly=true`, { headers, cache: 'no-store' }),
+    ]);
+    return {
+      categories: catRes.ok ? await catRes.json() : [],
+      posCategories: posCatRes.ok ? await posCatRes.json() : [],
+      units: unitRes.ok ? await unitRes.json() : [],
+    };
+  } catch (e) {
+    return { categories: [], posCategories: [], units: [] };
+  }
+}
+
 // 🔥 NEXT 16 FIX: Await params and searchParams
 export default async function EditProductPage({ 
   params, 
@@ -27,7 +47,7 @@ export default async function EditProductPage({
   const resolvedParams = await params;
   const resolvedSearchParams = await searchParams;
   
-  const product = await getProduct(resolvedParams.id);
+  const [product, { categories, posCategories, units }] = await Promise.all([getProduct(resolvedParams.id), getCategories()]);
   const hasError = resolvedSearchParams.error === 'true';
 
   if (!product) {
@@ -86,6 +106,46 @@ export default async function EditProductPage({
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-2">Description</label>
             <textarea name="description" rows={3} defaultValue={product.description || ''} className="w-full border border-gray-300 rounded-md px-4 py-3 text-black"></textarea>
+          </div>
+
+          <div className="grid grid-cols-3 gap-4 border-t border-gray-100 pt-6">
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">Type</label>
+              <select name="type" defaultValue={product.type || 'GOODS'} className="w-full border border-gray-300 rounded-md px-4 py-3 text-black bg-white">
+                <option value="GOODS">Goods</option>
+                <option value="SERVICE">Service</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">Category</label>
+              <select name="categoryId" defaultValue={product.categoryId || ''} className="w-full border border-gray-300 rounded-md px-4 py-3 text-black bg-white">
+                <option value="">None</option>
+                {categories.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">POS Category</label>
+              <select name="posCategoryId" defaultValue={product.posCategoryId || ''} className="w-full border border-gray-300 rounded-md px-4 py-3 text-black bg-white">
+                <option value="">None</option>
+                {posCategories.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-4 pt-2">
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">Unit of Measurement</label>
+              <select name="unitId" defaultValue={product.unitId || ''} className="w-full border border-gray-300 rounded-md px-4 py-3 text-black bg-white">
+                <option value="">None</option>
+                {units.map((u: any) => <option key={u.id} value={u.id}>{u.name} ({u.abbreviation})</option>)}
+              </select>
+            </div>
+            <div className="col-span-2 flex items-end pb-3">
+              <label className="flex items-center gap-2 text-sm font-bold text-gray-700">
+                <input type="checkbox" name="posActive" defaultChecked={product.posActive !== false} className="w-4 h-4" />
+                Active on POS
+              </label>
+            </div>
           </div>
 
           <div className="pt-4 border-t border-gray-100">

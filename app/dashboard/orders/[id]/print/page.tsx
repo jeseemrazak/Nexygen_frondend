@@ -25,6 +25,9 @@ export default async function SalesOrderPrintPage({ params }: { params: Promise<
 
   if (!order) return <div className="p-8 text-center text-rose-500 font-bold">Sales Order not found.</div>;
 
+  const subtotal = order.subtotal || order.totalAmount;
+  const discountAmount = subtotal - order.totalAmount;
+
   return (
     <div>
       <div className="no-print flex justify-between items-center p-4 max-w-4xl mx-auto">
@@ -38,9 +41,16 @@ export default async function SalesOrderPrintPage({ params }: { params: Promise<
         date={formatDate(order.createdAt)}
         party={order.clientName || 'Walk-in'}
         partyLabel="Client"
-        meta={[{ label: 'Warehouse', value: order.warehouse?.name || 'Unknown' }]}
+        meta={[
+          { label: 'Warehouse', value: order.warehouse?.name || 'Unknown' },
+          ...(order.customerReference ? [{ label: 'Customer Ref', value: order.customerReference }] : []),
+        ]}
         statusBadge={order.status}
+        subtotal={subtotal}
+        discountLabel={order.discountType === 'PERCENT' ? `Discount (${order.discountValue}%)` : 'Discount'}
+        discountAmount={discountAmount}
         totalAmount={order.totalAmount}
+        terms={order.termsAndConditions}
         columns={[
           { key: 'qty', label: 'Qty' },
           { key: 'unitPrice', label: 'Unit Price' },

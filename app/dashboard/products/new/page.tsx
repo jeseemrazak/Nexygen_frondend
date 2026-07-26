@@ -1,6 +1,7 @@
 import { createProduct } from './actions';
 import Link from 'next/link';
 import { cookies } from 'next/headers';
+import { API_BASE_URL } from '@/lib/config';
 
 async function getWarehouses() {
   const cookieStore = await cookies();
@@ -16,10 +17,30 @@ async function getWarehouses() {
   }
 }
 
+async function getCategories() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('nexygen_token')?.value;
+  const headers = { 'Authorization': `Bearer ${token}` };
+  try {
+    const [catRes, posCatRes, unitRes] = await Promise.all([
+      fetch(`${API_BASE_URL}/product-categories?activeOnly=true`, { headers, cache: 'no-store' }),
+      fetch(`${API_BASE_URL}/pos-categories?activeOnly=true`, { headers, cache: 'no-store' }),
+      fetch(`${API_BASE_URL}/units-of-measurement?activeOnly=true`, { headers, cache: 'no-store' }),
+    ]);
+    return {
+      categories: catRes.ok ? await catRes.json() : [],
+      posCategories: posCatRes.ok ? await posCatRes.json() : [],
+      units: unitRes.ok ? await unitRes.json() : [],
+    };
+  } catch (e) {
+    return { categories: [], posCategories: [], units: [] };
+  }
+}
+
 export default async function NewProductPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const resolvedParams = await searchParams;
   const hasError = resolvedParams.error === 'true';
-  const warehouses = await getWarehouses();
+  const [warehouses, { categories, posCategories, units }] = await Promise.all([getWarehouses(), getCategories()]);
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -70,6 +91,46 @@ export default async function NewProductPage({ searchParams }: { searchParams: P
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-2">Box Barcode</label>
                 <input type="text" name="barcodeBox" placeholder="Scan master carton" className="w-full border border-gray-300 rounded-md px-4 py-3 text-black" />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-4 mt-4">
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Type</label>
+                <select name="type" defaultValue="GOODS" className="w-full border border-gray-300 rounded-md px-4 py-3 text-black bg-white">
+                  <option value="GOODS">Goods</option>
+                  <option value="SERVICE">Service</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Category</label>
+                <select name="categoryId" className="w-full border border-gray-300 rounded-md px-4 py-3 text-black bg-white">
+                  <option value="">None</option>
+                  {categories.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">POS Category</label>
+                <select name="posCategoryId" className="w-full border border-gray-300 rounded-md px-4 py-3 text-black bg-white">
+                  <option value="">None</option>
+                  {posCategories.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-4 mt-4">
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Unit of Measurement</label>
+                <select name="unitId" className="w-full border border-gray-300 rounded-md px-4 py-3 text-black bg-white">
+                  <option value="">None</option>
+                  {units.map((u: any) => <option key={u.id} value={u.id}>{u.name} ({u.abbreviation})</option>)}
+                </select>
+              </div>
+              <div className="col-span-2 flex items-end pb-3">
+                <label className="flex items-center gap-2 text-sm font-bold text-gray-700">
+                  <input type="checkbox" name="posActive" defaultChecked className="w-4 h-4" />
+                  Active on POS
+                </label>
               </div>
             </div>
           </div>

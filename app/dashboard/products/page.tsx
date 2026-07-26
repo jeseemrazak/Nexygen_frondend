@@ -77,8 +77,15 @@ export default async function ProductCatalogPage({
           {/* 🔥 THE NEW IMPORT BUTTON */}
           <ImportProductsButton />
 
-          <Link 
-            href="/dashboard/products/new" 
+          <Link
+            href="/dashboard/products/categories"
+            className="text-gray-500 hover:text-gray-800 text-sm font-semibold underline whitespace-nowrap"
+          >
+            Categories
+          </Link>
+
+          <Link
+            href="/dashboard/products/new"
             className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-6 rounded-md shadow-sm transition whitespace-nowrap w-full md:w-auto text-center"
           >
             ➕ Add Product
@@ -99,6 +106,8 @@ export default async function ProductCatalogPage({
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
                 <th className="py-4 px-6 text-xs font-semibold text-gray-600 uppercase tracking-wider">Product Name</th>
+                <th className="py-4 px-6 text-xs font-semibold text-gray-600 uppercase tracking-wider">Category</th>
+                <th className="py-4 px-6 text-xs font-semibold text-gray-600 uppercase tracking-wider">Unit</th>
                 <th className="py-4 px-6 text-xs font-semibold text-gray-600 uppercase tracking-wider">SKU (Internal)</th>
                 <th className="py-4 px-6 text-xs font-semibold text-gray-600 uppercase tracking-wider">PCS Barcode</th>
                 <th className="py-4 px-6 text-xs font-semibold text-gray-600 uppercase tracking-wider">Box Barcode</th>
@@ -115,8 +124,21 @@ export default async function ProductCatalogPage({
 
                 return (
                   <tr key={product.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="py-4 px-6 font-bold text-gray-800">{product.name}</td>
-                    
+                    <td className="py-4 px-6 font-bold text-gray-800">
+                      {product.name}
+                      {product.type === 'SERVICE' && (
+                        <span className="ml-2 bg-purple-50 text-purple-700 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full align-middle">Service</span>
+                      )}
+                    </td>
+
+                    <td className="py-4 px-6 text-sm text-gray-600">
+                      {product.category?.name || <span className="text-gray-400 italic">--</span>}
+                    </td>
+
+                    <td className="py-4 px-6 text-sm text-gray-600">
+                      {product.unit?.abbreviation || <span className="text-gray-400 italic">--</span>}
+                    </td>
+
                     <td className="py-4 px-6 text-sm font-mono text-gray-600">
                       {product.sku || <span className="text-gray-400 italic">--</span>}
                     </td>

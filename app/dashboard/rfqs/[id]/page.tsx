@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { API_BASE_URL, getClientToken } from '@/lib/config';
+import { API_BASE_URL, getClientToken, safeJson } from '@/lib/config';
 
 const formatQAR = (amount: number) => new Intl.NumberFormat('en-QA', { style: 'currency', currency: 'QAR' }).format(amount);
 function formatDateTime(dateString: string) {
@@ -78,8 +78,8 @@ export default function RfqDetailsPage() {
       setCosts({});
       fetchRfq();
     } else {
-      const err = await res.json();
-      setResponseError(err.message || 'Failed to record response.');
+      const err = await safeJson(res);
+      setResponseError(err?.message || 'Failed to record response.');
     }
     setIsSubmittingResponse(false);
   };
@@ -99,8 +99,8 @@ export default function RfqDetailsPage() {
       const winning = updated.responses.find((r: any) => r.id === responseId);
       router.push(`/dashboard/purchases/${winning.convertedPurchaseOrderId}`);
     } else {
-      const err = await res.json();
-      alert(`Error: ${err.message}`);
+      const err = await safeJson(res);
+      alert(`Error: ${err?.message || 'Failed to convert response.'}`);
       setConvertingId(null);
     }
   };

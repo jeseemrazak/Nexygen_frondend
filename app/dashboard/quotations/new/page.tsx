@@ -1,8 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { API_BASE_URL, getClientToken } from '@/lib/config';
+import { API_BASE_URL, getClientToken, safeJson } from '@/lib/config';
+
+type DiscountType = '' | 'PERCENT' | 'AMOUNT';
+
+// Mirrors distribution-backend's src/common/discount.util.ts applyDiscount() exactly, for a
+// live client-side preview that matches what the server will actually store.
+function applyDiscount(base: number, type: DiscountType, value: number): number {
+  if (!type || !value) return base;
+  const discount = type === 'PERCENT' ? base * (value / 100) : value;
+  return Math.max(0, base - discount);
+}
 
 export default function NewQuotationPage() {
   const router = useRouter();
@@ -12,10 +22,15 @@ export default function NewQuotationPage() {
   const [customers, setCustomers] = useState([]);
   const [selectedCustomerId, setSelectedCustomerId] = useState('');
   const [clientName, setClientName] = useState('');
+  const [customerReference, setCustomerReference] = useState('');
+  const [termsAndConditions, setTermsAndConditions] = useState('');
   const [validUntil, setValidUntil] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
+  const [products, setProducts] = useState<any[]>([]);
+  const [productSearch, setProductSearch] = useState('');
   const [cart, setCart] = useState<any[]>([]);
+
+  const [discountType, setDiscountType] = useState<DiscountType>('');
+  const [discountValue, setDiscountValue] = useState('');
 
   const [showModal, setShowModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,41 +46,57 @@ export default function NewQuotationPage() {
       if (whRes.ok) setWarehouses(await whRes.json());
       const custRes = await fetch(`${API_BASE_URL}/customers`, { headers });
       if (custRes.ok) setCustomers(await custRes.json());
+      const settingsRes = await fetch(`${API_BASE_URL}/settings/company`, { headers });
+      if (settingsRes.ok) {
+        const settings = await settingsRes.json();
+        setTermsAndConditions(settings.termsAndConditions || '');
+      }
+      const prodRes = await fetch(`${API_BASE_URL}/products`, { headers });
+      if (prodRes.ok) {
+        const all = await prodRes.json();
+        setProducts(all.sort((a: any, b: any) => a.name.localeCompare(b.name)));
+      }
     };
     fetchInitialData();
   }, []);
 
-  useEffect(() => {
-    if (searchQuery.length < 2) {
-      setSearchResults([]);
-      return;
-    }
-
-    const delayDebounceFn = setTimeout(async () => {
-      const token = getClientToken();
-      const res = await fetch(`${API_BASE_URL}/products/search?q=${searchQuery}`, {
-        headers: { 'Authorization': `Bearer ${token}` },
-      });
-      if (res.ok) setSearchResults(await res.json());
-    }, 300);
-
-    return () => clearTimeout(delayDebounceFn);
-  }, [searchQuery]);
+  // Filters the already-fetched full catalog client-side — instant, no debounce/network
+  // round-trip needed since `products` was loaded once up front.
+  const filteredProducts = useMemo(() => {
+    const q = productSearch.trim().toLowerCase();
+    if (!q) return [];
+    return products.filter((p: any) =>
+      p.name.toLowerCase().includes(q) ||
+      p.sku?.toLowerCase().includes(q) ||
+      p.barcodePcs?.toLowerCase().includes(q) ||
+      p.barcodeBox?.toLowerCase().includes(q),
+    ).slice(0, 20);
+  }, [products, productSearch]);
 
   const addToCart = (product: any) => {
-    if (cart.find(item => item.productId === product.id)) return;
+    if (cart.find(item => item.productId === product.id)) {
+      setProductSearch('');
+      return;
+    }
 
     setCart([...cart, {
       productId: product.id,
       name: product.name,
       price: product.price,
       quantity: 1,
+      discountType: '' as DiscountType,
+      discountValue: '',
     }]);
-    setSearchQuery('');
-    setSearchResults([]);
+    setProductSearch('');
   };
 
-  const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const cartWithNet = cart.map((item) => ({
+    ...item,
+    netPrice: applyDiscount(Number(item.price) || 0, item.discountType, Number(item.discountValue) || 0),
+  }));
+  const subtotal = cartWithNet.reduce((sum, item) => sum + item.netPrice * item.quantity, 0);
+  const globalDiscountAmount = subtotal - applyDiscount(subtotal, discountType, Number(discountValue) || 0);
+  const totalAmount = subtotal - globalDiscountAmount;
 
   const handleInitialSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,6 +113,9 @@ export default function NewQuotationPage() {
       productId: item.productId,
       quantity: Number(item.quantity),
       price: Number(item.price),
+      listPrice: Number(item.price),
+      lineDiscountType: item.discountType || undefined,
+      lineDiscountValue: item.discountValue ? Number(item.discountValue) : undefined,
     }));
 
     const res = await fetch(`${API_BASE_URL}/quotations`, {
@@ -91,6 +125,10 @@ export default function NewQuotationPage() {
         warehouseId: Number(selectedWarehouse),
         clientName: clientName || undefined,
         customerId: selectedCustomerId ? Number(selectedCustomerId) : undefined,
+        customerReference: customerReference || undefined,
+        termsAndConditions: termsAndConditions || undefined,
+        discountType: discountType || undefined,
+        discountValue: discountValue ? Number(discountValue) : undefined,
         validUntil: validUntil || undefined,
         items,
       }),
@@ -101,8 +139,8 @@ export default function NewQuotationPage() {
       router.push('/dashboard/quotations');
       router.refresh();
     } else {
-      const errorData = await res.json();
-      setErrorMessage(errorData.message || 'Failed to create quotation.');
+      const errorData = await safeJson(res);
+      setErrorMessage(errorData?.message || 'Failed to create quotation.');
       setIsSubmitting(false);
     }
   };
@@ -181,21 +219,64 @@ export default function NewQuotationPage() {
               className="w-full border border-gray-300 rounded-md p-3 text-black"
             />
           </div>
+
+          <div>
+            <label className="block text-sm font-bold text-gray-700 mb-2">Customer Reference</label>
+            <input
+              type="text"
+              value={customerReference}
+              onChange={(e) => setCustomerReference(e.target.value)}
+              placeholder="Customer's own reference number"
+              className="w-full border border-gray-300 rounded-md p-3 text-black"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-bold text-gray-700 mb-2">Global Discount</label>
+            <div className="flex gap-2">
+              <select value={discountType} onChange={(e) => setDiscountType(e.target.value as DiscountType)} className="border border-gray-300 rounded-md p-3 text-black bg-white">
+                <option value="">No discount</option>
+                <option value="PERCENT">%</option>
+                <option value="AMOUNT">QAR</option>
+              </select>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={discountValue}
+                onChange={(e) => setDiscountValue(e.target.value)}
+                disabled={!discountType}
+                placeholder="0"
+                className="w-full border border-gray-300 rounded-md p-3 text-black disabled:bg-gray-50"
+              />
+            </div>
+          </div>
+
+          <div className="md:col-span-3">
+            <label className="block text-sm font-bold text-gray-700 mb-2">Terms &amp; Conditions</label>
+            <textarea
+              value={termsAndConditions}
+              onChange={(e) => setTermsAndConditions(e.target.value)}
+              rows={3}
+              placeholder="Prefilled from company defaults — edit or clear for this quotation"
+              className="w-full border border-gray-300 rounded-md p-3 text-black"
+            />
+          </div>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 relative">
           <label className="block text-sm font-bold text-gray-700 mb-2">Search Product (Name/SKU/Barcode)</label>
           <input
             type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={productSearch}
+            onChange={(e) => setProductSearch(e.target.value)}
             placeholder="Type to search products..."
             className="w-full border border-teal-500 rounded-md p-3 text-black shadow-inner"
           />
 
-          {searchResults.length > 0 && (
+          {filteredProducts.length > 0 && (
             <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 shadow-xl rounded-md max-h-96 overflow-y-auto left-0">
-              {searchResults.map((product: any) => (
+              {filteredProducts.map((product: any) => (
                 <button
                   type="button"
                   key={product.id}
@@ -221,12 +302,13 @@ export default function NewQuotationPage() {
                   <th className="p-4 text-sm text-gray-600">Product</th>
                   <th className="p-4 text-sm text-gray-600">Qty</th>
                   <th className="p-4 text-sm text-gray-600 text-right">Unit Price</th>
+                  <th className="p-4 text-sm text-gray-600">Discount</th>
                   <th className="p-4 text-sm text-gray-600 text-right">Total</th>
                   <th className="p-4"></th>
                 </tr>
               </thead>
               <tbody>
-                {cart.map((item, index) => (
+                {cartWithNet.map((item, index) => (
                   <tr key={item.productId} className="border-b border-gray-50 text-black">
                     <td className="p-4 font-medium">{item.name}</td>
                     <td className="p-4">
@@ -235,7 +317,29 @@ export default function NewQuotationPage() {
                     <td className="p-4 text-right">
                       <input type="number" min="0" step="0.01" value={item.price} onChange={(e) => { const newCart = [...cart]; newCart[index].price = Number(e.target.value); setCart(newCart); }} className="w-24 border border-gray-300 rounded p-1 text-right" />
                     </td>
-                    <td className="p-4 text-right font-bold">{formatQAR(item.price * item.quantity)}</td>
+                    <td className="p-4">
+                      <div className="flex gap-1">
+                        <select
+                          value={item.discountType}
+                          onChange={(e) => { const newCart = [...cart]; newCart[index].discountType = e.target.value; setCart(newCart); }}
+                          className="border border-gray-300 rounded p-1 bg-white text-xs"
+                        >
+                          <option value="">None</option>
+                          <option value="PERCENT">%</option>
+                          <option value="AMOUNT">QAR</option>
+                        </select>
+                        <input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={item.discountValue}
+                          disabled={!item.discountType}
+                          onChange={(e) => { const newCart = [...cart]; newCart[index].discountValue = e.target.value; setCart(newCart); }}
+                          className="w-16 border border-gray-300 rounded p-1 text-xs disabled:bg-gray-50"
+                        />
+                      </div>
+                    </td>
+                    <td className="p-4 text-right font-bold">{formatQAR(item.netPrice * item.quantity)}</td>
                     <td className="p-4 text-right">
                       <button type="button" onClick={() => setCart(cart.filter(c => c.productId !== item.productId))} className="text-red-500 text-sm font-bold hover:underline">Remove</button>
                     </td>
@@ -245,9 +349,13 @@ export default function NewQuotationPage() {
             </table>
 
             <div className="p-6 bg-gray-50 border-t border-gray-200 flex justify-between items-center">
-              <div>
-                <p className="text-sm text-gray-500 uppercase tracking-wide">Total Quoted Value</p>
-                <p className="text-3xl font-bold text-teal-700 mt-1">{formatQAR(totalAmount)}</p>
+              <div className="space-y-1">
+                <p className="text-sm text-gray-600 flex justify-between gap-8"><span>Subtotal</span> <span className="font-semibold">{formatQAR(subtotal)}</span></p>
+                {globalDiscountAmount > 0 && (
+                  <p className="text-sm text-rose-600 flex justify-between gap-8"><span>Discount</span> <span className="font-semibold">-{formatQAR(globalDiscountAmount)}</span></p>
+                )}
+                <p className="text-sm text-gray-500 uppercase tracking-wide pt-1">Total Quoted Value</p>
+                <p className="text-3xl font-bold text-teal-700">{formatQAR(totalAmount)}</p>
               </div>
               <button
                 type="submit"

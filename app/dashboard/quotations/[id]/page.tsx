@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { API_BASE_URL, getClientToken } from '@/lib/config';
+import { API_BASE_URL, getClientToken, safeJson } from '@/lib/config';
 
 const formatQAR = (amount: number) => new Intl.NumberFormat('en-QA', { style: 'currency', currency: 'QAR' }).format(amount);
 function formatDateTime(dateString: string) {
@@ -51,8 +51,8 @@ export default function QuotationDetailsPage() {
     if (res.ok) {
       fetchQuotation();
     } else {
-      const err = await res.json();
-      alert(`Error: ${err.message}`);
+      const err = await safeJson(res);
+      alert(`Error: ${err?.message || 'Failed to update status.'}`);
     }
   };
 
@@ -72,8 +72,8 @@ export default function QuotationDetailsPage() {
       const updated = await res.json();
       router.push(`/dashboard/orders/${updated.convertedOrderId}`);
     } else {
-      const err = await res.json();
-      setErrorMessage(err.message || 'Failed to convert quotation.');
+      const err = await safeJson(res);
+      setErrorMessage(err?.message || 'Failed to convert quotation.');
       setIsConverting(false);
     }
   };
@@ -111,6 +111,11 @@ export default function QuotationDetailsPage() {
             {quotation.validUntil && (
               <p className="flex items-center gap-1.5 text-slate-600 font-medium">
                 <span className="text-slate-400">⏳</span> Valid until: {formatDateTime(quotation.validUntil)}
+              </p>
+            )}
+            {quotation.customerReference && (
+              <p className="flex items-center gap-1.5 text-slate-600 font-medium">
+                <span className="text-slate-400">🔖</span> Ref: <span className="font-bold text-slate-800">{quotation.customerReference}</span>
               </p>
             )}
           </div>
@@ -158,6 +163,7 @@ export default function QuotationDetailsPage() {
                 <th className="py-4 px-6">Product</th>
                 <th className="py-4 px-6 text-center">Qty</th>
                 <th className="py-4 px-6 text-right">Unit Price</th>
+                <th className="py-4 px-6 text-right">Discount</th>
                 <th className="py-4 px-6 text-right">Line Total</th>
               </tr>
             </thead>
@@ -166,13 +172,43 @@ export default function QuotationDetailsPage() {
                 <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
                   <td className="py-4 px-6 font-bold text-slate-800">{item.product?.name}</td>
                   <td className="py-4 px-6 text-center font-black text-slate-700">{item.quantity}</td>
-                  <td className="py-4 px-6 text-right text-slate-600">{formatQAR(item.price)}</td>
+                  <td className="py-4 px-6 text-right text-slate-600">
+                    {item.listPrice && item.listPrice !== item.price ? (
+                      <>
+                        <span className="line-through text-slate-400 mr-1">{formatQAR(item.listPrice)}</span>
+                        {formatQAR(item.price)}
+                      </>
+                    ) : formatQAR(item.price)}
+                  </td>
+                  <td className="py-4 px-6 text-right text-rose-600">
+                    {item.lineDiscountType ? (item.lineDiscountType === 'PERCENT' ? `${item.lineDiscountValue}%` : formatQAR(item.lineDiscountValue)) : '—'}
+                  </td>
                   <td className="py-4 px-6 text-right font-bold">{formatQAR(item.price * item.quantity)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+
+        <div className="px-6 py-5 border-t border-slate-200 bg-slate-50/50 flex justify-end">
+          <div className="w-full max-w-xs space-y-1.5">
+            <p className="flex justify-between text-sm text-slate-600"><span>Subtotal</span> <span className="font-semibold">{formatQAR(quotation.subtotal || quotation.totalAmount)}</span></p>
+            {quotation.discountType && quotation.discountValue > 0 && (
+              <p className="flex justify-between text-sm text-rose-600">
+                <span>Discount {quotation.discountType === 'PERCENT' ? `(${quotation.discountValue}%)` : ''}</span>
+                <span className="font-semibold">-{formatQAR((quotation.subtotal || quotation.totalAmount) - quotation.totalAmount)}</span>
+              </p>
+            )}
+            <p className="flex justify-between text-base font-extrabold text-slate-900 pt-1.5 border-t border-slate-200"><span>Total</span> <span>{formatQAR(quotation.totalAmount)}</span></p>
+          </div>
+        </div>
+
+        {quotation.termsAndConditions && (
+          <div className="px-6 py-5 border-t border-slate-200">
+            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Terms &amp; Conditions</h3>
+            <p className="text-sm text-slate-600 whitespace-pre-line">{quotation.termsAndConditions}</p>
+          </div>
+        )}
 
         {canConvert && (
           <div className="p-6 bg-slate-50 border-t border-slate-200">

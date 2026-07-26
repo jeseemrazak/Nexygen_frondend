@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { API_BASE_URL, getClientToken } from '@/lib/config';
+import { API_BASE_URL, getClientToken, uploadUrl } from '@/lib/config';
 
 function formatDateTime(dateString: string) {
   if (!dateString) return 'N/A';
@@ -148,9 +148,9 @@ export default function DeliveryDetailsPage() {
           <h2 className="text-lg font-extrabold text-slate-800 flex items-center gap-2.5 mb-4">
             <span>📸</span> Proof of Delivery
           </h2>
-          <a href={`${API_BASE_URL}${delivery.proofOfDelivery}`} target="_blank" rel="noopener noreferrer">
+          <a href={uploadUrl(delivery.proofOfDelivery)} target="_blank" rel="noopener noreferrer">
             <img
-              src={`${API_BASE_URL}${delivery.proofOfDelivery}`}
+              src={uploadUrl(delivery.proofOfDelivery)}
               alt="Proof of delivery"
               className="max-h-96 rounded-lg border border-slate-200 shadow-sm"
             />

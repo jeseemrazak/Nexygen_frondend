@@ -24,8 +24,12 @@ export default function DocumentPrintView({
   meta = [],
   lines,
   columns,
+  subtotal,
+  discountLabel,
+  discountAmount,
   totalAmount,
   statusBadge,
+  terms,
 }: {
   settings: CompanySettings | null;
   title: string;
@@ -36,8 +40,15 @@ export default function DocumentPrintView({
   meta?: { label: string; value: string }[];
   lines: DocumentLine[];
   columns: DocumentColumn[];
+  // Only rendered as a Subtotal/Discount breakdown above Total when discountAmount is set.
+  subtotal?: number;
+  discountLabel?: string;
+  discountAmount?: number;
   totalAmount?: number;
   statusBadge?: string;
+  // Per-document override — falls back to the company-wide default (settings.termsAndConditions)
+  // when not provided. Never shows both.
+  terms?: string | null;
 }) {
   const accent = settings?.reportAccentColor || '0D9488';
   const headerColor = settings?.reportHeaderColor || 'E0E0E0';
@@ -86,6 +97,18 @@ export default function DocumentPrintView({
         </tbody>
         {totalAmount != null && (
           <tfoot>
+            {discountAmount != null && discountAmount > 0 && (
+              <>
+                <tr>
+                  <td className="py-1 px-3 text-right text-gray-500" colSpan={columns.length}>Subtotal</td>
+                  <td className="py-1 px-3 text-right text-gray-700">{formatQAR(subtotal ?? totalAmount + discountAmount)}</td>
+                </tr>
+                <tr>
+                  <td className="py-1 px-3 text-right text-gray-500" colSpan={columns.length}>{discountLabel || 'Discount'}</td>
+                  <td className="py-1 px-3 text-right text-rose-600">-{formatQAR(discountAmount)}</td>
+                </tr>
+              </>
+            )}
             <tr className="border-t-2 border-gray-800">
               <td className="py-2 px-3 font-black" colSpan={columns.length}>Total</td>
               <td className="py-2 px-3 text-right font-black">{formatQAR(totalAmount)}</td>
@@ -97,10 +120,10 @@ export default function DocumentPrintView({
       {settings?.reportShowFooter && settings?.footerNote && (
         <p className="mt-8 text-xs text-gray-500 text-center">{settings.footerNote}</p>
       )}
-      {settings?.termsAndConditions && (
+      {(terms || settings?.termsAndConditions) && (
         <div className="mt-6 pt-4 border-t border-gray-200 text-xs text-gray-500">
           <p className="font-bold mb-1">Terms &amp; Conditions</p>
-          <p className="whitespace-pre-line">{settings.termsAndConditions}</p>
+          <p className="whitespace-pre-line">{terms || settings?.termsAndConditions}</p>
         </div>
       )}
     </div>

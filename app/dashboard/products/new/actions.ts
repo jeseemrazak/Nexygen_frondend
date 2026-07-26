@@ -14,6 +14,11 @@ export async function createProduct(formData: FormData) {
   const sku = formData.get('sku') as string;
   const barcodePcs = formData.get('barcodePcs') as string;
   const barcodeBox = formData.get('barcodeBox') as string;
+  const type = formData.get('type') as string;
+  const categoryIdRaw = formData.get('categoryId') as string;
+  const posCategoryIdRaw = formData.get('posCategoryId') as string;
+  const unitIdRaw = formData.get('unitId') as string;
+  const posActive = formData.get('posActive') === 'on';
 
   // Initial Stock Fields
   const warehouseId = parseInt(formData.get('warehouseId') as string, 10);
@@ -37,7 +42,12 @@ export async function createProduct(formData: FormData) {
       description: description || undefined,
       sku: sku || undefined,
       barcodePcs: barcodePcs || undefined,
-      barcodeBox: barcodeBox || undefined
+      barcodeBox: barcodeBox || undefined,
+      type: type || undefined,
+      categoryId: categoryIdRaw ? Number(categoryIdRaw) : undefined,
+      posCategoryId: posCategoryIdRaw ? Number(posCategoryIdRaw) : undefined,
+      unitId: unitIdRaw ? Number(unitIdRaw) : undefined,
+      posActive,
     }),
   });
 

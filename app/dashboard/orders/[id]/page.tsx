@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { API_BASE_URL, getClientToken } from '@/lib/config';
+import { API_BASE_URL, getClientToken, safeJson } from '@/lib/config';
 
 function formatDateTime(dateString: string) {
   if (!dateString) return 'N/A';
@@ -133,14 +133,15 @@ export default function SalesOrderDetailsPage() {
       .map((item: any) => ({
         salesOrderItemId: item.id,
         quantity: Number(deliveryQty[item.id]),
-        batchNumber: deliveryBatch[item.id],
+        // Services have no batch/warehouse stock to pick from — omitted entirely for them.
+        batchNumber: item.product.type === 'SERVICE' ? undefined : deliveryBatch[item.id],
       }));
 
     if (items.length === 0) {
       setDeliveryError('Enter a quantity for at least one item.');
       return;
     }
-    if (items.some((i: any) => !i.batchNumber)) {
+    if (items.some((i: any) => order.items.find((oi: any) => oi.id === i.salesOrderItemId)?.product.type !== 'SERVICE' && !i.batchNumber)) {
       setDeliveryError('Select a batch for every line you are delivering.');
       return;
     }
@@ -158,8 +159,8 @@ export default function SalesOrderDetailsPage() {
         setDeliveryBatch({});
         await fetchOrderDetails();
       } else {
-        const errData = await res.json();
-        setDeliveryError(errData.message || 'Failed to create delivery.');
+        const errData = await safeJson(res);
+        setDeliveryError(errData?.message || 'Failed to create delivery.');
       }
     } catch (error) {
       setDeliveryError('Network error while creating delivery.');
@@ -241,6 +242,11 @@ export default function SalesOrderDetailsPage() {
             <p className="flex items-center gap-1.5 text-slate-600 font-medium">
               <span className="text-slate-400">💰</span> Total: <span className="font-bold text-slate-800">{formatQAR(order.totalAmount)}</span>
             </p>
+            {order.customerReference && (
+              <p className="flex items-center gap-1.5 text-slate-600 font-medium">
+                <span className="text-slate-400">🔖</span> Ref: <span className="font-bold text-slate-800">{order.customerReference}</span>
+              </p>
+            )}
           </div>
         </div>
 
@@ -332,7 +338,12 @@ export default function SalesOrderDetailsPage() {
                   <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
                     <td className="py-4 px-6">
                       <p className="font-bold text-slate-800">{item.product.name}</p>
-                      <p className="text-[11px] text-slate-500 mt-1">{formatQAR(item.price)} / unit</p>
+                      <p className="text-[11px] text-slate-500 mt-1">
+                        {item.listPrice && item.listPrice !== item.price && (
+                          <span className="line-through text-slate-400 mr-1">{formatQAR(item.listPrice)}</span>
+                        )}
+                        {formatQAR(item.price)} / unit
+                      </p>
                     </td>
                     <td className="py-4 px-6 text-center">
                       <span className="font-black text-slate-700 bg-slate-100 px-3 py-1 rounded-md">{item.quantity}</span>
@@ -361,18 +372,22 @@ export default function SalesOrderDetailsPage() {
                               onChange={(e) => setDeliveryQty({ ...deliveryQty, [item.id]: e.target.value })}
                               className="w-20 border border-slate-300 rounded-md p-2 text-sm"
                             />
-                            <select
-                              value={deliveryBatch[item.id] || ''}
-                              onChange={(e) => setDeliveryBatch({ ...deliveryBatch, [item.id]: e.target.value })}
-                              className="border border-slate-300 rounded-md p-2 text-sm bg-white"
-                            >
-                              <option value="">Batch...</option>
-                              {availableBatches.map((inv: any) => (
-                                <option key={inv.id} value={inv.batchNumber}>
-                                  {inv.batchNumber} (Avail: {inv.quantity})
-                                </option>
-                              ))}
-                            </select>
+                            {item.product.type === 'SERVICE' ? (
+                              <span className="text-xs text-slate-400 italic self-center">Service — no batch</span>
+                            ) : (
+                              <select
+                                value={deliveryBatch[item.id] || ''}
+                                onChange={(e) => setDeliveryBatch({ ...deliveryBatch, [item.id]: e.target.value })}
+                                className="border border-slate-300 rounded-md p-2 text-sm bg-white"
+                              >
+                                <option value="">Batch...</option>
+                                {availableBatches.map((inv: any) => (
+                                  <option key={inv.id} value={inv.batchNumber}>
+                                    {inv.batchNumber} (Avail: {inv.quantity})
+                                  </option>
+                                ))}
+                              </select>
+                            )}
                           </div>
                         ) : (
                           <span className="text-emerald-600 text-xs font-bold">Fully delivered</span>
@@ -403,6 +418,27 @@ export default function SalesOrderDetailsPage() {
             </tbody>
           </table>
         </div>
+
+        {(order.discountType || order.customerReference || order.termsAndConditions) && (
+          <div className="px-6 py-5 border-t border-slate-200 bg-slate-50/50 flex flex-col md:flex-row justify-between gap-6">
+            {order.termsAndConditions && (
+              <div className="flex-1">
+                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Terms &amp; Conditions</h3>
+                <p className="text-sm text-slate-600 whitespace-pre-line">{order.termsAndConditions}</p>
+              </div>
+            )}
+            {order.discountType && order.discountValue > 0 && (
+              <div className="w-full max-w-xs space-y-1.5">
+                <p className="flex justify-between text-sm text-slate-600"><span>Subtotal</span> <span className="font-semibold">{formatQAR(order.subtotal || order.totalAmount)}</span></p>
+                <p className="flex justify-between text-sm text-rose-600">
+                  <span>Discount {order.discountType === 'PERCENT' ? `(${order.discountValue}%)` : ''}</span>
+                  <span className="font-semibold">-{formatQAR((order.subtotal || order.totalAmount) - order.totalAmount)}</span>
+                </p>
+                <p className="flex justify-between text-base font-extrabold text-slate-900 pt-1.5 border-t border-slate-200"><span>Total</span> <span>{formatQAR(order.totalAmount)}</span></p>
+              </div>
+            )}
+          </div>
+        )}
 
         {canFulfill && (
           <div className="p-6 bg-slate-50 border-t border-slate-200 flex flex-col md:flex-row gap-4 md:items-center md:justify-between">

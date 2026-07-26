@@ -22,6 +22,17 @@ export default async function AddInitialStockPage({
     fetch(`${API_BASE_URL}/warehouses/${warehouseId}`, { headers, cache: 'no-store' })
   ]);
 
+  if (!productRes.ok || !warehouseRes.ok) {
+    return (
+      <div className="max-w-xl mx-auto space-y-6">
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-center">
+          <p className="text-rose-600 font-bold">Product or warehouse not found.</p>
+          <Link href="/dashboard/inventory" className="text-teal-600 hover:text-teal-800 font-medium mt-2 inline-block">← Back to Inventory</Link>
+        </div>
+      </div>
+    );
+  }
+
   const product = await productRes.json();
   const warehouse = await warehouseRes.json();
 

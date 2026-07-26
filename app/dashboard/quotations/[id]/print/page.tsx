@@ -25,7 +25,8 @@ export default async function QuotationPrintPage({ params }: { params: Promise<{
 
   if (!quotation) return <div className="p-8 text-center text-rose-500 font-bold">Quotation not found.</div>;
 
-  const totalAmount = quotation.items.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
+  const subtotal = quotation.subtotal || quotation.totalAmount;
+  const discountAmount = subtotal - quotation.totalAmount;
 
   return (
     <div>
@@ -43,9 +44,14 @@ export default async function QuotationPrintPage({ params }: { params: Promise<{
         meta={[
           { label: 'Warehouse', value: quotation.warehouse?.name || 'Unknown' },
           ...(quotation.validUntil ? [{ label: 'Valid Until', value: formatDate(quotation.validUntil) }] : []),
+          ...(quotation.customerReference ? [{ label: 'Customer Ref', value: quotation.customerReference }] : []),
         ]}
         statusBadge={quotation.status}
-        totalAmount={totalAmount}
+        subtotal={subtotal}
+        discountLabel={quotation.discountType === 'PERCENT' ? `Discount (${quotation.discountValue}%)` : 'Discount'}
+        discountAmount={discountAmount}
+        totalAmount={quotation.totalAmount}
+        terms={quotation.termsAndConditions}
         columns={[
           { key: 'qty', label: 'Qty' },
           { key: 'unitPrice', label: 'Unit Price' },

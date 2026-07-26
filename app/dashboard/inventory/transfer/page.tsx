@@ -16,6 +16,7 @@ export default function StockTransferPage() {
   const [toWarehouse, setToWarehouse] = useState('');
   const [quantity, setQuantity] = useState('');
   const [reason, setReason] = useState('');
+  const [unitCost, setUnitCost] = useState('');
   
   // Smart Search & Batch State
   const [searchQuery, setSearchQuery] = useState('');
@@ -82,6 +83,7 @@ export default function StockTransferPage() {
       reason,
       fromWarehouseId: type === 'TRANSFER' || type === 'WRITE_OFF' ? Number(fromWarehouse) : undefined,
       toWarehouseId: type === 'TRANSFER' || type === 'ADJUSTMENT' ? Number(toWarehouse) : undefined,
+      unitCost: type === 'ADJUSTMENT' && unitCost ? Number(unitCost) : undefined,
     };
 
     try {
@@ -267,6 +269,23 @@ export default function StockTransferPage() {
                 </select>
               )}
             </div>
+
+            {/* UNIT COST — ADJUSTMENT only. Values this stock for the GL (Inventory vs
+                Inventory Adjustment posting) instead of silently defaulting to 0/untracked. */}
+            {type === 'ADJUSTMENT' && (
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Unit Cost (QAR)</label>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={unitCost}
+                  onChange={(e) => setUnitCost(e.target.value)}
+                  className="w-full border border-slate-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-teal-500 outline-none"
+                  placeholder="Leave blank if unknown"
+                />
+              </div>
+            )}
 
             {/* Quantity */}
             <div>

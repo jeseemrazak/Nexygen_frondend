@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { API_BASE_URL, getClientToken } from '@/lib/config';
+import { API_BASE_URL, getClientToken, safeJson } from '@/lib/config';
 
 export default function NewPurchaseOrderPage() {
   const router = useRouter();
@@ -12,8 +12,8 @@ export default function NewPurchaseOrderPage() {
   const [selectedSupplier, setSelectedSupplier] = useState('');
   const [selectedWarehouse, setSelectedWarehouse] = useState('');
   const [reference, setReference] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
+  const [products, setProducts] = useState<any[]>([]);
+  const [productSearch, setProductSearch] = useState('');
   const [cart, setCart] = useState<any[]>([]);
 
   const [showModal, setShowModal] = useState(false);
@@ -32,29 +32,33 @@ export default function NewPurchaseOrderPage() {
       ]);
       if (supRes.ok) setSuppliers(await supRes.json());
       if (whRes.ok) setWarehouses(await whRes.json());
+      const prodRes = await fetch(`${API_BASE_URL}/products`, { headers });
+      if (prodRes.ok) {
+        const all = await prodRes.json();
+        setProducts(all.sort((a: any, b: any) => a.name.localeCompare(b.name)));
+      }
     };
     fetchInitialData();
   }, []);
 
-  useEffect(() => {
-    if (searchQuery.length < 2) {
-      setSearchResults([]);
-      return;
-    }
-
-    const delayDebounceFn = setTimeout(async () => {
-      const token = getClientToken();
-      const res = await fetch(`${API_BASE_URL}/products/search?q=${searchQuery}`, {
-        headers: { 'Authorization': `Bearer ${token}` },
-      });
-      if (res.ok) setSearchResults(await res.json());
-    }, 300);
-
-    return () => clearTimeout(delayDebounceFn);
-  }, [searchQuery]);
+  // Filters the already-fetched full catalog client-side — instant, no debounce/network
+  // round-trip needed since `products` was loaded once up front.
+  const filteredProducts = useMemo(() => {
+    const q = productSearch.trim().toLowerCase();
+    if (!q) return [];
+    return products.filter((p: any) =>
+      p.name.toLowerCase().includes(q) ||
+      p.sku?.toLowerCase().includes(q) ||
+      p.barcodePcs?.toLowerCase().includes(q) ||
+      p.barcodeBox?.toLowerCase().includes(q),
+    ).slice(0, 20);
+  }, [products, productSearch]);
 
   const addToCart = (product: any) => {
-    if (cart.find(item => item.productId === product.id)) return;
+    if (cart.find(item => item.productId === product.id)) {
+      setProductSearch('');
+      return;
+    }
 
     setCart([...cart, {
       productId: product.id,
@@ -62,8 +66,7 @@ export default function NewPurchaseOrderPage() {
       unitCost: product.price,
       quantityOrdered: 1,
     }]);
-    setSearchQuery('');
-    setSearchResults([]);
+    setProductSearch('');
   };
 
   const totalAmount = cart.reduce((sum, item) => sum + (item.unitCost * item.quantityOrdered), 0);
@@ -78,31 +81,36 @@ export default function NewPurchaseOrderPage() {
     setIsSubmitting(true);
     setErrorMessage('');
 
-    const token = getClientToken();
-    const items = cart.map(item => ({
-      productId: item.productId,
-      quantityOrdered: Number(item.quantityOrdered),
-      unitCost: Number(item.unitCost),
-    }));
+    try {
+      const token = getClientToken();
+      const items = cart.map(item => ({
+        productId: item.productId,
+        quantityOrdered: Number(item.quantityOrdered),
+        unitCost: Number(item.unitCost),
+      }));
 
-    const res = await fetch(`${API_BASE_URL}/purchase-orders`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({
-        supplierId: Number(selectedSupplier),
-        warehouseId: Number(selectedWarehouse),
-        reference: reference || undefined,
-        items,
-      }),
-    });
+      const res = await fetch(`${API_BASE_URL}/purchase-orders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({
+          supplierId: Number(selectedSupplier),
+          warehouseId: Number(selectedWarehouse),
+          reference: reference || undefined,
+          items,
+        }),
+      });
 
-    if (res.ok) {
-      setShowModal(false);
-      router.push('/dashboard/purchases');
-      router.refresh();
-    } else {
-      const errorData = await res.json();
-      setErrorMessage(errorData.message || 'Failed to create purchase order.');
+      if (res.ok) {
+        setShowModal(false);
+        router.push('/dashboard/purchases');
+        router.refresh();
+      } else {
+        const errorData = await safeJson(res);
+        setErrorMessage(errorData?.message || `Failed to create purchase order (HTTP ${res.status}).`);
+        setIsSubmitting(false);
+      }
+    } catch (error) {
+      setErrorMessage('Network error — please check your connection and try again.');
       setIsSubmitting(false);
     }
   };
@@ -180,15 +188,15 @@ export default function NewPurchaseOrderPage() {
           <label className="block text-sm font-bold text-gray-700 mb-2">Search Product (Name/SKU/Barcode)</label>
           <input
             type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={productSearch}
+            onChange={(e) => setProductSearch(e.target.value)}
             placeholder="Type to search products..."
             className="w-full border border-teal-500 rounded-md p-3 text-black shadow-inner"
           />
 
-          {searchResults.length > 0 && (
+          {filteredProducts.length > 0 && (
             <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 shadow-xl rounded-md max-h-96 overflow-y-auto left-0">
-              {searchResults.map((product: any) => (
+              {filteredProducts.map((product: any) => (
                 <button
                   type="button"
                   key={product.id}
