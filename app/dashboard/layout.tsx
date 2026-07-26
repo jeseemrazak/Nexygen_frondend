@@ -1,14 +1,32 @@
-'use client'; 
+'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { API_BASE_URL, getClientToken } from '@/lib/config';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
-  const isWarehouseSectionActive = pathname?.includes('/dashboard/warehouses') || pathname?.includes('/dashboard/inventory');
-  const [isWarehouseOpen, setIsWarehouseOpen] = useState(isWarehouseSectionActive);
+  // The Fleet sidebar group only shows once one of its two apps (Vehicle Management or Job
+  // Order) is actually installed — mirrors the App Store's "nothing until you install it" rule.
+  const [showFleetMenu, setShowFleetMenu] = useState(false);
+  useEffect(() => {
+    const checkFleetModules = async () => {
+      const token = getClientToken();
+      try {
+        const res = await fetch(`${API_BASE_URL}/app-modules`, { headers: { Authorization: `Bearer ${token}` } });
+        if (!res.ok) return;
+        const modules = await res.json();
+        const active = modules.some((m: any) => (m.key === 'vehicle-management' || m.key === 'job-order-management') && m.isActive);
+        setShowFleetMenu(active);
+      } catch {
+        // Leave the menu hidden on failure — same "fail closed" behavior as any other
+        // module-gated feature in this app.
+      }
+    };
+    checkFleetModules();
+  }, []);
 
   const isSalesSectionActive = pathname?.includes('/dashboard/orders') || pathname?.includes('/dashboard/deliveries') || pathname?.includes('/dashboard/quotations') || pathname?.includes('/dashboard/sales-invoices') || pathname?.includes('/dashboard/customers');
   const [isSalesOpen, setIsSalesOpen] = useState(isSalesSectionActive);
@@ -19,36 +37,42 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const isPosSectionActive = pathname?.includes('/dashboard/pos');
   const [isPosOpen, setIsPosOpen] = useState(isPosSectionActive);
 
-  const isPayrollSectionActive = pathname?.includes('/dashboard/payroll');
-  const [isPayrollOpen, setIsPayrollOpen] = useState(isPayrollSectionActive);
+  const isInventorySectionActive = pathname?.includes('/dashboard/warehouses') || pathname?.includes('/dashboard/inventory') || pathname?.includes('/dashboard/products') || pathname?.includes('/dashboard/configuration');
+  const [isInventoryOpen, setIsInventoryOpen] = useState(isInventorySectionActive);
 
   const isAccountingSectionActive = pathname?.includes('/dashboard/accounting');
   const [isAccountingOpen, setIsAccountingOpen] = useState(isAccountingSectionActive);
 
+  const isPayrollSectionActive = pathname?.includes('/dashboard/payroll');
+  const [isPayrollOpen, setIsPayrollOpen] = useState(isPayrollSectionActive);
+
   const isExpensesSectionActive = pathname?.includes('/dashboard/expenses');
   const [isExpensesOpen, setIsExpensesOpen] = useState(isExpensesSectionActive);
+
+  const isFleetSectionActive = pathname?.includes('/dashboard/vehicles') || pathname?.includes('/dashboard/job-orders');
+  const [isFleetOpen, setIsFleetOpen] = useState(isFleetSectionActive);
 
   const isSettingsSectionActive = pathname?.includes('/dashboard/settings');
   const [isSettingsOpen, setIsSettingsOpen] = useState(isSettingsSectionActive);
 
   // 🔥 THE EXACT MENU STYLE YOU REQUESTED
   const linkStyle = "flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-teal-50 hover:text-teal-700 rounded-lg font-semibold transition-colors";
-  
+
   // 🔥 THE PURPLE ICON STYLE
   const iconStyle = "w-6 h-6 text-black-600";
 
   return (
     <div className="flex min-h-screen bg-gray-50 text-black">
-      
+
       {/* Sidebar - Changed to bg-white so your text-gray-600 menus look great! */}
       <aside className="w-64 bg-white border-r border-gray-200 flex flex-col z-10">
         <div className="p-6">
-          <h2 className="text-2xl font-bold text-teal-600">Nexygen</h2>
-          <p className="text-xs text-gray-400 mt-1">Command Center</p>
+          <img src="/nexygen-logo.png" alt="Nexygen" className="w-full h-auto" />
+          <p className="text-xs text-gray-400 mt-2">NEXT GENERATION ERP</p>
         </div>
 
         <nav className="flex-1 px-4 space-y-1 mt-2">
-          
+
           <Link href="/dashboard" className={linkStyle}>
             <svg className={iconStyle} fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
@@ -131,8 +155,83 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
           </div>
 
+          {/* PURCHASES COLLAPSIBLE GROUP */}
+          <div className="pt-2">
+
+            <button
+              onClick={() => setIsPurchasesOpen(!isPurchasesOpen)}
+              className="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-teal-50 transition font-semibold text-gray-600 hover:text-teal-700"
+            >
+              <div className="flex items-center gap-3">
+                <svg className={iconStyle} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+                <span>Purchases</span>
+              </div>
+
+              <svg
+                className={`w-4 h-4 transition-transform duration-300 ${isPurchasesOpen ? 'rotate-180 text-teal-600' : 'text-gray-400'}`}
+                fill="none" viewBox="0 0 24 24" stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            <div
+              className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                isPurchasesOpen ? 'max-h-48 opacity-100 mt-1' : 'max-h-0 opacity-0'
+              }`}
+            >
+              <Link
+                href="/dashboard/rfqs"
+                className={`block px-4 py-2 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm pl-[3.25rem] ${
+                  pathname === '/dashboard/rfqs' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                }`}
+              >
+                RFQs
+              </Link>
+
+              <Link
+                href="/dashboard/purchases"
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/purchases' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                }`}
+              >
+                Purchase Orders
+              </Link>
+
+              <Link
+                href="/dashboard/receipts"
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/receipts' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                }`}
+              >
+                Receipts
+              </Link>
+
+              <Link
+                href="/dashboard/purchases/invoices"
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/purchases/invoices' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                }`}
+              >
+                Purchase Invoices
+              </Link>
+
+              <Link
+                href="/dashboard/suppliers"
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/suppliers' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                }`}
+              >
+                Suppliers
+              </Link>
+            </div>
+
+          </div>
+
           {/* POS COLLAPSIBLE GROUP */}
-          <div>
+          <div className="pt-2">
 
             <button
               onClick={() => setIsPosOpen(!isPosOpen)}
@@ -193,26 +292,35 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               >
                 Staff
               </Link>
+
+              <Link
+                href="/dashboard/pos/reports"
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/pos/reports' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                }`}
+              >
+                Reports
+              </Link>
             </div>
 
           </div>
 
-          {/* PAYROLL COLLAPSIBLE GROUP */}
-          <div>
+          {/* INVENTORY COLLAPSIBLE GROUP */}
+          <div className="pt-2">
 
             <button
-              onClick={() => setIsPayrollOpen(!isPayrollOpen)}
+              onClick={() => setIsInventoryOpen(!isInventoryOpen)}
               className="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-teal-50 transition font-semibold text-gray-600 hover:text-teal-700"
             >
               <div className="flex items-center gap-3">
                 <svg className={iconStyle} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-1.13a4 4 0 100-8 4 4 0 000 8zm6 3c0-1.657-2.686-3-6-3s-6 1.343-6 3" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
-                <span>Payroll</span>
+                <span>Inventory</span>
               </div>
 
               <svg
-                className={`w-4 h-4 transition-transform duration-300 ${isPayrollOpen ? 'rotate-180 text-teal-600' : 'text-gray-400'}`}
+                className={`w-4 h-4 transition-transform duration-300 ${isInventoryOpen ? 'rotate-180 text-teal-600' : 'text-gray-400'}`}
                 fill="none" viewBox="0 0 24 24" stroke="currentColor"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -221,110 +329,47 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             <div
               className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                isPayrollOpen ? 'max-h-64 opacity-100 mt-1' : 'max-h-0 opacity-0'
+                isInventoryOpen ? 'max-h-[28rem] opacity-100 mt-1' : 'max-h-0 opacity-0'
               }`}
             >
               <Link
-                href="/dashboard/payroll/employees"
+                href="/dashboard/products"
                 className={`block px-4 py-2 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm pl-[3.25rem] ${
-                  pathname?.startsWith('/dashboard/payroll/employees') ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                  pathname?.startsWith('/dashboard/products') ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
                 }`}
               >
-                Employees
+                Products
               </Link>
 
               <Link
-                href="/dashboard/payroll/runs"
+                href="/dashboard/products/labels"
                 className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname?.startsWith('/dashboard/payroll/runs') ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                  pathname === '/dashboard/products/labels' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
                 }`}
               >
-                Payroll Runs
+                Barcode Labels
               </Link>
 
               <Link
-                href="/dashboard/payroll/loans"
+                href="/dashboard/configuration"
                 className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/payroll/loans' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                  pathname?.startsWith('/dashboard/configuration') ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
                 }`}
               >
-                Loans
+                Configuration
               </Link>
 
               <Link
-                href="/dashboard/payroll/eos-gratuity"
+                href="/dashboard/warehouses"
                 className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/payroll/eos-gratuity' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
-                }`}
-              >
-                EOS Gratuity
-              </Link>
-
-              <Link
-                href="/dashboard/payroll/config"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/payroll/config' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
-                }`}
-              >
-                Settings
-              </Link>
-            </div>
-
-          </div>
-
-          <Link href="/dashboard/products" className={linkStyle}>
-            <svg className={iconStyle} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-            </svg>
-            Products
-          </Link>
-
-          <Link href="/dashboard/merchandisers" className={linkStyle}>
-            <svg className={iconStyle} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-            Fleet Management
-          </Link>
-
-          {/* WAREHOUSE COLLAPSIBLE GROUP */}
-          <div className="pt-4 mt-4 border-t border-gray-100">
-            
-            <button 
-              onClick={() => setIsWarehouseOpen(!isWarehouseOpen)}
-              className="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-teal-50 transition font-semibold text-gray-600 hover:text-teal-700"
-            >
-              <div className="flex items-center gap-3">
-                <svg className={iconStyle} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-                <span>Warehouses</span>
-              </div>
-              
-              <svg 
-                className={`w-4 h-4 transition-transform duration-300 ${isWarehouseOpen ? 'rotate-180 text-teal-600' : 'text-gray-400'}`} 
-                fill="none" viewBox="0 0 24 24" stroke="currentColor"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            
-            {/* 🔥 INCREASED max-h-64 so all 4 links fit! */}
-            <div 
-              className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                isWarehouseOpen ? 'max-h-80 opacity-100 mt-1' : 'max-h-0 opacity-0'
-              }`}
-            >
-              <Link 
-                href="/dashboard/warehouses" 
-                className={`block px-4 py-2 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm pl-[3.25rem] ${
                   pathname === '/dashboard/warehouses' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
                 }`}
               >
                 All Warehouses
               </Link>
-              
-              <Link 
-                href="/dashboard/inventory" 
+
+              <Link
+                href="/dashboard/inventory"
                 className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
                   pathname === '/dashboard/inventory' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
                 }`}
@@ -341,9 +386,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 Stock Value
               </Link>
 
-              {/* 🔥 NEW: Stock Operations */}
-              <Link 
-                href="/dashboard/inventory/transfer" 
+              <Link
+                href="/dashboard/inventory/transfer"
                 className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
                   pathname === '/dashboard/inventory/transfer' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
                 }`}
@@ -351,7 +395,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 Stock Operations
               </Link>
 
-              {/* 🔥 NEW: Audit Log */}
               <Link
                 href="/dashboard/inventory/movements"
                 className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
@@ -365,83 +408,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
           </div>
 
-          {/* PURCHASES COLLAPSIBLE GROUP */}
-          <div className="pt-2">
-
-            <button
-              onClick={() => setIsPurchasesOpen(!isPurchasesOpen)}
-              className="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-teal-50 transition font-semibold text-gray-600 hover:text-teal-700"
-            >
-              <div className="flex items-center gap-3">
-                <svg className={iconStyle} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
-                <span>Purchases</span>
-              </div>
-
-              <svg
-                className={`w-4 h-4 transition-transform duration-300 ${isPurchasesOpen ? 'rotate-180 text-teal-600' : 'text-gray-400'}`}
-                fill="none" viewBox="0 0 24 24" stroke="currentColor"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-
-            <div
-              className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                isPurchasesOpen ? 'max-h-48 opacity-100 mt-1' : 'max-h-0 opacity-0'
-              }`}
-            >
-              <Link
-                href="/dashboard/purchases"
-                className={`block px-4 py-2 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm pl-[3.25rem] ${
-                  pathname === '/dashboard/purchases' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
-                }`}
-              >
-                Purchase Orders
-              </Link>
-
-              <Link
-                href="/dashboard/suppliers"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/suppliers' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
-                }`}
-              >
-                Suppliers
-              </Link>
-
-              <Link
-                href="/dashboard/rfqs"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/rfqs' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
-                }`}
-              >
-                RFQs
-              </Link>
-
-              <Link
-                href="/dashboard/receipts"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/receipts' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
-                }`}
-              >
-                Receipts
-              </Link>
-
-              <Link
-                href="/dashboard/purchases/invoices"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/purchases/invoices' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
-                }`}
-              >
-                Purchase Invoices
-              </Link>
-            </div>
-
-          </div>
+          {/* DIVIDER */}
+          <div className="my-3 border-t border-gray-100" />
 
           {/* ACCOUNTING COLLAPSIBLE GROUP */}
-          <div className="pt-2">
+          <div>
 
             <button
               onClick={() => setIsAccountingOpen(!isAccountingOpen)}
@@ -578,6 +549,81 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
           </div>
 
+          {/* PAYROLL COLLAPSIBLE GROUP */}
+          <div className="pt-2">
+
+            <button
+              onClick={() => setIsPayrollOpen(!isPayrollOpen)}
+              className="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-teal-50 transition font-semibold text-gray-600 hover:text-teal-700"
+            >
+              <div className="flex items-center gap-3">
+                <svg className={iconStyle} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-1.13a4 4 0 100-8 4 4 0 000 8zm6 3c0-1.657-2.686-3-6-3s-6 1.343-6 3" />
+                </svg>
+                <span>Payroll</span>
+              </div>
+
+              <svg
+                className={`w-4 h-4 transition-transform duration-300 ${isPayrollOpen ? 'rotate-180 text-teal-600' : 'text-gray-400'}`}
+                fill="none" viewBox="0 0 24 24" stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            <div
+              className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                isPayrollOpen ? 'max-h-64 opacity-100 mt-1' : 'max-h-0 opacity-0'
+              }`}
+            >
+              <Link
+                href="/dashboard/payroll/employees"
+                className={`block px-4 py-2 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm pl-[3.25rem] ${
+                  pathname?.startsWith('/dashboard/payroll/employees') ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                }`}
+              >
+                Employees
+              </Link>
+
+              <Link
+                href="/dashboard/payroll/runs"
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
+                  pathname?.startsWith('/dashboard/payroll/runs') ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                }`}
+              >
+                Payroll Runs
+              </Link>
+
+              <Link
+                href="/dashboard/payroll/loans"
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/payroll/loans' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                }`}
+              >
+                Loans
+              </Link>
+
+              <Link
+                href="/dashboard/payroll/eos-gratuity"
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/payroll/eos-gratuity' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                }`}
+              >
+                EOS Gratuity
+              </Link>
+
+              <Link
+                href="/dashboard/payroll/config"
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/payroll/config' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                }`}
+              >
+                Settings
+              </Link>
+            </div>
+
+          </div>
+
           {/* EXPENSES COLLAPSIBLE GROUP */}
           <div className="pt-2">
 
@@ -626,8 +672,68 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
           </div>
 
-          {/* SETTINGS COLLAPSIBLE GROUP */}
+          {/* FLEET COLLAPSIBLE GROUP — hidden until Vehicle Management or Job Order is installed */}
+          {showFleetMenu && (
           <div className="pt-2">
+
+            <button
+              onClick={() => setIsFleetOpen(!isFleetOpen)}
+              className="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-teal-50 transition font-semibold text-gray-600 hover:text-teal-700"
+            >
+              <div className="flex items-center gap-3">
+                <svg className={iconStyle} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0zM5 17H3v-4m2 4h10m4 0h2v-6l-2-5h-4m0 11V8m0 0H5m0 0L3 13" />
+                </svg>
+                <span>Fleet</span>
+              </div>
+
+              <svg
+                className={`w-4 h-4 transition-transform duration-300 ${isFleetOpen ? 'rotate-180 text-teal-600' : 'text-gray-400'}`}
+                fill="none" viewBox="0 0 24 24" stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            <div
+              className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                isFleetOpen ? 'max-h-48 opacity-100 mt-1' : 'max-h-0 opacity-0'
+              }`}
+            >
+              <Link
+                href="/dashboard/vehicles"
+                className={`block px-4 py-2 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm pl-[3.25rem] ${
+                  pathname?.startsWith('/dashboard/vehicles') ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                }`}
+              >
+                Vehicles
+              </Link>
+
+              <Link
+                href="/dashboard/job-orders"
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
+                  pathname?.startsWith('/dashboard/job-orders') ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                }`}
+              >
+                Job Orders
+              </Link>
+            </div>
+
+          </div>
+          )}
+
+          <Link href="/dashboard/merchandisers" className={`${linkStyle} mt-1`}>
+            <svg className={iconStyle} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            Merchandizer
+          </Link>
+
+          {/* DIVIDER */}
+          <div className="my-3 border-t border-gray-100" />
+
+          {/* SETTINGS COLLAPSIBLE GROUP */}
+          <div>
 
             <button
               onClick={() => setIsSettingsOpen(!isSettingsOpen)}
@@ -651,7 +757,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             <div
               className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                isSettingsOpen ? 'max-h-48 opacity-100 mt-1' : 'max-h-0 opacity-0'
+                isSettingsOpen ? 'max-h-80 opacity-100 mt-1' : 'max-h-0 opacity-0'
               }`}
             >
               <Link
@@ -670,6 +776,33 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 }`}
               >
                 Report Designer
+              </Link>
+
+              <Link
+                href="/dashboard/settings/account-mappings"
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/settings/account-mappings' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                }`}
+              >
+                Account Mappings
+              </Link>
+
+              <Link
+                href="/dashboard/settings/pos"
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/settings/pos' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                }`}
+              >
+                Configure POS
+              </Link>
+
+              <Link
+                href="/dashboard/settings/apps"
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
+                  pathname === '\dashboard\settings\apps' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                }`}
+              >
+                App Store
               </Link>
             </div>
 
