@@ -25,6 +25,11 @@ export const REPORT_FIELD_CATALOG: Record<string, ReportFieldDef[]> = {
     { key: 'name', label: 'Account' },
     { key: 'amount', label: 'Amount' },
   ],
+  cashFlowStatement: [
+    { key: 'code', label: 'Code' },
+    { key: 'name', label: 'Account' },
+    { key: 'amount', label: 'Cash Impact' },
+  ],
   generalLedger: [
     { key: 'date', label: 'Date' },
     { key: 'entryNo', label: 'Entry No' },
@@ -91,6 +96,7 @@ export const REPORT_FIELD_DEFAULTS: Record<string, string[]> = {
   trialBalance: ['code', 'name', 'debit', 'credit', 'balance'],
   profitAndLoss: ['name', 'amount'],
   balanceSheet: ['name', 'amount'],
+  cashFlowStatement: ['name', 'amount'],
   generalLedger: ['date', 'entryNo', 'description', 'debit', 'credit', 'balance'],
   partnerLedger: ['date', 'entryNo', 'description', 'debit', 'credit', 'balance'],
   agedReceivables: ['invoiceNumber', 'party', 'invoiceDate', 'totalAmount', 'outstanding', 'bucket'],
@@ -104,6 +110,7 @@ export const REPORT_TYPE_LABELS: Record<string, string> = {
   trialBalance: 'Trial Balance',
   profitAndLoss: 'Profit & Loss',
   balanceSheet: 'Balance Sheet',
+  cashFlowStatement: 'Cash Flow Statement',
   generalLedger: 'General Ledger',
   partnerLedger: 'Partner Ledger',
   agedReceivables: 'Aged Receivables (AR)',

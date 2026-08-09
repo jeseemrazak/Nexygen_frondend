@@ -46,7 +46,9 @@
     visibility: hidden;
   }
   .print-area,
-  .print-area * {
+  .print-area *,
+  .print-area-80mm,
+  .print-area-80mm * {
     visibility: visible;
   }
   .print-area {
@@ -63,6 +65,19 @@
   }
   .print-landscape {
     width: 100%;
+  }
+  /* 80mm thermal receipts — narrow, minimal-margin variant of .print-area. Real thermal
+     printers (ESC/POS roll printers) mostly ignore @page sizing and just clip/wrap to the
+     roll width regardless, so this width is what actually keeps the on-screen preview and
+     any PDF export visually correct at 80mm. */
+  .print-area-80mm {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 80mm;
+    margin: 0;
+    padding: 2mm;
+    box-shadow: none;
   }
   @page {
     margin: 0.4in;

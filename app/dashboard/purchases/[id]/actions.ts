@@ -65,6 +65,9 @@ export async function createReceipt(formData: FormData) {
 export async function createBill(formData: FormData) {
   const poId = formData.get('poId') as string;
   const itemIds = formData.getAll('itemIds') as string[];
+  const taxId = formData.get('taxId') as string;
+  const paymentTermId = formData.get('paymentTermId') as string;
+  const currencyId = formData.get('currencyId') as string;
 
   const items = itemIds
     .map((itemId) => {
@@ -86,7 +89,13 @@ export async function createBill(formData: FormData) {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     },
-    body: JSON.stringify({ purchaseOrderId: Number(poId), items }),
+    body: JSON.stringify({
+      purchaseOrderId: Number(poId),
+      taxId: taxId ? Number(taxId) : undefined,
+      paymentTermId: paymentTermId ? Number(paymentTermId) : undefined,
+      currencyId: currencyId ? Number(currencyId) : undefined,
+      items,
+    }),
   });
 
   if (!res.ok) {

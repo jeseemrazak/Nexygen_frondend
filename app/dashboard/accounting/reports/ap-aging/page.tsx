@@ -41,6 +41,7 @@ export default function ApAgingPage() {
       'Invoice #': r.invoiceNumber,
       'Supplier': r.supplierName,
       'Invoice Date': formatDate(r.invoiceDate),
+      'Due Date': formatDate(r.dueDate),
       'Total': r.totalAmount,
       'Paid': r.amountPaid,
       'Outstanding': r.outstanding,
@@ -98,6 +99,7 @@ export default function ApAgingPage() {
                     <th className="py-3 px-6 text-xs font-semibold text-gray-600 uppercase">Invoice #</th>
                     <th className="py-3 px-6 text-xs font-semibold text-gray-600 uppercase">Supplier</th>
                     <th className="py-3 px-6 text-xs font-semibold text-gray-600 uppercase">Date</th>
+                    <th className="py-3 px-6 text-xs font-semibold text-gray-600 uppercase">Due Date</th>
                     <th className="py-3 px-6 text-xs font-semibold text-gray-600 uppercase text-right">Outstanding</th>
                     <th className="py-3 px-6 text-xs font-semibold text-gray-600 uppercase">Age</th>
                   </tr>
@@ -110,6 +112,7 @@ export default function ApAgingPage() {
                       </td>
                       <td className="py-4 px-6 text-sm font-bold">{r.supplierName}</td>
                       <td className="py-4 px-6 text-sm text-gray-600">{formatDate(r.invoiceDate)}</td>
+                      <td className="py-4 px-6 text-sm text-gray-600">{formatDate(r.dueDate)}</td>
                       <td className="py-4 px-6 text-right font-bold text-sm">{formatQAR(r.outstanding)}</td>
                       <td className="py-4 px-6">
                         <span className={`px-2 py-1 rounded-full text-xs font-bold ${BUCKET_COLORS[r.bucket]}`}>

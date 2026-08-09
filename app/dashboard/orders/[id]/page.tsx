@@ -47,10 +47,36 @@ export default function SalesOrderDetailsPage() {
   const [invoiceQty, setInvoiceQty] = useState<Record<number, string>>({});
   const [isInvoicing, setIsInvoicing] = useState(false);
   const [invoiceError, setInvoiceError] = useState('');
+  const [taxes, setTaxes] = useState<any[]>([]);
+  const [invoiceTaxId, setInvoiceTaxId] = useState('');
+  const [paymentTerms, setPaymentTerms] = useState<any[]>([]);
+  const [invoicePaymentTermId, setInvoicePaymentTermId] = useState('');
+  const [currencies, setCurrencies] = useState<any[]>([]);
+  const [invoiceCurrencyId, setInvoiceCurrencyId] = useState('');
 
   useEffect(() => {
     fetchOrderDetails();
+    const token = getClientToken();
+    fetch(`${API_BASE_URL}/accounting/taxes?activeOnly=true`, { headers: { 'Authorization': `Bearer ${token}` } })
+      .then((res) => (res.ok ? res.json() : []))
+      .then(setTaxes);
+    fetch(`${API_BASE_URL}/accounting/payment-terms?activeOnly=true`, { headers: { 'Authorization': `Bearer ${token}` } })
+      .then((res) => (res.ok ? res.json() : []))
+      .then(setPaymentTerms);
+    fetch(`${API_BASE_URL}/accounting/currencies?activeOnly=true`, { headers: { 'Authorization': `Bearer ${token}` } })
+      .then((res) => (res.ok ? res.json() : []))
+      .then(setCurrencies);
   }, []);
+
+  // Default the invoice's tax to whatever tax (if any) the sales order itself was quoted with.
+  useEffect(() => {
+    if (order?.taxId) setInvoiceTaxId(String(order.taxId));
+  }, [order?.taxId]);
+
+  // Default the invoice's payment term to the customer's, if one is set on the order/customer.
+  useEffect(() => {
+    if (order?.customer?.paymentTermId) setInvoicePaymentTermId(String(order.customer.paymentTermId));
+  }, [order?.customer?.paymentTermId]);
 
   const fetchOrderDetails = async () => {
     const token = getClientToken();
@@ -191,7 +217,13 @@ export default function SalesOrderDetailsPage() {
       const res = await fetch(`${API_BASE_URL}/invoices`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ salesOrderId: order.id, items }),
+        body: JSON.stringify({
+          salesOrderId: order.id,
+          taxId: invoiceTaxId ? Number(invoiceTaxId) : undefined,
+          paymentTermId: invoicePaymentTermId ? Number(invoicePaymentTermId) : undefined,
+          currencyId: invoiceCurrencyId ? Number(invoiceCurrencyId) : undefined,
+          items,
+        }),
       });
       if (res.ok) {
         setInvoiceQty({});
@@ -453,6 +485,42 @@ export default function SalesOrderDetailsPage() {
               {deliveryError && <p className="text-rose-600 text-sm font-semibold">{deliveryError}</p>}
             </div>
             <div className="space-y-2">
+              {taxes.length > 0 && (
+                <select
+                  value={invoiceTaxId}
+                  onChange={(e) => setInvoiceTaxId(e.target.value)}
+                  className="border border-gray-300 rounded-md p-2 text-sm text-black bg-white"
+                >
+                  <option value="">No tax</option>
+                  {taxes.map((t: any) => (
+                    <option key={t.id} value={t.id}>{t.name} ({t.rate}%)</option>
+                  ))}
+                </select>
+              )}
+              {paymentTerms.length > 0 && (
+                <select
+                  value={invoicePaymentTermId}
+                  onChange={(e) => setInvoicePaymentTermId(e.target.value)}
+                  className="border border-gray-300 rounded-md p-2 text-sm text-black bg-white"
+                >
+                  <option value="">No payment term</option>
+                  {paymentTerms.map((t: any) => (
+                    <option key={t.id} value={t.id}>{t.name} ({t.days} days)</option>
+                  ))}
+                </select>
+              )}
+              {currencies.length > 0 && (
+                <select
+                  value={invoiceCurrencyId}
+                  onChange={(e) => setInvoiceCurrencyId(e.target.value)}
+                  className="border border-gray-300 rounded-md p-2 text-sm text-black bg-white"
+                >
+                  <option value="">QAR only</option>
+                  {currencies.map((c: any) => (
+                    <option key={c.id} value={c.id}>Quote in {c.code}</option>
+                  ))}
+                </select>
+              )}
               <button
                 onClick={handleCreateInvoice}
                 disabled={isInvoicing}

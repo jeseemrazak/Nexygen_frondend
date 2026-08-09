@@ -16,6 +16,36 @@ type CartLine = {
   isService?: boolean;
 };
 
+type OrderDraft = {
+  id: string;
+  label: string;
+  cart: CartLine[];
+  selectedCustomerId: string;
+  discountInput: string;
+  taxId: string;
+};
+
+const makeEmptyOrder = (n: number, defaultTaxId = ''): OrderDraft => ({
+  id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+  label: `Order ${n}`,
+  cart: [],
+  selectedCustomerId: '',
+  discountInput: '',
+  taxId: defaultTaxId,
+});
+
+// Round `total` up to the next multiple of `step` — the building block for the cash quick-amount
+// row (e.g. a 33.35 total suggests 34 / 35 / 40 / 50, exactly matching how most POS tills round
+// a cash tender up to the next coin/note denomination instead of making the cashier type it).
+const roundUpTo = (total: number, step: number) => Math.ceil(total / step) * step;
+const quickCashAmounts = (total: number): number[] => {
+  if (total <= 0) return [];
+  const candidates = [roundUpTo(total, 1), roundUpTo(total, 5), roundUpTo(total, 10), roundUpTo(total, 50)];
+  return Array.from(new Set(candidates)).slice(0, 4);
+};
+
+const isCashMethod = (m: any) => !!m?.name?.toLowerCase().includes('cash');
+
 function QtyBtn({ symbol, color, onClick }: { symbol: '+' | '-'; color: string; onClick: () => void }) {
   return (
     <button
@@ -36,12 +66,12 @@ function ProductCard({ product, stock, onPick }: { product: any; stock: number; 
       type="button"
       onClick={onPick}
       disabled={outOfStock}
-      className={`text-left bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm transition-all ${
-        outOfStock ? 'opacity-40 cursor-not-allowed' : 'hover:shadow-md hover:border-teal-300 hover:-translate-y-0.5'
+      className={`text-left bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm transition-all relative ${
+        outOfStock ? 'opacity-40 cursor-not-allowed' : 'hover:shadow-md hover:border-teal-300 hover:-translate-y-0.5 active:scale-[.97]'
       }`}
     >
-      <div className="h-24 bg-teal-50 flex items-center justify-center text-3xl">{isService ? '🛠️' : '📦'}</div>
-      <div className="p-2.5">
+      <span className={`absolute inset-x-0 top-0 h-1 ${isService ? 'bg-purple-400' : outOfStock ? 'bg-rose-300' : 'bg-teal-400'}`} />
+      <div className="p-2.5 pt-3.5">
         <p className="font-bold text-gray-800 text-xs leading-tight line-clamp-2 h-8">{product.name}</p>
         <div className="flex items-center justify-between mt-2">
           <span className="text-teal-700 font-bold text-sm">{formatQAR(product.price)}</span>
@@ -65,23 +95,75 @@ export default function PosCheckoutPage() {
   const [sessionLoading, setSessionLoading] = useState(false);
 
   const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
-  const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState('');
+  const [taxes, setTaxes] = useState<any[]>([]);
   const [staffList, setStaffList] = useState<any[]>([]);
   const [customers, setCustomers] = useState<any[]>([]);
-  const [selectedCustomerId, setSelectedCustomerId] = useState('');
-  const [discountInput, setDiscountInput] = useState('');
 
   const [products, setProducts] = useState<any[]>([]);
   const [posCategories, setPosCategories] = useState<any[]>([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [cart, setCart] = useState<CartLine[]>([]);
+
+  // Order tabs — every unpaid draft order stays simultaneously accessible as a tab instead of
+  // hiding parked carts behind a "Held Sales" modal.
+  const [orders, setOrders] = useState<OrderDraft[]>(() => [makeEmptyOrder(1)]);
+  const [activeOrderId, setActiveOrderId] = useState(() => orders[0].id);
+  const activeOrder = orders.find((o) => o.id === activeOrderId) ?? orders[0];
+  const cart = activeOrder.cart;
+  const selectedCustomerId = activeOrder.selectedCustomerId;
+  const discountInput = activeOrder.discountInput;
+  const taxId = activeOrder.taxId;
+
+  const updateActiveOrder = (updater: (o: OrderDraft) => OrderDraft) => {
+    setOrders((prev) => prev.map((o) => (o.id === activeOrderId ? updater(o) : o)));
+  };
+  const setCart = (updater: CartLine[] | ((prev: CartLine[]) => CartLine[])) => {
+    updateActiveOrder((o) => ({ ...o, cart: typeof updater === 'function' ? (updater as (p: CartLine[]) => CartLine[])(o.cart) : updater }));
+  };
+  const setSelectedCustomerId = (val: string) => updateActiveOrder((o) => ({ ...o, selectedCustomerId: val }));
+  const setDiscountInput = (val: string | ((prev: string) => string)) => {
+    updateActiveOrder((o) => ({ ...o, discountInput: typeof val === 'function' ? (val as (p: string) => string)(o.discountInput) : val }));
+  };
+  const setTaxId = (val: string) => updateActiveOrder((o) => ({ ...o, taxId: val }));
+
+  // Payment panel — inline, always docked under the cart (no separate full-screen step). Reset
+  // whenever the active order changes so a half-typed tender never leaks onto the next sale.
+  const [selectedMethodId, setSelectedMethodId] = useState('');
+  const [splitMode, setSplitMode] = useState(false);
+  const [amountReceived, setAmountReceived] = useState('');
+  const [splitAmounts, setSplitAmounts] = useState<Record<string, string>>({});
+
+  const resetPaymentPanel = () => {
+    setSplitMode(false);
+    setAmountReceived('');
+    setSplitAmounts({});
+  };
+
+  const addOrder = () => {
+    const defaultTax = taxes.find((t: any) => t.isDefault);
+    const next = makeEmptyOrder(orders.length + 1, defaultTax ? String(defaultTax.id) : '');
+    setOrders((prev) => [...prev, next]);
+    setActiveOrderId(next.id);
+    resetPaymentPanel();
+  };
+
+  const switchOrder = (id: string) => {
+    setActiveOrderId(id);
+    resetPaymentPanel();
+  };
+
+  const closeOrder = (id: string) => {
+    if (orders.length === 1) return;
+    const idx = orders.findIndex((o) => o.id === id);
+    const remaining = orders.filter((o) => o.id !== id);
+    setOrders(remaining);
+    if (activeOrderId === id) {
+      const fallback = remaining[Math.max(0, idx - 1)] ?? remaining[0];
+      switchOrder(fallback.id);
+    }
+  };
 
   const [batchPicker, setBatchPicker] = useState<{ product: any; batches: any[] } | null>(null);
-
-  type HeldSale = { id: string; label: string; cart: CartLine[]; selectedCustomerId: string; discountInput: string; heldAt: string };
-  const [heldSales, setHeldSales] = useState<HeldSale[]>([]);
-  const [showHeldSales, setShowHeldSales] = useState(false);
 
   const [showPinPad, setShowPinPad] = useState(false);
   const [pinStaffId, setPinStaffId] = useState('');
@@ -105,9 +187,10 @@ export default function PosCheckoutPage() {
     const load = async () => {
       const token = getClientToken();
       const headers = { 'Authorization': `Bearer ${token}` };
-      const [whRes, pmRes, staffRes, prodRes, custRes, posCatRes, settingsRes, loyaltyRes] = await Promise.all([
+      const [whRes, pmRes, taxRes, staffRes, prodRes, custRes, posCatRes, settingsRes, loyaltyRes] = await Promise.all([
         fetch(`${API_BASE_URL}/warehouses`, { headers }),
         fetch(`${API_BASE_URL}/accounting/payment-methods?activeOnly=true`, { headers }),
+        fetch(`${API_BASE_URL}/accounting/taxes?activeOnly=true`, { headers }),
         fetch(`${API_BASE_URL}/pos-staff?activeOnly=true`, { headers }),
         fetch(`${API_BASE_URL}/products?posActiveOnly=true`, { headers }),
         fetch(`${API_BASE_URL}/customers`, { headers }),
@@ -115,24 +198,28 @@ export default function PosCheckoutPage() {
         fetch(`${API_BASE_URL}/settings/company`, { headers }),
         fetch(`${API_BASE_URL}/app-modules/loyalty-rewards`, { headers }),
       ]);
-      const [whData, pmData] = await Promise.all([
+      const [whData, pmData, taxData] = await Promise.all([
         whRes.ok ? whRes.json() : [],
         pmRes.ok ? pmRes.json() : [],
+        taxRes.ok ? taxRes.json() : [],
       ]);
       setWarehouses(whData);
       setPaymentMethods(pmData);
+      setTaxes(taxData);
+      const defaultTax = taxData.find((t: any) => t.isDefault);
+      if (defaultTax) {
+        setOrders((prev) => prev.map((o) => (o.taxId === '' ? { ...o, taxId: String(defaultTax.id) } : o)));
+      }
       if (staffRes.ok) setStaffList(await staffRes.json());
       if (prodRes.ok) setProducts(await prodRes.json());
       if (custRes.ok) setCustomers(await custRes.json());
       if (posCatRes.ok) setPosCategories(await posCatRes.json());
+      let settingsData: any = null;
       if (settingsRes.ok) {
-        const settingsData = await settingsRes.json();
+        settingsData = await settingsRes.json();
         setSettings(settingsData);
         if (settingsData.posDefaultWarehouseId && whData.some((w: any) => w.id === settingsData.posDefaultWarehouseId)) {
           setSelectedWarehouse(String(settingsData.posDefaultWarehouseId));
-        }
-        if (settingsData.posDefaultPaymentMethodId && pmData.some((m: any) => m.id === settingsData.posDefaultPaymentMethodId)) {
-          setSelectedPaymentMethodId(String(settingsData.posDefaultPaymentMethodId));
         }
       }
       if (loyaltyRes.ok) {
@@ -140,6 +227,10 @@ export default function PosCheckoutPage() {
         setLoyaltyActive(loyaltyMod.isActive);
         setLoyaltyConfig(loyaltyMod.config || {});
       }
+      // Default the payment panel to the configured default method, else the first active one.
+      const defaultId = settingsData?.posDefaultPaymentMethodId;
+      const fallback = pmData.find((m: any) => m.id === defaultId) || pmData[0];
+      if (fallback) setSelectedMethodId(String(fallback.id));
     };
     load();
   }, []);
@@ -273,28 +364,34 @@ export default function PosCheckoutPage() {
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
   const discountAmount = Math.min(Math.max(Number(discountInput) || 0, 0), subtotal);
-  const totalAmount = subtotal - discountAmount;
+  const netAfterDiscount = subtotal - discountAmount;
+  const selectedTax = taxes.find((t: any) => String(t.id) === taxId);
+  const taxAmount = selectedTax ? Math.round(netAfterDiscount * (selectedTax.rate / 100) * 100) / 100 : 0;
+  const totalAmount = netAfterDiscount + taxAmount;
 
-  const holdSale = () => {
-    if (cart.length === 0) return;
-    const label = customers.find((c: any) => String(c.id) === selectedCustomerId)?.name || `Sale @ ${new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
-    setHeldSales((prev) => [...prev, { id: `${Date.now()}`, label, cart, selectedCustomerId, discountInput, heldAt: new Date().toISOString() }]);
-    setCart([]);
-    setSelectedCustomerId('');
-    setDiscountInput('');
-  };
+  const selectedMethod = paymentMethods.find((m: any) => String(m.id) === selectedMethodId);
+  const receivedNum = Number(amountReceived) || 0;
+  const change = Math.max(0, receivedNum - totalAmount);
 
-  const resumeHeldSale = (held: HeldSale) => {
-    setCart(held.cart);
-    setSelectedCustomerId(held.selectedCustomerId);
-    setDiscountInput(held.discountInput);
-    setHeldSales((prev) => prev.filter((h) => h.id !== held.id));
-    setShowHeldSales(false);
-  };
+  const splitTotal = useMemo(
+    () => Object.values(splitAmounts).reduce((s, v) => s + (Number(v) || 0), 0),
+    [splitAmounts],
+  );
+  const splitRemaining = Math.round((totalAmount - splitTotal) * 100) / 100;
 
-  const discardHeldSale = (id: string) => {
-    setHeldSales((prev) => prev.filter((h) => h.id !== id));
-  };
+  const tenders = useMemo(() => {
+    if (splitMode) {
+      return Object.entries(splitAmounts)
+        .filter(([, v]) => Number(v) > 0)
+        .map(([paymentMethodId, v]) => ({ paymentMethodId: Number(paymentMethodId), amount: Number(v) }));
+    }
+    return selectedMethodId ? [{ paymentMethodId: Number(selectedMethodId), amount: totalAmount }] : [];
+  }, [splitMode, splitAmounts, selectedMethodId, totalAmount]);
+
+  const canCharge =
+    cart.length > 0 &&
+    !isSubmitting &&
+    (splitMode ? tenders.length > 0 && Math.abs(splitRemaining) <= 0.01 : !!selectedMethodId);
 
   const handleVerifyPin = async () => {
     setPinError('');
@@ -318,10 +415,9 @@ export default function PosCheckoutPage() {
     }
   };
 
-  const handleCompleteSale = async () => {
+  const handleCharge = async () => {
     setSubmitError('');
     if (cart.length === 0) return setSubmitError('Cart is empty.');
-    if (!selectedPaymentMethodId) return setSubmitError('Select a payment method.');
     if (!session) return setSubmitError('No open session for this warehouse.');
     if (settings?.posRequireCustomer && !selectedCustomerId) return setSubmitError('Select a customer to continue.');
     if (settings?.posMaxDiscountPercent != null && subtotal > 0) {
@@ -330,28 +426,39 @@ export default function PosCheckoutPage() {
         return setSubmitError(`Discount exceeds the maximum allowed (${settings.posMaxDiscountPercent}%). Get manager approval.`);
       }
     }
+    if (tenders.some((t) => {
+      const m = paymentMethods.find((pm: any) => pm.id === t.paymentMethodId);
+      return m?.type === 'ACCOUNT_RECEIVABLE' && !selectedCustomerId;
+    })) {
+      return setSubmitError('Select or add a customer to leave a balance on account.');
+    }
+    if (!canCharge) return;
 
     setIsSubmitting(true);
     const token = getClientToken();
+    const payload: any = {
+      sessionId: session.id,
+      servedByToken: servedBy?.staffToken,
+      customerId: selectedCustomerId ? Number(selectedCustomerId) : undefined,
+      discountAmount: discountAmount || undefined,
+      taxId: selectedTax ? selectedTax.id : undefined,
+      items: cart.map((i) => ({ productId: i.productId, quantity: i.quantity, batchNumber: i.batchNumber })),
+    };
+    if (tenders.length === 1) {
+      payload.paymentMethodId = tenders[0].paymentMethodId;
+    } else {
+      payload.payments = tenders;
+    }
     const res = await fetch(`${API_BASE_URL}/pos-sales`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({
-        sessionId: session.id,
-        paymentMethodId: Number(selectedPaymentMethodId),
-        servedByToken: servedBy?.staffToken,
-        customerId: selectedCustomerId ? Number(selectedCustomerId) : undefined,
-        discountAmount: discountAmount || undefined,
-        items: cart.map((i) => ({ productId: i.productId, quantity: i.quantity, batchNumber: i.batchNumber })),
-      }),
+      body: JSON.stringify(payload),
     });
     if (res.ok) {
       const sale = await res.json();
       setLastSale(sale);
-      setCart([]);
-      setSelectedCustomerId('');
-      setDiscountInput('');
-      setSelectedPaymentMethodId(settings?.posDefaultPaymentMethodId ? String(settings.posDefaultPaymentMethodId) : '');
+      updateActiveOrder((o) => ({ ...o, cart: [], selectedCustomerId: '', discountInput: '' }));
+      resetPaymentPanel();
       if (settings?.posAutoPrintReceipt) {
         window.open(`/dashboard/pos/sales/${sale.id}/print`, '_blank', 'noopener,noreferrer');
       }
@@ -472,37 +579,6 @@ export default function PosCheckoutPage() {
         </div>
       )}
 
-      {/* HELD SALES MODAL */}
-      {showHeldSales && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 border border-gray-100">
-            <h3 className="text-lg font-bold text-gray-900 mb-1">Held Sales</h3>
-            <p className="text-sm text-gray-500 mb-4">Resume a parked cart, or discard it.</p>
-            {heldSales.length === 0 ? (
-              <p className="text-center text-gray-400 py-6">No held sales.</p>
-            ) : (
-              <div className="space-y-2 max-h-72 overflow-y-auto">
-                {heldSales.map((h) => (
-                  <div key={h.id} className="flex items-center justify-between gap-2 px-4 py-2.5 border border-gray-200 rounded-md">
-                    <div className="min-w-0">
-                      <p className="font-bold text-gray-800 text-sm truncate">{h.label}</p>
-                      <p className="text-xs text-gray-500">{h.cart.length} item(s) · {formatQAR(h.cart.reduce((s, l) => s + l.price * l.quantity, 0))}</p>
-                    </div>
-                    <div className="flex gap-2 shrink-0">
-                      <button onClick={() => resumeHeldSale(h)} className="text-teal-600 hover:text-teal-800 text-xs font-bold">Resume</button>
-                      <button onClick={() => discardHeldSale(h.id)} className="text-rose-500 hover:text-rose-700 text-xs font-bold">Discard</button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-            <button onClick={() => setShowHeldSales(false)} className="mt-4 w-full px-4 py-2 rounded-md font-bold text-gray-600 hover:bg-gray-100">
-              Close
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* HEADER BAR */}
       <div className="bg-teal-600 px-5 py-3 flex items-center gap-4 shrink-0">
         <span className="text-xl">🛒</span>
@@ -516,9 +592,6 @@ export default function PosCheckoutPage() {
           {warehouses.map((w: any) => <option key={w.id} value={w.id} className="text-black">{w.name}</option>)}
         </select>
         <div className="flex-1" />
-        <button onClick={() => setShowHeldSales(true)} className="flex items-center gap-1.5 text-white/90 hover:text-white text-sm font-semibold">
-          ⏸️ Held{heldSales.length > 0 ? ` (${heldSales.length})` : ''}
-        </button>
         {servedBy ? (
           <button onClick={() => setServedBy(null)} className="flex items-center gap-2 text-white/80 hover:text-white text-sm font-semibold">
             👤 {servedBy.name} (Logout)
@@ -529,6 +602,36 @@ export default function PosCheckoutPage() {
           </button>
         )}
       </div>
+
+      {/* ORDER TABS STRIP */}
+      {selectedWarehouse && session && (
+        <div className="bg-white border-b border-gray-200 px-3 flex items-center gap-1.5 overflow-x-auto shrink-0">
+          {orders.map((o) => (
+            <button
+              key={o.id}
+              type="button"
+              onClick={() => switchOrder(o.id)}
+              className={`shrink-0 flex items-center gap-2 px-3.5 py-2 text-xs font-bold border-b-2 transition-colors ${
+                o.id === activeOrderId ? 'border-teal-600 text-teal-700' : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <span>{o.label}{o.cart.length > 0 ? ` (${o.cart.reduce((s, l) => s + l.quantity, 0)})` : ''}</span>
+              {orders.length > 1 && (
+                <span
+                  role="button"
+                  onClick={(e) => { e.stopPropagation(); closeOrder(o.id); }}
+                  className="text-gray-400 hover:text-rose-500 font-bold"
+                >
+                  ×
+                </span>
+              )}
+            </button>
+          ))}
+          <button type="button" onClick={addOrder} className="shrink-0 px-3 py-2 text-teal-600 hover:text-teal-800 font-bold text-sm">
+            +
+          </button>
+        </div>
+      )}
 
       {!selectedWarehouse ? (
         <div className="flex-1 flex items-center justify-center bg-gray-50 text-gray-400 font-semibold">
@@ -593,11 +696,19 @@ export default function PosCheckoutPage() {
             </div>
           </div>
 
-          {/* RIGHT: CART PANEL */}
-          <div className="w-[340px] shrink-0 bg-[#E8F4FD] border-l border-[#BBDEFB] flex flex-col">
-            <div className="p-4 border-b border-[#D8E9F5] flex items-center gap-2">
-              <span className="text-teal-700">🛒</span>
-              <span className="font-bold text-gray-800 text-sm">Cart ({totalItems} item{totalItems === 1 ? '' : 's'})</span>
+          {/* RIGHT: TICKET PANEL (cart + inline payment, single screen) */}
+          <div className="w-[360px] shrink-0 bg-[#E8F4FD] border-l border-[#BBDEFB] flex flex-col">
+            <div className="p-4 border-b border-[#D8E9F5] flex items-center justify-between">
+              <span className="font-bold text-gray-800 text-sm">Ticket {totalItems > 0 ? `· ${totalItems}` : ''}</span>
+              {cart.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => { setCart([]); resetPaymentPanel(); }}
+                  className="text-rose-500 hover:text-rose-700 text-xs font-bold"
+                >
+                  Clear
+                </button>
+              )}
             </div>
 
             <div className="px-4 py-2.5 border-b border-[#D8E9F5] flex items-center gap-2">
@@ -607,7 +718,7 @@ export default function PosCheckoutPage() {
                 onChange={(e) => { setSelectedCustomerId(e.target.value); setRedeemPointsInput(''); setRedeemError(''); }}
                 className="flex-1 bg-transparent text-sm text-gray-800 focus:outline-none"
               >
-                <option value="">Walk-in Customer</option>
+                <option value="">Walk-in customer</option>
                 {customers.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
             </div>
@@ -642,19 +753,22 @@ export default function PosCheckoutPage() {
               </div>
             )}
 
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto min-h-[80px]">
               {cart.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center gap-2 text-gray-400">
-                  <span className="text-5xl">🛒</span>
-                  <span className="font-semibold text-sm">Cart is empty</span>
+                  <span className="text-4xl">🛒</span>
+                  <span className="font-semibold text-sm">Tap a product to start</span>
                 </div>
               ) : (
                 cart.map((item) => (
-                  <div key={`${item.productId}-${item.batchNumber}`} className="px-4 py-2.5 border-b border-[#F0F0F0] flex items-center gap-2 bg-white/40">
+                  <div
+                    key={`${item.productId}-${item.batchNumber}`}
+                    className="px-4 py-2.5 border-b border-[#F0F0F0] flex items-center gap-2 bg-white/40"
+                  >
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-gray-800 text-sm truncate">{item.name}</p>
                       <p className="text-gray-500 text-xs">
-                        {item.isService ? <span className="text-purple-600 font-bold">Service</span> : <span className="font-mono">{item.batchNumber}</span>} · {formatQAR(item.price)} × {item.quantity} = <span className="font-bold text-gray-700">{formatQAR(item.price * item.quantity)}</span>
+                        {formatQAR(item.price)} × {item.quantity} = <span className="font-bold text-gray-700">{formatQAR(item.price * item.quantity)}</span>
                       </p>
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
@@ -667,9 +781,14 @@ export default function PosCheckoutPage() {
               )}
             </div>
 
-            <div className="p-4 border-t border-[#D8E9F5] bg-white/60 space-y-3 shrink-0">
-              <div className="flex items-center gap-2">
-                <span className="text-gray-500 text-sm">Discount (QAR)</span>
+            {/* Totals + discount */}
+            <div className="px-4 pt-3 border-t border-[#D8E9F5] bg-white/60 space-y-1.5 shrink-0">
+              <div className="flex items-center justify-between text-sm text-gray-500">
+                <span>Subtotal</span>
+                <span>{formatQAR(subtotal)}</span>
+              </div>
+              <div className="flex items-center justify-between gap-2 text-sm text-gray-500">
+                <span>Discount</span>
                 <input
                   type="number"
                   min="0"
@@ -677,51 +796,130 @@ export default function PosCheckoutPage() {
                   value={discountInput}
                   onChange={(e) => setDiscountInput(e.target.value)}
                   placeholder="0.00"
-                  className="w-24 border border-gray-300 rounded-md p-1.5 text-sm text-black text-right ml-auto"
+                  className="w-24 border border-gray-300 rounded-md p-1 text-sm text-black text-right"
                 />
               </div>
-
-              {discountAmount > 0 && (
-                <>
-                  <div className="flex justify-between items-center text-sm text-gray-500">
-                    <span>Subtotal:</span>
-                    <span>{formatQAR(subtotal)}</span>
+              {taxes.length > 0 && (
+                <div className="flex items-center justify-between gap-2 text-sm text-gray-500">
+                  <span>Tax</span>
+                  <div className="flex items-center gap-2">
+                    <select
+                      value={taxId}
+                      onChange={(e) => setTaxId(e.target.value)}
+                      className="border border-gray-300 rounded-md p-1 text-xs text-black bg-white"
+                    >
+                      <option value="">No tax</option>
+                      {taxes.map((t: any) => (
+                        <option key={t.id} value={t.id}>{t.name}</option>
+                      ))}
+                    </select>
+                    <span>{formatQAR(taxAmount)}</span>
                   </div>
-                  <div className="flex justify-between items-center text-sm text-rose-500">
-                    <span>Discount:</span>
-                    <span>-{formatQAR(discountAmount)}</span>
-                  </div>
-                </>
+                </div>
               )}
-
-              <div className="flex justify-between items-center">
-                <span className="text-gray-700 font-bold">Total:</span>
+              <div className="flex items-center justify-between pt-1">
+                <span className="text-gray-800 font-bold">Total</span>
                 <span className="text-teal-700 font-bold text-xl">{formatQAR(totalAmount)}</span>
               </div>
+            </div>
 
-              <select value={selectedPaymentMethodId} onChange={(e) => setSelectedPaymentMethodId(e.target.value)} className="w-full border border-gray-300 rounded-md p-2 text-sm text-black bg-white">
-                <option value="">Payment method...</option>
-                {paymentMethods.map((m: any) => <option key={m.id} value={m.id}>{m.name}</option>)}
-              </select>
+            {/* Inline payment panel */}
+            <div className="p-4 border-t border-[#D8E9F5] bg-white/60 space-y-3 shrink-0">
+              <div className="flex flex-wrap gap-1.5">
+                {paymentMethods.filter((m: any) => m.type !== 'ACCOUNT_RECEIVABLE').map((m: any) => (
+                  <button
+                    key={m.id}
+                    type="button"
+                    onClick={() => { setSplitMode(false); setSelectedMethodId(String(m.id)); setAmountReceived(''); }}
+                    className={`px-3.5 h-9 rounded-lg text-xs font-bold border transition-colors ${
+                      !splitMode && selectedMethodId === String(m.id)
+                        ? 'bg-teal-600 border-teal-600 text-white'
+                        : 'bg-white border-gray-200 text-gray-600 hover:border-teal-300'
+                    }`}
+                  >
+                    {m.name}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => setSplitMode(true)}
+                  className={`px-3.5 h-9 rounded-lg text-xs font-bold border transition-colors ${
+                    splitMode ? 'bg-teal-600 border-teal-600 text-white' : 'bg-white border-gray-200 text-gray-600 hover:border-teal-300'
+                  }`}
+                >
+                  Split
+                </button>
+              </div>
+
+              {splitMode ? (
+                <div className="space-y-2">
+                  {paymentMethods.map((m: any) => {
+                    const gated = m.type === 'ACCOUNT_RECEIVABLE' && !selectedCustomerId;
+                    return (
+                      <div key={m.id}>
+                        <div className="flex items-center justify-between gap-2">
+                          <span className={`text-xs font-bold ${gated ? 'text-gray-400' : 'text-gray-700'}`}>
+                            {m.type === 'ACCOUNT_RECEIVABLE' ? 'On account' : m.name}
+                          </span>
+                          <input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            disabled={gated}
+                            value={splitAmounts[m.id] || ''}
+                            onChange={(e) => setSplitAmounts((prev) => ({ ...prev, [m.id]: e.target.value }))}
+                            placeholder="0.00"
+                            className="w-24 border border-gray-300 rounded-md p-1 text-sm text-black text-right disabled:bg-gray-100"
+                          />
+                        </div>
+                        {gated && <p className="text-[11px] text-amber-600 mt-0.5">Select or add a customer to leave a balance on account</p>}
+                      </div>
+                    );
+                  })}
+                  <div className={`flex items-center justify-between text-xs font-bold ${Math.abs(splitRemaining) <= 0.01 ? 'text-emerald-600' : 'text-rose-500'}`}>
+                    <span>{splitRemaining > 0.01 ? 'Remaining' : splitRemaining < -0.01 ? 'Over' : 'Balanced'}</span>
+                    <span>{formatQAR(Math.abs(splitRemaining))}</span>
+                  </div>
+                </div>
+              ) : selectedMethod && isCashMethod(selectedMethod) ? (
+                <div className="space-y-2">
+                  <div className="flex gap-1.5">
+                    {quickCashAmounts(totalAmount).map((amt) => (
+                      <button
+                        key={amt}
+                        type="button"
+                        onClick={() => setAmountReceived(String(amt))}
+                        className="flex-1 h-8 rounded-md text-xs font-bold bg-white border border-gray-200 text-gray-700 hover:border-teal-300"
+                      >
+                        {amt}
+                      </button>
+                    ))}
+                  </div>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={amountReceived}
+                    onChange={(e) => setAmountReceived(e.target.value)}
+                    placeholder="Amount received"
+                    className="w-full border border-gray-300 rounded-md p-2 text-sm text-black"
+                  />
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-gray-500">Change</span>
+                    <span className="font-bold text-gray-800">{formatQAR(change)}</span>
+                  </div>
+                </div>
+              ) : null}
 
               {submitError && <p className="text-rose-600 text-xs font-semibold">{submitError}</p>}
 
-              <div className="flex gap-2">
-                <button
-                  onClick={holdSale}
-                  disabled={cart.length === 0}
-                  className="px-4 h-12 rounded-lg font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 disabled:opacity-40 transition-colors"
-                >
-                  ⏸️ Hold
-                </button>
-                <button
-                  onClick={handleCompleteSale}
-                  disabled={isSubmitting || cart.length === 0}
-                  className="flex-1 h-12 rounded-lg font-bold text-white bg-teal-600 hover:bg-teal-700 disabled:bg-gray-300 transition-colors flex items-center justify-center gap-2"
-                >
-                  💳 {isSubmitting ? 'Processing...' : 'Charge Payment'}
-                </button>
-              </div>
+              <button
+                onClick={handleCharge}
+                disabled={!canCharge}
+                className="w-full h-12 rounded-lg font-bold text-white bg-teal-600 hover:bg-teal-700 disabled:bg-gray-300 transition-colors"
+              >
+                {isSubmitting ? 'Processing...' : splitMode ? `Split · ${formatQAR(totalAmount)}` : `Charge · ${formatQAR(totalAmount)}`}
+              </button>
             </div>
           </div>
         </div>

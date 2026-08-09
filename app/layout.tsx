@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "NEXYGEN ERP",
-  description: "NEXYGEN ERP — distribution management system",
+  title: "AXON ERP",
+  description: "AXON ERP — distribution management system",
 };
 
 export default function RootLayout({

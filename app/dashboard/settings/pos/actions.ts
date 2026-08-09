@@ -24,6 +24,8 @@ export async function updatePosSettings(formData: FormData) {
       posAutoPrintReceipt: formData.get('posAutoPrintReceipt') === 'on',
       posMaxDiscountPercent: maxDiscount ? Number(maxDiscount) : null,
       posRequireCashCount: formData.get('posRequireCashCount') === 'on',
+      kotAutoPrint: formData.get('kotAutoPrint') === 'on',
+      kotFooterText: (formData.get('kotFooterText') as string) || undefined,
     }),
   });
 

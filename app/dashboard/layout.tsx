@@ -11,22 +11,32 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   // The Fleet sidebar group only shows once one of its two apps (Vehicle Management or Job
   // Order) is actually installed — mirrors the App Store's "nothing until you install it" rule.
   const [showFleetMenu, setShowFleetMenu] = useState(false);
+  // Each CRM & Tools link is gated independently by its own module's install state (unlike
+  // Fleet's all-or-nothing gating, since Leads/Appointments/Tasks are fully independent of
+  // each other) — the group header shows once any one of the three is active.
+  const [showLeadsLink, setShowLeadsLink] = useState(false);
+  const [showAppointmentsLink, setShowAppointmentsLink] = useState(false);
+  const [showTasksLink, setShowTasksLink] = useState(false);
   useEffect(() => {
-    const checkFleetModules = async () => {
+    const checkModules = async () => {
       const token = getClientToken();
       try {
         const res = await fetch(`${API_BASE_URL}/app-modules`, { headers: { Authorization: `Bearer ${token}` } });
         if (!res.ok) return;
         const modules = await res.json();
-        const active = modules.some((m: any) => (m.key === 'vehicle-management' || m.key === 'job-order-management') && m.isActive);
-        setShowFleetMenu(active);
+        const isActive = (key: string) => modules.some((m: any) => m.key === key && m.isActive);
+        setShowFleetMenu(isActive('vehicle-management') || isActive('job-order-management'));
+        setShowLeadsLink(isActive('crm-leads'));
+        setShowAppointmentsLink(isActive('appointments'));
+        setShowTasksLink(isActive('todo-list'));
       } catch {
-        // Leave the menu hidden on failure — same "fail closed" behavior as any other
+        // Leave the menus hidden on failure — same "fail closed" behavior as any other
         // module-gated feature in this app.
       }
     };
-    checkFleetModules();
+    checkModules();
   }, []);
+  const showCrmMenu = showLeadsLink || showAppointmentsLink || showTasksLink;
 
   const isSalesSectionActive = pathname?.includes('/dashboard/orders') || pathname?.includes('/dashboard/deliveries') || pathname?.includes('/dashboard/quotations') || pathname?.includes('/dashboard/sales-invoices') || pathname?.includes('/dashboard/customers');
   const [isSalesOpen, setIsSalesOpen] = useState(isSalesSectionActive);
@@ -52,6 +62,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const isFleetSectionActive = pathname?.includes('/dashboard/vehicles') || pathname?.includes('/dashboard/job-orders');
   const [isFleetOpen, setIsFleetOpen] = useState(isFleetSectionActive);
 
+  const isCrmSectionActive = pathname?.includes('/dashboard/leads') || pathname?.includes('/dashboard/appointments') || pathname?.includes('/dashboard/tasks');
+  const [isCrmOpen, setIsCrmOpen] = useState(isCrmSectionActive);
+
   const isSettingsSectionActive = pathname?.includes('/dashboard/settings');
   const [isSettingsOpen, setIsSettingsOpen] = useState(isSettingsSectionActive);
 
@@ -67,8 +80,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Sidebar - Changed to bg-white so your text-gray-600 menus look great! */}
       <aside className="w-64 bg-white border-r border-gray-200 flex flex-col z-10">
         <div className="p-6">
-          <img src="/nexygen-logo.png" alt="Nexygen" className="w-full h-auto" />
-          <p className="text-xs text-gray-400 mt-2">NEXT GENERATION ERP</p>
+          <img src="/axon-logo.png" alt="AXON ERP" className="w-full h-auto" />
         </div>
 
         <nav className="flex-1 px-4 space-y-1 mt-2">
@@ -435,7 +447,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             <div
               className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                isAccountingOpen ? 'max-h-[40rem] opacity-100 mt-1' : 'max-h-0 opacity-0'
+                isAccountingOpen ? 'max-h-[44rem] opacity-100 mt-1' : 'max-h-0 opacity-0'
               }`}
             >
               <Link
@@ -471,7 +483,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   pathname === '/dashboard/accounting/ledger' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
                 }`}
               >
-                Ledger
+                Ledger / Account Inquiry
               </Link>
 
               <Link
@@ -489,7 +501,25 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   pathname === '/dashboard/accounting/reports' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
                 }`}
               >
-                P&amp;L / Balance Sheet
+                Financial Statements
+              </Link>
+
+              <Link
+                href="/dashboard/accounting/reports/outlet-pnl"
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/accounting/reports/outlet-pnl' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                }`}
+              >
+                Outlet P&amp;L
+              </Link>
+
+              <Link
+                href="/dashboard/accounting/reports/fx-revaluation"
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/accounting/reports/fx-revaluation' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                }`}
+              >
+                FX Revaluation
               </Link>
 
               <Link
@@ -722,6 +752,71 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
           )}
 
+          {/* CRM & TOOLS COLLAPSIBLE GROUP — each link hidden until its own module is installed */}
+          {showCrmMenu && (
+          <div className="pt-2">
+
+            <button
+              onClick={() => setIsCrmOpen(!isCrmOpen)}
+              className="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-teal-50 transition font-semibold text-gray-600 hover:text-teal-700"
+            >
+              <div className="flex items-center gap-3">
+                <svg className={iconStyle} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-2.13a4 4 0 10-4-4 4 4 0 004 4zm6 0a4 4 0 10-4-4" />
+                </svg>
+                <span>CRM & Tools</span>
+              </div>
+
+              <svg
+                className={`w-4 h-4 transition-transform duration-300 ${isCrmOpen ? 'rotate-180 text-teal-600' : 'text-gray-400'}`}
+                fill="none" viewBox="0 0 24 24" stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            <div
+              className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                isCrmOpen ? 'max-h-48 opacity-100 mt-1' : 'max-h-0 opacity-0'
+              }`}
+            >
+              {showLeadsLink && (
+                <Link
+                  href="/dashboard/leads"
+                  className={`block px-4 py-2 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm pl-[3.25rem] ${
+                    pathname?.startsWith('/dashboard/leads') ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                  }`}
+                >
+                  Leads
+                </Link>
+              )}
+
+              {showAppointmentsLink && (
+                <Link
+                  href="/dashboard/appointments"
+                  className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm pl-[3.25rem] ${
+                    pathname?.startsWith('/dashboard/appointments') ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                  }`}
+                >
+                  Appointments
+                </Link>
+              )}
+
+              {showTasksLink && (
+                <Link
+                  href="/dashboard/tasks"
+                  className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm pl-[3.25rem] ${
+                    pathname?.startsWith('/dashboard/tasks') ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                  }`}
+                >
+                  Tasks
+                </Link>
+              )}
+            </div>
+
+          </div>
+          )}
+
           <Link href="/dashboard/merchandisers" className={`${linkStyle} mt-1`}>
             <svg className={iconStyle} fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -757,7 +852,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             <div
               className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                isSettingsOpen ? 'max-h-80 opacity-100 mt-1' : 'max-h-0 opacity-0'
+                isSettingsOpen ? 'max-h-[40rem] opacity-100 mt-1' : 'max-h-0 opacity-0'
               }`}
             >
               <Link
@@ -785,6 +880,51 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 }`}
               >
                 Account Mappings
+              </Link>
+
+              <Link
+                href="/dashboard/settings/taxes"
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/settings/taxes' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                }`}
+              >
+                Taxes
+              </Link>
+
+              <Link
+                href="/dashboard/settings/payment-terms"
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/settings/payment-terms' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                }`}
+              >
+                Payment Terms
+              </Link>
+
+              <Link
+                href="/dashboard/settings/cost-centers"
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/settings/cost-centers' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                }`}
+              >
+                Cost Centers
+              </Link>
+
+              <Link
+                href="/dashboard/settings/fiscal-years"
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/settings/fiscal-years' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                }`}
+              >
+                Fiscal Years
+              </Link>
+
+              <Link
+                href="/dashboard/settings/currencies"
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/settings/currencies' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                }`}
+              >
+                Currencies
               </Link>
 
               <Link

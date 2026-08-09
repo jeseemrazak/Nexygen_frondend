@@ -32,6 +32,9 @@ export type CompanySettings = {
   posAutoPrintReceipt: boolean;
   posMaxDiscountPercent: number | null;
   posRequireCashCount: boolean;
+
+  kotAutoPrint: boolean;
+  kotFooterText: string | null;
 };
 
 // Server-side fetch of the single company-settings row — used by every print page (letterhead)

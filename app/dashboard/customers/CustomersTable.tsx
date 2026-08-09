@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { API_BASE_URL, getClientToken, safeJson } from '@/lib/config';
 
 type Customer = {
@@ -131,7 +132,10 @@ export default function CustomersTable({ initialCustomers }: { initialCustomers:
               <td className="py-4 px-6 text-sm text-gray-500">{customer.phone || <Empty />}</td>
               <td className="py-4 px-6 text-sm text-gray-500">{customer.email || <Empty />}</td>
               <td className="py-4 px-6 text-sm text-gray-500">{customer.address || <Empty />}</td>
-              <td className="py-4 px-6 text-right">
+              <td className="py-4 px-6 text-right space-x-3">
+                <Link href={`/dashboard/customers/${customer.id}`} className="text-teal-600 hover:text-teal-800 font-bold text-xs underline">
+                  View
+                </Link>
                 <button onClick={() => startEdit(customer)} className="text-teal-600 hover:text-teal-800 font-bold text-xs underline">
                   Edit
                 </button>

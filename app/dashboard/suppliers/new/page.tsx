@@ -1,12 +1,22 @@
+import { cookies } from 'next/headers';
 import { createSupplier } from './actions';
 import Link from 'next/link';
+import { API_BASE_URL } from '@/lib/config';
 
-export default function NewSupplierPage({
+export default async function NewSupplierPage({
   searchParams,
 }: {
   searchParams: { error?: string };
 }) {
   const hasError = searchParams.error === 'true';
+
+  const cookieStore = await cookies();
+  const token = cookieStore.get('nexygen_token')?.value;
+  const termsRes = await fetch(`${API_BASE_URL}/accounting/payment-terms?activeOnly=true`, {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: 'no-store',
+  });
+  const paymentTerms = termsRes.ok ? await termsRes.json() : [];
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
@@ -89,6 +99,22 @@ export default function NewSupplierPage({
               placeholder="e.g., Industrial Area, Doha"
               className="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-teal-500 focus:border-teal-500 text-black"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-bold text-gray-700 mb-2">
+              Payment Term <span className="text-gray-400 font-normal">(Optional)</span>
+            </label>
+            <select
+              name="paymentTermId"
+              defaultValue=""
+              className="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-teal-500 focus:border-teal-500 text-black"
+            >
+              <option value="">-- None --</option>
+              {paymentTerms.map((t: any) => (
+                <option key={t.id} value={t.id}>{t.name} ({t.days} days)</option>
+              ))}
+            </select>
           </div>
 
           <div className="pt-4 border-t border-gray-100">

@@ -2,13 +2,14 @@ import { cookies } from 'next/headers';
 import Link from 'next/link';
 import Form from 'next/form';
 import ImportProductsButton from './ImportProductsButton'; // 🔥 Import the new client component!
+import ArchiveProductButton from './ArchiveProductButton';
 import { API_BASE_URL } from '@/lib/config';
 
-async function getProducts() {
+async function getProducts(showArchived: boolean) {
   const cookieStore = await cookies();
   const token = cookieStore.get('nexygen_token')?.value;
 
-  const url = `${API_BASE_URL}/products`;
+  const url = `${API_BASE_URL}/products${showArchived ? '' : '?activeOnly=true'}`;
 
   try {
     const res = await fetch(url, {
@@ -22,15 +23,16 @@ async function getProducts() {
   }
 }
 
-export default async function ProductCatalogPage({ 
-  searchParams 
-}: { 
-  searchParams: Promise<{ q?: string }> 
+export default async function ProductCatalogPage({
+  searchParams
+}: {
+  searchParams: Promise<{ q?: string; showArchived?: string }>
 }) {
   const resolvedParams = await searchParams;
   const searchQuery = resolvedParams.q || '';
+  const showArchived = resolvedParams.showArchived === 'true';
 
-  const products = await getProducts();
+  const products = await getProducts(showArchived);
 
   const filteredProducts = products.filter((p: any) => {
     if (!searchQuery) return true;
@@ -85,6 +87,13 @@ export default async function ProductCatalogPage({
           </Link>
 
           <Link
+            href={`/dashboard/products?${showArchived ? '' : 'showArchived=true'}${searchQuery ? `${showArchived ? '' : '&'}q=${encodeURIComponent(searchQuery)}` : ''}`}
+            className="text-gray-500 hover:text-gray-800 text-sm font-semibold underline whitespace-nowrap"
+          >
+            {showArchived ? 'Show Active' : 'Show Archived'}
+          </Link>
+
+          <Link
             href="/dashboard/products/new"
             className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-6 rounded-md shadow-sm transition whitespace-nowrap w-full md:w-auto text-center"
           >
@@ -128,6 +137,9 @@ export default async function ProductCatalogPage({
                       {product.name}
                       {product.type === 'SERVICE' && (
                         <span className="ml-2 bg-purple-50 text-purple-700 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full align-middle">Service</span>
+                      )}
+                      {product.isActive === false && (
+                        <span className="ml-2 bg-gray-200 text-gray-600 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full align-middle">Archived</span>
                       )}
                     </td>
 
@@ -173,12 +185,15 @@ export default async function ProductCatalogPage({
                     </td>
                     
                     <td className="py-4 px-6 text-right">
-                      <Link 
-                        href={`/dashboard/products/${product.id}/edit`} 
-                        className="text-teal-600 hover:text-teal-800 font-semibold text-sm underline"
-                      >
-                        Edit Details
-                      </Link>
+                      <div className="flex items-center justify-end gap-4">
+                        <Link
+                          href={`/dashboard/products/${product.id}/edit`}
+                          className="text-teal-600 hover:text-teal-800 font-semibold text-sm underline"
+                        >
+                          Edit Details
+                        </Link>
+                        <ArchiveProductButton productId={product.id} isActive={product.isActive !== false} />
+                      </div>
                     </td>
                   </tr>
                 );

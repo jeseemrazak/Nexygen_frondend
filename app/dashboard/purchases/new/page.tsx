@@ -16,6 +16,9 @@ export default function NewPurchaseOrderPage() {
   const [productSearch, setProductSearch] = useState('');
   const [cart, setCart] = useState<any[]>([]);
 
+  const [taxes, setTaxes] = useState<any[]>([]);
+  const [taxId, setTaxId] = useState('');
+
   const [showModal, setShowModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -32,6 +35,13 @@ export default function NewPurchaseOrderPage() {
       ]);
       if (supRes.ok) setSuppliers(await supRes.json());
       if (whRes.ok) setWarehouses(await whRes.json());
+      const taxRes = await fetch(`${API_BASE_URL}/accounting/taxes?activeOnly=true`, { headers });
+      if (taxRes.ok) {
+        const taxData = await taxRes.json();
+        setTaxes(taxData);
+        const def = taxData.find((t: any) => t.isDefault);
+        if (def) setTaxId(String(def.id));
+      }
       const prodRes = await fetch(`${API_BASE_URL}/products`, { headers });
       if (prodRes.ok) {
         const all = await prodRes.json();
@@ -69,7 +79,10 @@ export default function NewPurchaseOrderPage() {
     setProductSearch('');
   };
 
-  const totalAmount = cart.reduce((sum, item) => sum + (item.unitCost * item.quantityOrdered), 0);
+  const subtotal = cart.reduce((sum, item) => sum + (item.unitCost * item.quantityOrdered), 0);
+  const selectedTax = taxes.find((t: any) => String(t.id) === taxId);
+  const taxAmount = selectedTax ? Math.round(subtotal * (selectedTax.rate / 100) * 100) / 100 : 0;
+  const totalAmount = subtotal + taxAmount;
 
   const handleInitialSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,6 +109,7 @@ export default function NewPurchaseOrderPage() {
           supplierId: Number(selectedSupplier),
           warehouseId: Number(selectedWarehouse),
           reference: reference || undefined,
+          taxId: selectedTax ? selectedTax.id : undefined,
           items,
         }),
       });
@@ -182,6 +196,18 @@ export default function NewPurchaseOrderPage() {
               className="w-full border border-gray-300 rounded-md p-3 text-black"
             />
           </div>
+
+          {taxes.length > 0 && (
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">Tax</label>
+              <select value={taxId} onChange={(e) => setTaxId(e.target.value)} className="w-full border border-gray-300 rounded-md p-3 text-black bg-white">
+                <option value="">No tax</option>
+                {taxes.map((t: any) => (
+                  <option key={t.id} value={t.id}>{t.name} ({t.rate}%)</option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 relative">
@@ -247,6 +273,12 @@ export default function NewPurchaseOrderPage() {
 
             <div className="p-6 bg-gray-50 border-t border-gray-200 flex justify-between items-center">
               <div>
+                {taxAmount > 0 && (
+                  <p className="text-sm text-gray-600 flex justify-between gap-8"><span>Subtotal</span> <span>{formatQAR(subtotal)}</span></p>
+                )}
+                {taxAmount > 0 && (
+                  <p className="text-sm text-gray-600 flex justify-between gap-8"><span>Tax ({selectedTax?.name})</span> <span className="font-semibold">{formatQAR(taxAmount)}</span></p>
+                )}
                 <p className="text-sm text-gray-500 uppercase tracking-wide">Total Purchase Value</p>
                 <p className="text-3xl font-bold text-teal-700 mt-1">{formatQAR(totalAmount)}</p>
               </div>

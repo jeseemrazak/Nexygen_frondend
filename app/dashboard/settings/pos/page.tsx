@@ -120,6 +120,26 @@ export default async function PosSettingsPage({ searchParams }: { searchParams: 
         </div>
 
         <div>
+          <h2 className="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Kitchen Printing</h2>
+          <div className="space-y-4">
+            <label className="flex items-center gap-2 text-sm text-gray-700 font-medium">
+              <input type="checkbox" name="kotAutoPrint" defaultChecked={settings.kotAutoPrint} className="w-4 h-4" />
+              Automatically open the kitchen ticket for printing when items are sent to the kitchen
+            </label>
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">Kitchen Ticket Footer Text</label>
+              <input
+                type="text"
+                name="kotFooterText"
+                defaultValue={settings.kotFooterText || ''}
+                placeholder="e.g. Allergy? Ask your server."
+                className="w-full border border-gray-300 rounded-md px-4 py-3 text-black"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div>
           <h2 className="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Cash Drawer</h2>
           <label className="flex items-center gap-2 text-sm text-gray-700 font-medium">
             <input type="checkbox" name="posRequireCashCount" defaultChecked={settings.posRequireCashCount} className="w-4 h-4" />

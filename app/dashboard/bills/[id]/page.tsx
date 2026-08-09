@@ -25,6 +25,7 @@ export default function BillDetailsPage() {
   const [paymentJournalId, setPaymentJournalId] = useState('');
   const [isRecordingPayment, setIsRecordingPayment] = useState(false);
   const [paymentError, setPaymentError] = useState('');
+  const [isCancelling, setIsCancelling] = useState(false);
 
   useEffect(() => {
     fetchBillDetails();
@@ -92,8 +93,32 @@ export default function BillDetailsPage() {
     }
   };
 
+  const handleCancel = async () => {
+    if (!bill || !confirm('Cancel this bill? This will reverse its accounting entries and cannot be undone.')) return;
+    setIsCancelling(true);
+    const token = getClientToken();
+    try {
+      const res = await fetch(`${API_BASE_URL}/bills/${bill.id}/cancel`, {
+        method: 'PATCH',
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (res.ok) {
+        await fetchBillDetails();
+      } else {
+        const errData = await res.json();
+        alert(errData.message || 'Failed to cancel bill.');
+      }
+    } catch (error) {
+      alert('Network error while cancelling bill.');
+    } finally {
+      setIsCancelling(false);
+    }
+  };
+
   if (loading) return <div className="p-8 text-center text-slate-500 font-bold">Loading Bill...</div>;
   if (!bill) return <div className="p-8 text-center text-rose-500 font-bold">Bill not found.</div>;
+
+  const canCancel = !bill.cancelledAt && !(bill.amountPaid > 0);
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 p-6 font-sans">
@@ -105,13 +130,19 @@ export default function BillDetailsPage() {
         </Link>
         <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3 flex-wrap">
           {bill.billNumber || `Bill #${bill.id}`}
-          <span className={`text-xs font-bold px-3 py-1 rounded-full ring-1 ring-inset ${
-            bill.paymentStatus === 'PAID' ? 'bg-emerald-50 text-emerald-700 ring-emerald-600/20' :
-            bill.paymentStatus === 'PARTIAL' ? 'bg-amber-50 text-amber-700 ring-amber-600/20' :
-            'bg-rose-50 text-rose-700 ring-rose-600/20'
-          }`}>
-            {bill.paymentStatus || 'UNPAID'}
-          </span>
+          {bill.cancelledAt ? (
+            <span className="text-xs font-bold px-3 py-1 rounded-full ring-1 ring-inset bg-slate-100 text-slate-600 ring-slate-300">
+              CANCELLED
+            </span>
+          ) : (
+            <span className={`text-xs font-bold px-3 py-1 rounded-full ring-1 ring-inset ${
+              bill.paymentStatus === 'PAID' ? 'bg-emerald-50 text-emerald-700 ring-emerald-600/20' :
+              bill.paymentStatus === 'PARTIAL' ? 'bg-amber-50 text-amber-700 ring-amber-600/20' :
+              'bg-rose-50 text-rose-700 ring-rose-600/20'
+            }`}>
+              {bill.paymentStatus || 'UNPAID'}
+            </span>
+          )}
         </h1>
 
         <div className="flex flex-wrap gap-x-6 gap-y-2 mt-4 text-sm">
@@ -130,6 +161,15 @@ export default function BillDetailsPage() {
           >
             🖨️ Print
           </Link>
+          {canCancel && (
+            <button
+              onClick={handleCancel}
+              disabled={isCancelling}
+              className="bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold py-1.5 px-4 rounded-lg border border-rose-200 text-xs transition-all disabled:opacity-50"
+            >
+              {isCancelling ? 'Cancelling...' : '✕ Cancel Bill'}
+            </button>
+          )}
         </div>
       </div>
 
@@ -207,7 +247,9 @@ export default function BillDetailsPage() {
             )}
           </div>
 
-          {bill.paymentStatus !== 'PAID' && (
+          {bill.cancelledAt ? (
+            <p className="text-slate-400 text-sm italic">This bill is cancelled — payments cannot be recorded.</p>
+          ) : bill.paymentStatus !== 'PAID' && (
             <form onSubmit={handleRecordPayment} className="space-y-3">
               {paymentError && (
                 <p className="text-rose-600 text-sm font-semibold">{paymentError}</p>

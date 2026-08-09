@@ -30,6 +30,8 @@ export default function NewSalesOrderPage() {
 
   const [discountType, setDiscountType] = useState<DiscountType>('');
   const [discountValue, setDiscountValue] = useState('');
+  const [taxes, setTaxes] = useState<any[]>([]);
+  const [taxId, setTaxId] = useState('');
 
   const [showModal, setShowModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -45,6 +47,13 @@ export default function NewSalesOrderPage() {
       if (whRes.ok) setWarehouses(await whRes.json());
       const custRes = await fetch(`${API_BASE_URL}/customers`, { headers });
       if (custRes.ok) setCustomers(await custRes.json());
+      const taxRes = await fetch(`${API_BASE_URL}/accounting/taxes?activeOnly=true`, { headers });
+      if (taxRes.ok) {
+        const taxData = await taxRes.json();
+        setTaxes(taxData);
+        const def = taxData.find((t: any) => t.isDefault);
+        if (def) setTaxId(String(def.id));
+      }
       const settingsRes = await fetch(`${API_BASE_URL}/settings/company`, { headers });
       if (settingsRes.ok) {
         const settings = await settingsRes.json();
@@ -95,7 +104,10 @@ export default function NewSalesOrderPage() {
   }));
   const subtotal = cartWithNet.reduce((sum, item) => sum + item.netPrice * item.quantity, 0);
   const globalDiscountAmount = subtotal - applyDiscount(subtotal, discountType, Number(discountValue) || 0);
-  const totalAmount = subtotal - globalDiscountAmount;
+  const netAfterDiscount = subtotal - globalDiscountAmount;
+  const selectedTax = taxes.find((t: any) => String(t.id) === taxId);
+  const taxAmount = selectedTax ? Math.round(netAfterDiscount * (selectedTax.rate / 100) * 100) / 100 : 0;
+  const totalAmount = netAfterDiscount + taxAmount;
 
   const handleInitialSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -128,6 +140,7 @@ export default function NewSalesOrderPage() {
         termsAndConditions: termsAndConditions || undefined,
         discountType: discountType || undefined,
         discountValue: discountValue ? Number(discountValue) : undefined,
+        taxId: selectedTax ? selectedTax.id : undefined,
         items,
       }),
     });
@@ -242,6 +255,18 @@ export default function NewSalesOrderPage() {
             </div>
           </div>
 
+          {taxes.length > 0 && (
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">Tax</label>
+              <select value={taxId} onChange={(e) => setTaxId(e.target.value)} className="w-full border border-gray-300 rounded-md p-3 text-black bg-white">
+                <option value="">No tax</option>
+                {taxes.map((t: any) => (
+                  <option key={t.id} value={t.id}>{t.name} ({t.rate}%)</option>
+                ))}
+              </select>
+            </div>
+          )}
+
           <div className="md:col-span-2">
             <label className="block text-sm font-bold text-gray-700 mb-2">Terms &amp; Conditions</label>
             <textarea
@@ -343,6 +368,9 @@ export default function NewSalesOrderPage() {
                 <p className="text-sm text-gray-600 flex justify-between gap-8"><span>Subtotal</span> <span className="font-semibold">{formatQAR(subtotal)}</span></p>
                 {globalDiscountAmount > 0 && (
                   <p className="text-sm text-rose-600 flex justify-between gap-8"><span>Discount</span> <span className="font-semibold">-{formatQAR(globalDiscountAmount)}</span></p>
+                )}
+                {taxAmount > 0 && (
+                  <p className="text-sm text-gray-600 flex justify-between gap-8"><span>Tax ({selectedTax?.name})</span> <span className="font-semibold">{formatQAR(taxAmount)}</span></p>
                 )}
                 <p className="text-sm text-gray-500 uppercase tracking-wide pt-1">Total Order Value</p>
                 <p className="text-3xl font-bold text-teal-700">{formatQAR(totalAmount)}</p>

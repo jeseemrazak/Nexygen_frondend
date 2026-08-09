@@ -8,18 +8,24 @@ import { API_BASE_URL, getClientToken } from '@/lib/config';
 export default function NewExpensePage() {
   const router = useRouter();
   const [categories, setCategories] = useState<any[]>([]);
+  const [costCenters, setCostCenters] = useState<any[]>([]);
   const [categoryId, setCategoryId] = useState('');
   const [payeeName, setPayeeName] = useState('');
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
+  const [costCenterId, setCostCenterId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
     const load = async () => {
       const token = getClientToken();
-      const res = await fetch(`${API_BASE_URL}/expense-categories?activeOnly=true`, { headers: { 'Authorization': `Bearer ${token}` } });
-      if (res.ok) setCategories(await res.json());
+      const [catRes, ccRes] = await Promise.all([
+        fetch(`${API_BASE_URL}/expense-categories?activeOnly=true`, { headers: { 'Authorization': `Bearer ${token}` } }),
+        fetch(`${API_BASE_URL}/accounting/cost-centers?activeOnly=true`, { headers: { 'Authorization': `Bearer ${token}` } }),
+      ]);
+      if (catRes.ok) setCategories(await catRes.json());
+      if (ccRes.ok) setCostCenters(await ccRes.json());
     };
     load();
   }, []);
@@ -41,6 +47,7 @@ export default function NewExpensePage() {
         payeeName: payeeName.trim(),
         description: description.trim() || undefined,
         amount: Number(amount),
+        costCenterId: costCenterId ? Number(costCenterId) : undefined,
       }),
     });
     if (res.ok) {
@@ -112,6 +119,18 @@ export default function NewExpensePage() {
             onChange={(e) => setAmount(e.target.value)}
             className="w-full border border-gray-300 rounded-md p-3 text-black"
           />
+        </div>
+
+        <div>
+          <label className="block text-sm font-bold text-gray-700 mb-2">Cost Center</label>
+          <select
+            value={costCenterId}
+            onChange={(e) => setCostCenterId(e.target.value)}
+            className="w-full border border-gray-300 rounded-md p-3 text-black bg-white"
+          >
+            <option value="">-- None --</option>
+            {costCenters.map((c: any) => <option key={c.id} value={c.id}>{c.name} ({c.code})</option>)}
+          </select>
         </div>
 
         {error && <p className="text-rose-600 text-sm font-semibold">{error}</p>}

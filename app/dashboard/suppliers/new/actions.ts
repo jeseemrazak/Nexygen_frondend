@@ -11,6 +11,7 @@ export async function createSupplier(formData: FormData) {
   const phone = formData.get('phone') as string;
   const email = formData.get('email') as string;
   const address = formData.get('address') as string;
+  const paymentTermId = formData.get('paymentTermId') as string;
 
   const cookieStore = await cookies();
   const token = cookieStore.get('nexygen_token')?.value;
@@ -27,6 +28,7 @@ export async function createSupplier(formData: FormData) {
       phone: phone || undefined,
       email: email || undefined,
       address: address || undefined,
+      paymentTermId: paymentTermId ? Number(paymentTermId) : undefined,
     }),
   });
 

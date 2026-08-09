@@ -26,12 +26,13 @@ function JournalEntriesPageInner() {
 
   const [entries, setEntries] = useState<any[]>([]);
   const [accounts, setAccounts] = useState<any[]>([]);
+  const [costCenters, setCostCenters] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [memo, setMemo] = useState('');
   const [lines, setLines] = useState<any[]>([
-    { accountId: '', debit: '', credit: '', description: '' },
-    { accountId: '', debit: '', credit: '', description: '' },
+    { accountId: '', debit: '', credit: '', description: '', costCenterId: '' },
+    { accountId: '', debit: '', credit: '', description: '', costCenterId: '' },
   ]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -40,6 +41,7 @@ function JournalEntriesPageInner() {
 
   useEffect(() => {
     fetchAccounts();
+    fetchCostCenters();
   }, []);
 
   useEffect(() => {
@@ -51,6 +53,12 @@ function JournalEntriesPageInner() {
     const token = getClientToken();
     const res = await fetch(`${API_BASE_URL}/accounting/accounts?activeOnly=true`, { headers: { 'Authorization': `Bearer ${token}` } });
     if (res.ok) setAccounts(await res.json());
+  };
+
+  const fetchCostCenters = async () => {
+    const token = getClientToken();
+    const res = await fetch(`${API_BASE_URL}/accounting/cost-centers?activeOnly=true`, { headers: { 'Authorization': `Bearer ${token}` } });
+    if (res.ok) setCostCenters(await res.json());
   };
 
   const fetchEntries = async () => {
@@ -102,6 +110,7 @@ function JournalEntriesPageInner() {
             debit: Number(l.debit) || 0,
             credit: Number(l.credit) || 0,
             description: l.description || undefined,
+            costCenterId: l.costCenterId ? Number(l.costCenterId) : undefined,
           })),
       }),
     });
@@ -174,6 +183,7 @@ function JournalEntriesPageInner() {
                 <th className="py-2 pr-2">Description</th>
                 <th className="py-2 pr-2 w-32">Debit</th>
                 <th className="py-2 pr-2 w-32">Credit</th>
+                <th className="py-2 pr-2 w-36">Cost Center</th>
                 <th className="py-2 w-16"></th>
               </tr>
             </thead>
@@ -195,6 +205,12 @@ function JournalEntriesPageInner() {
                   <td className="py-1 pr-2">
                     <input type="number" min="0" step="0.01" value={line.credit} onChange={(e) => updateLine(index, 'credit', e.target.value)} className="w-full border border-gray-300 rounded p-2 text-black text-sm" />
                   </td>
+                  <td className="py-1 pr-2">
+                    <select value={line.costCenterId} onChange={(e) => updateLine(index, 'costCenterId', e.target.value)} className="w-full border border-gray-300 rounded p-2 text-black bg-white text-sm">
+                      <option value="">--</option>
+                      {costCenters.map((c: any) => <option key={c.id} value={c.id}>{c.code}</option>)}
+                    </select>
+                  </td>
                   <td className="py-1">
                     {lines.length > 2 && (
                       <button type="button" onClick={() => setLines(lines.filter((_, i) => i !== index))} className="text-red-500 text-xs font-bold hover:underline">Remove</button>
@@ -205,7 +221,7 @@ function JournalEntriesPageInner() {
             </tbody>
           </table>
 
-          <button type="button" onClick={() => setLines([...lines, { accountId: '', debit: '', credit: '', description: '' }])} className="text-teal-600 text-sm font-bold hover:underline">
+          <button type="button" onClick={() => setLines([...lines, { accountId: '', debit: '', credit: '', description: '', costCenterId: '' }])} className="text-teal-600 text-sm font-bold hover:underline">
             + Add Line
           </button>
 

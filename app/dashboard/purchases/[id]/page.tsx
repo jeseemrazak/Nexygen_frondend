@@ -19,6 +19,54 @@ async function getPurchaseOrder(id: string) {
   }
 }
 
+async function getActiveTaxes() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('nexygen_token')?.value;
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/accounting/taxes?activeOnly=true`, {
+      headers: { 'Authorization': `Bearer ${token}` },
+      cache: 'no-store',
+    });
+    if (!res.ok) return [];
+    return await res.json();
+  } catch (error) {
+    return [];
+  }
+}
+
+async function getActivePaymentTerms() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('nexygen_token')?.value;
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/accounting/payment-terms?activeOnly=true`, {
+      headers: { 'Authorization': `Bearer ${token}` },
+      cache: 'no-store',
+    });
+    if (!res.ok) return [];
+    return await res.json();
+  } catch (error) {
+    return [];
+  }
+}
+
+async function getActiveCurrencies() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('nexygen_token')?.value;
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/accounting/currencies?activeOnly=true`, {
+      headers: { 'Authorization': `Bearer ${token}` },
+      cache: 'no-store',
+    });
+    if (!res.ok) return [];
+    return await res.json();
+  } catch (error) {
+    return [];
+  }
+}
+
 const formatQAR = (amount: number) => new Intl.NumberFormat('en-QA', { style: 'currency', currency: 'QAR' }).format(amount);
 const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
@@ -37,7 +85,7 @@ export default async function PurchaseOrderDetailPage({
 }) {
   const resolvedParams = await params;
   const resolvedSearchParams = await searchParams;
-  const po = await getPurchaseOrder(resolvedParams.id);
+  const [po, taxes, paymentTerms, currencies] = await Promise.all([getPurchaseOrder(resolvedParams.id), getActiveTaxes(), getActivePaymentTerms(), getActiveCurrencies()]);
   const hasError = resolvedSearchParams.error === 'true';
 
   if (!po) return <div className="p-8 text-center text-rose-500 font-bold">Purchase order not found.</div>;
@@ -212,6 +260,39 @@ export default async function PurchaseOrderDetailPage({
 
           <form action={createBill} className="p-6 space-y-5">
             <input type="hidden" name="poId" value={po.id} />
+            {taxes.length > 0 && (
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Tax</label>
+                <select name="taxId" defaultValue={po.taxId ? String(po.taxId) : ''} className="border border-slate-300 rounded-md p-2 text-sm text-black bg-white">
+                  <option value="">No tax</option>
+                  {taxes.map((t: any) => (
+                    <option key={t.id} value={t.id}>{t.name} ({t.rate}%)</option>
+                  ))}
+                </select>
+              </div>
+            )}
+            {paymentTerms.length > 0 && (
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Payment Term</label>
+                <select name="paymentTermId" defaultValue={po.supplier?.paymentTermId ? String(po.supplier.paymentTermId) : ''} className="border border-slate-300 rounded-md p-2 text-sm text-black bg-white">
+                  <option value="">No payment term</option>
+                  {paymentTerms.map((t: any) => (
+                    <option key={t.id} value={t.id}>{t.name} ({t.days} days)</option>
+                  ))}
+                </select>
+              </div>
+            )}
+            {currencies.length > 0 && (
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Currency</label>
+                <select name="currencyId" defaultValue="" className="border border-slate-300 rounded-md p-2 text-sm text-black bg-white">
+                  <option value="">QAR only</option>
+                  {currencies.map((c: any) => (
+                    <option key={c.id} value={c.id}>Quote in {c.code}</option>
+                  ))}
+                </select>
+              </div>
+            )}
             {pendingBillItems.map((item: any) => {
               const remaining = item.quantityOrdered - item.quantityBilled;
               return (

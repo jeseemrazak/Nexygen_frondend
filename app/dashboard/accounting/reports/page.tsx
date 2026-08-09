@@ -15,16 +15,20 @@ async function getReports(from?: string, to?: string) {
   if (to) bsQuery.set('asOf', to);
 
   try {
-    const [plRes, bsRes] = await Promise.all([
+    const [plRes, bsRes, cfRes] = await Promise.all([
       fetch(`${API_BASE_URL}/accounting/reports/profit-loss?${plQuery.toString()}`, { headers, cache: 'no-store' }),
       fetch(`${API_BASE_URL}/accounting/reports/balance-sheet?${bsQuery.toString()}`, { headers, cache: 'no-store' }),
+      from && to
+        ? fetch(`${API_BASE_URL}/accounting/reports/cash-flow?from=${from}&to=${to}`, { headers, cache: 'no-store' })
+        : Promise.resolve(null),
     ]);
     return {
       pl: plRes.ok ? await plRes.json() : null,
       bs: bsRes.ok ? await bsRes.json() : null,
+      cf: cfRes && cfRes.ok ? await cfRes.json() : null,
     };
   } catch (error) {
-    return { pl: null, bs: null };
+    return { pl: null, bs: null, cf: null };
   }
 }
 
@@ -32,7 +36,7 @@ const formatQAR = (amount: number) => new Intl.NumberFormat('en-QA', { style: 'c
 
 export default async function ReportsPage({ searchParams }: { searchParams: Promise<{ from?: string; to?: string }> }) {
   const resolvedParams = await searchParams;
-  const { pl, bs } = await getReports(resolvedParams.from, resolvedParams.to);
+  const { pl, bs, cf } = await getReports(resolvedParams.from, resolvedParams.to);
   const rangeQuery = new URLSearchParams();
   if (resolvedParams.from) rangeQuery.set('from', resolvedParams.from);
   if (resolvedParams.to) rangeQuery.set('to', resolvedParams.to);
@@ -42,8 +46,8 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
     <div className="max-w-5xl mx-auto space-y-6">
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 flex flex-col md:flex-row justify-between md:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Financial Reports</h1>
-          <p className="text-sm text-gray-500 mt-1">Profit &amp; Loss and Balance Sheet.</p>
+          <h1 className="text-2xl font-bold text-gray-800">Financial Statements</h1>
+          <p className="text-sm text-gray-500 mt-1">Profit &amp; Loss, Balance Sheet, and Cash Flow Statement. Set a From/To range to also generate Cash Flow.</p>
         </div>
         <form action="/dashboard/accounting/reports" className="flex items-center gap-3">
           <input type="date" name="from" defaultValue={resolvedParams.from || ''} placeholder="From" className="border border-gray-300 rounded-md px-3 py-2 text-sm text-black" />
@@ -136,6 +140,45 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
                 {formatQAR(bs?.totalAssets || 0)} = {formatQAR((bs?.totalLiabilities || 0) + (bs?.totalEquity || 0))}
               </span>
             </div>
+          </div>
+        </div>
+
+        {/* CASH FLOW STATEMENT */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden lg:col-span-2">
+          <div className="bg-gray-50 border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+            <h2 className="text-lg font-bold text-gray-800">Cash Flow Statement</h2>
+            {resolvedParams.from && resolvedParams.to && (
+              <Link href={`/dashboard/accounting/reports/cash-flow/print?${rangeQuery.toString()}`} className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-1.5 px-3 rounded-md text-xs">🖨️ Print</Link>
+            )}
+          </div>
+          <div className="p-6">
+            {!resolvedParams.from || !resolvedParams.to ? (
+              <p className="text-sm text-gray-400 italic">Set a From and To date above to generate the Cash Flow Statement for that period.</p>
+            ) : !cf ? (
+              <p className="text-sm text-gray-400 italic">No data for this range.</p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <p className="text-xs font-bold text-gray-500 uppercase mb-2">Operating</p>
+                  <div className="flex justify-between text-sm text-black py-1"><span>Net Income</span><span className="font-bold">{formatQAR(cf.netProfit)}</span></div>
+                  <div className="flex justify-between text-sm text-black py-1"><span>Working capital changes</span><span className="font-bold">{formatQAR(cf.netCashFromOperating - cf.netProfit)}</span></div>
+                  <div className="flex justify-between text-sm font-black border-t border-gray-100 mt-2 pt-2"><span>Net Operating</span><span>{formatQAR(cf.netCashFromOperating)}</span></div>
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-gray-500 uppercase mb-2">Investing</p>
+                  <div className="flex justify-between text-sm font-black py-1"><span>Net Investing</span><span>{formatQAR(cf.netCashFromInvesting)}</span></div>
+                  <p className="text-xs font-bold text-gray-500 uppercase mb-2 mt-4">Financing</p>
+                  <div className="flex justify-between text-sm font-black py-1"><span>Net Financing</span><span>{formatQAR(cf.netCashFromFinancing)}</span></div>
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-gray-500 uppercase mb-2">Cash Reconciliation</p>
+                  <div className="flex justify-between text-sm text-black py-1"><span>Opening Cash &amp; Bank</span><span>{formatQAR(cf.openingCash)}</span></div>
+                  <div className="flex justify-between text-sm text-black py-1"><span>Closing Cash &amp; Bank</span><span>{formatQAR(cf.closingCash)}</span></div>
+                  <div className="flex justify-between text-sm font-black border-t border-gray-100 mt-2 pt-2"><span>Net Change in Cash</span><span>{formatQAR(cf.netChangeInCash)}</span></div>
+                  <p className={`text-xs font-bold mt-2 ${cf.reconciles ? 'text-emerald-600' : 'text-rose-600'}`}>{cf.reconciles ? '✓ Reconciles' : '✗ Does not reconcile'}</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
