@@ -20,18 +20,20 @@ async function getCategories() {
   const token = cookieStore.get('nexygen_token')?.value;
   const headers = { 'Authorization': `Bearer ${token}` };
   try {
-    const [catRes, posCatRes, unitRes] = await Promise.all([
+    const [catRes, posCatRes, unitRes, taxRes] = await Promise.all([
       fetch(`${API_BASE_URL}/product-categories?activeOnly=true`, { headers, cache: 'no-store' }),
       fetch(`${API_BASE_URL}/pos-categories?activeOnly=true`, { headers, cache: 'no-store' }),
       fetch(`${API_BASE_URL}/units-of-measurement?activeOnly=true`, { headers, cache: 'no-store' }),
+      fetch(`${API_BASE_URL}/accounting/taxes?activeOnly=true`, { headers, cache: 'no-store' }),
     ]);
     return {
       categories: catRes.ok ? await catRes.json() : [],
       posCategories: posCatRes.ok ? await posCatRes.json() : [],
       units: unitRes.ok ? await unitRes.json() : [],
+      taxes: taxRes.ok ? await taxRes.json() : [],
     };
   } catch (e) {
-    return { categories: [], posCategories: [], units: [] };
+    return { categories: [], posCategories: [], units: [], taxes: [] };
   }
 }
 
@@ -47,7 +49,7 @@ export default async function EditProductPage({
   const resolvedParams = await params;
   const resolvedSearchParams = await searchParams;
   
-  const [product, { categories, posCategories, units }] = await Promise.all([getProduct(resolvedParams.id), getCategories()]);
+  const [product, { categories, posCategories, units, taxes }] = await Promise.all([getProduct(resolvedParams.id), getCategories()]);
   const hasError = resolvedSearchParams.error === 'true';
 
   if (!product) {
@@ -140,7 +142,14 @@ export default async function EditProductPage({
                 {units.map((u: any) => <option key={u.id} value={u.id}>{u.name} ({u.abbreviation})</option>)}
               </select>
             </div>
-            <div className="col-span-2 flex items-end pb-3">
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">Default Tax</label>
+              <select name="taxId" defaultValue={product.taxId || ''} className="w-full border border-gray-300 rounded-md px-4 py-3 text-black bg-white">
+                <option value="">No tax</option>
+                {taxes.map((t: any) => <option key={t.id} value={t.id}>{t.name} ({t.rate}%)</option>)}
+              </select>
+            </div>
+            <div className="flex items-end pb-3">
               <label className="flex items-center gap-2 text-sm font-bold text-gray-700">
                 <input type="checkbox" name="posActive" defaultChecked={product.posActive !== false} className="w-4 h-4" />
                 Active on POS

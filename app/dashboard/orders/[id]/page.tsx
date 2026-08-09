@@ -49,6 +49,8 @@ export default function SalesOrderDetailsPage() {
   const [invoiceError, setInvoiceError] = useState('');
   const [taxes, setTaxes] = useState<any[]>([]);
   const [invoiceTaxId, setInvoiceTaxId] = useState('');
+  const [costCenters, setCostCenters] = useState<any[]>([]);
+  const [invoiceCostCenterId, setInvoiceCostCenterId] = useState('');
   const [paymentTerms, setPaymentTerms] = useState<any[]>([]);
   const [invoicePaymentTermId, setInvoicePaymentTermId] = useState('');
   const [currencies, setCurrencies] = useState<any[]>([]);
@@ -60,6 +62,9 @@ export default function SalesOrderDetailsPage() {
     fetch(`${API_BASE_URL}/accounting/taxes?activeOnly=true`, { headers: { 'Authorization': `Bearer ${token}` } })
       .then((res) => (res.ok ? res.json() : []))
       .then(setTaxes);
+    fetch(`${API_BASE_URL}/accounting/cost-centers?activeOnly=true`, { headers: { 'Authorization': `Bearer ${token}` } })
+      .then((res) => (res.ok ? res.json() : []))
+      .then(setCostCenters);
     fetch(`${API_BASE_URL}/accounting/payment-terms?activeOnly=true`, { headers: { 'Authorization': `Bearer ${token}` } })
       .then((res) => (res.ok ? res.json() : []))
       .then(setPaymentTerms);
@@ -72,6 +77,11 @@ export default function SalesOrderDetailsPage() {
   useEffect(() => {
     if (order?.taxId) setInvoiceTaxId(String(order.taxId));
   }, [order?.taxId]);
+
+  // Same "default, not forced" relationship for cost center as tax has above.
+  useEffect(() => {
+    if (order?.costCenterId) setInvoiceCostCenterId(String(order.costCenterId));
+  }, [order?.costCenterId]);
 
   // Default the invoice's payment term to the customer's, if one is set on the order/customer.
   useEffect(() => {
@@ -220,6 +230,7 @@ export default function SalesOrderDetailsPage() {
         body: JSON.stringify({
           salesOrderId: order.id,
           taxId: invoiceTaxId ? Number(invoiceTaxId) : undefined,
+          costCenterId: invoiceCostCenterId ? Number(invoiceCostCenterId) : undefined,
           paymentTermId: invoicePaymentTermId ? Number(invoicePaymentTermId) : undefined,
           currencyId: invoiceCurrencyId ? Number(invoiceCurrencyId) : undefined,
           items,
@@ -494,6 +505,18 @@ export default function SalesOrderDetailsPage() {
                   <option value="">No tax</option>
                   {taxes.map((t: any) => (
                     <option key={t.id} value={t.id}>{t.name} ({t.rate}%)</option>
+                  ))}
+                </select>
+              )}
+              {costCenters.length > 0 && (
+                <select
+                  value={invoiceCostCenterId}
+                  onChange={(e) => setInvoiceCostCenterId(e.target.value)}
+                  className="border border-gray-300 rounded-md p-2 text-sm text-black bg-white"
+                >
+                  <option value="">-- No cost center --</option>
+                  {costCenters.map((c: any) => (
+                    <option key={c.id} value={c.id}>{c.name} ({c.code})</option>
                   ))}
                 </select>
               )}

@@ -35,6 +35,22 @@ async function getActiveTaxes() {
   }
 }
 
+async function getActiveCostCenters() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('nexygen_token')?.value;
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/accounting/cost-centers?activeOnly=true`, {
+      headers: { 'Authorization': `Bearer ${token}` },
+      cache: 'no-store',
+    });
+    if (!res.ok) return [];
+    return await res.json();
+  } catch (error) {
+    return [];
+  }
+}
+
 async function getActivePaymentTerms() {
   const cookieStore = await cookies();
   const token = cookieStore.get('nexygen_token')?.value;
@@ -85,7 +101,7 @@ export default async function PurchaseOrderDetailPage({
 }) {
   const resolvedParams = await params;
   const resolvedSearchParams = await searchParams;
-  const [po, taxes, paymentTerms, currencies] = await Promise.all([getPurchaseOrder(resolvedParams.id), getActiveTaxes(), getActivePaymentTerms(), getActiveCurrencies()]);
+  const [po, taxes, costCenters, paymentTerms, currencies] = await Promise.all([getPurchaseOrder(resolvedParams.id), getActiveTaxes(), getActiveCostCenters(), getActivePaymentTerms(), getActiveCurrencies()]);
   const hasError = resolvedSearchParams.error === 'true';
 
   if (!po) return <div className="p-8 text-center text-rose-500 font-bold">Purchase order not found.</div>;
@@ -267,6 +283,17 @@ export default async function PurchaseOrderDetailPage({
                   <option value="">No tax</option>
                   {taxes.map((t: any) => (
                     <option key={t.id} value={t.id}>{t.name} ({t.rate}%)</option>
+                  ))}
+                </select>
+              </div>
+            )}
+            {costCenters.length > 0 && (
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Cost Center</label>
+                <select name="costCenterId" defaultValue={po.costCenterId ? String(po.costCenterId) : ''} className="border border-slate-300 rounded-md p-2 text-sm text-black bg-white">
+                  <option value="">-- None --</option>
+                  {costCenters.map((c: any) => (
+                    <option key={c.id} value={c.id}>{c.name} ({c.code})</option>
                   ))}
                 </select>
               </div>

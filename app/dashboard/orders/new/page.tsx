@@ -32,6 +32,8 @@ export default function NewSalesOrderPage() {
   const [discountValue, setDiscountValue] = useState('');
   const [taxes, setTaxes] = useState<any[]>([]);
   const [taxId, setTaxId] = useState('');
+  const [costCenters, setCostCenters] = useState<any[]>([]);
+  const [costCenterId, setCostCenterId] = useState('');
 
   const [showModal, setShowModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -54,6 +56,8 @@ export default function NewSalesOrderPage() {
         const def = taxData.find((t: any) => t.isDefault);
         if (def) setTaxId(String(def.id));
       }
+      const ccRes = await fetch(`${API_BASE_URL}/accounting/cost-centers?activeOnly=true`, { headers });
+      if (ccRes.ok) setCostCenters(await ccRes.json());
       const settingsRes = await fetch(`${API_BASE_URL}/settings/company`, { headers });
       if (settingsRes.ok) {
         const settings = await settingsRes.json();
@@ -85,6 +89,12 @@ export default function NewSalesOrderPage() {
     if (cart.find(item => item.productId === product.id)) {
       setProductSearch('');
       return;
+    }
+
+    // Suggest this product's default tax onto the order the moment it becomes the first line —
+    // never overrides a tax the user already picked, and never fires again after that.
+    if (cart.length === 0 && !taxId && product.taxId) {
+      setTaxId(String(product.taxId));
     }
 
     setCart([...cart, {
@@ -141,6 +151,7 @@ export default function NewSalesOrderPage() {
         discountType: discountType || undefined,
         discountValue: discountValue ? Number(discountValue) : undefined,
         taxId: selectedTax ? selectedTax.id : undefined,
+        costCenterId: costCenterId ? Number(costCenterId) : undefined,
         items,
       }),
     });
@@ -262,6 +273,18 @@ export default function NewSalesOrderPage() {
                 <option value="">No tax</option>
                 {taxes.map((t: any) => (
                   <option key={t.id} value={t.id}>{t.name} ({t.rate}%)</option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {costCenters.length > 0 && (
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">Cost Center</label>
+              <select value={costCenterId} onChange={(e) => setCostCenterId(e.target.value)} className="w-full border border-gray-300 rounded-md p-3 text-black bg-white">
+                <option value="">-- None --</option>
+                {costCenters.map((c: any) => (
+                  <option key={c.id} value={c.id}>{c.name} ({c.code})</option>
                 ))}
               </select>
             </div>

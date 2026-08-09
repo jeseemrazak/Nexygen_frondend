@@ -18,6 +18,7 @@ export async function createProduct(formData: FormData) {
   const categoryIdRaw = formData.get('categoryId') as string;
   const posCategoryIdRaw = formData.get('posCategoryId') as string;
   const unitIdRaw = formData.get('unitId') as string;
+  const taxIdRaw = formData.get('taxId') as string;
   const posActive = formData.get('posActive') === 'on';
 
   // Initial Stock Fields
@@ -47,6 +48,7 @@ export async function createProduct(formData: FormData) {
       categoryId: categoryIdRaw ? Number(categoryIdRaw) : undefined,
       posCategoryId: posCategoryIdRaw ? Number(posCategoryIdRaw) : undefined,
       unitId: unitIdRaw ? Number(unitIdRaw) : undefined,
+      taxId: taxIdRaw ? Number(taxIdRaw) : undefined,
       posActive,
     }),
   });

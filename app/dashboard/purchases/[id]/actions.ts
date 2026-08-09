@@ -66,6 +66,7 @@ export async function createBill(formData: FormData) {
   const poId = formData.get('poId') as string;
   const itemIds = formData.getAll('itemIds') as string[];
   const taxId = formData.get('taxId') as string;
+  const costCenterId = formData.get('costCenterId') as string;
   const paymentTermId = formData.get('paymentTermId') as string;
   const currencyId = formData.get('currencyId') as string;
 
@@ -92,6 +93,7 @@ export async function createBill(formData: FormData) {
     body: JSON.stringify({
       purchaseOrderId: Number(poId),
       taxId: taxId ? Number(taxId) : undefined,
+      costCenterId: costCenterId ? Number(costCenterId) : undefined,
       paymentTermId: paymentTermId ? Number(paymentTermId) : undefined,
       currencyId: currencyId ? Number(currencyId) : undefined,
       items,

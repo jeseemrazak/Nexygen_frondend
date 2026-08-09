@@ -19,6 +19,7 @@ export async function updateProduct(formData: FormData) {
   const categoryIdRaw = formData.get('categoryId') as string;
   const posCategoryIdRaw = formData.get('posCategoryId') as string;
   const unitIdRaw = formData.get('unitId') as string;
+  const taxIdRaw = formData.get('taxId') as string;
   const posActive = formData.get('posActive') === 'on';
 
   const cookieStore = await cookies();
@@ -42,6 +43,7 @@ export async function updateProduct(formData: FormData) {
       categoryId: categoryIdRaw ? Number(categoryIdRaw) : null,
       posCategoryId: posCategoryIdRaw ? Number(posCategoryIdRaw) : null,
       unitId: unitIdRaw ? Number(unitIdRaw) : null,
+      taxId: taxIdRaw ? Number(taxIdRaw) : null,
       posActive,
     }),
   });
