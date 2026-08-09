@@ -2,7 +2,7 @@ import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { API_BASE_URL } from '@/lib/config';
 import { seedDefaultAccounts } from './actions';
-import AccountRowActions from './AccountRowActions';
+import AccountsFilterTable from './AccountsFilterTable';
 
 async function getAccounts() {
   const cookieStore = await cookies();
@@ -55,50 +55,7 @@ export default async function ChartOfAccountsPage() {
         </div>
       )}
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        {accounts.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">No accounts found.</div>
-        ) : (
-          <table className="w-full text-left border-collapse">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="py-3 px-6 text-xs font-semibold text-gray-600 uppercase tracking-wider">Code</th>
-                <th className="py-3 px-6 text-xs font-semibold text-gray-600 uppercase tracking-wider">Name</th>
-                <th className="py-3 px-6 text-xs font-semibold text-gray-600 uppercase tracking-wider">Type</th>
-                <th className="py-3 px-6 text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-                <th className="py-3 px-6 text-xs font-semibold text-gray-600 uppercase tracking-wider text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 text-black">
-              {accounts.map((account: any) => (
-                <tr key={account.id} className={`hover:bg-gray-50 transition-colors ${!account.isActive ? 'opacity-50' : ''}`}>
-                  <td className="py-4 px-6 font-mono font-bold text-gray-800">{account.code}</td>
-                  <td className="py-4 px-6 font-bold text-gray-800">
-                    {account.name}
-                    {account.isSystemAccount && (
-                      <span className="ml-2 text-[10px] font-bold text-slate-400 uppercase">System</span>
-                    )}
-                  </td>
-                  <td className="py-4 px-6 text-sm text-gray-500">{account.type}</td>
-                  <td className="py-4 px-6 text-sm">
-                    <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${account.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
-                      {account.isActive ? 'Active' : 'Inactive'}
-                    </span>
-                  </td>
-                  <td className="py-4 px-6 text-right">
-                    <div className="flex items-center justify-end gap-3">
-                      <Link href={`/dashboard/accounting/ledger?accountId=${account.id}`} className="text-slate-500 hover:text-slate-700 font-semibold text-sm underline">
-                        Ledger
-                      </Link>
-                      <AccountRowActions account={account} />
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
+      {accounts.length > 0 && <AccountsFilterTable accounts={accounts} />}
     </div>
   );
 }
