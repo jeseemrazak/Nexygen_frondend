@@ -40,7 +40,7 @@ export default async function AdjustInventoryPage({
       <div className="flex justify-between items-center bg-white p-6 rounded-lg shadow-sm border border-gray-200">
         <div>
           <h1 className="text-xl font-bold text-gray-800">Adjust Stock</h1>
-          <div className="text-sm font-bold text-teal-700 mt-1">
+          <div className="text-sm font-bold text-purple-700 mt-1">
             {targetInv.product?.name || "Unknown Product"}
             <span className="text-gray-400 font-normal mx-2">|</span>
             Batch: <span className="text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded font-mono">{targetInv.batchNumber}</span>

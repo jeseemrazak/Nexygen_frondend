@@ -64,7 +64,7 @@ export default function CloseSessionButton({ sessionId, staff, requireCashCount 
               <button
                 onClick={proceedWithPin}
                 disabled={requireCashCount && !countedCash}
-                className="w-full px-4 py-2.5 rounded-md font-bold text-white bg-teal-600 hover:bg-teal-700 disabled:bg-gray-300"
+                className="w-full px-4 py-2.5 rounded-md font-bold text-white bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300"
               >
                 Verify PIN & Close
               </button>

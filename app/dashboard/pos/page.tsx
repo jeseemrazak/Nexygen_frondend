@@ -67,14 +67,14 @@ function ProductCard({ product, stock, onPick }: { product: any; stock: number; 
       onClick={onPick}
       disabled={outOfStock}
       className={`text-left bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm transition-all relative ${
-        outOfStock ? 'opacity-40 cursor-not-allowed' : 'hover:shadow-md hover:border-teal-300 hover:-translate-y-0.5 active:scale-[.97]'
+        outOfStock ? 'opacity-40 cursor-not-allowed' : 'hover:shadow-md hover:border-purple-300 hover:-translate-y-0.5 active:scale-[.97]'
       }`}
     >
-      <span className={`absolute inset-x-0 top-0 h-1 ${isService ? 'bg-purple-400' : outOfStock ? 'bg-rose-300' : 'bg-teal-400'}`} />
+      <span className={`absolute inset-x-0 top-0 h-1 ${isService ? 'bg-purple-400' : outOfStock ? 'bg-rose-300' : 'bg-purple-400'}`} />
       <div className="p-2.5 pt-3.5">
         <p className="font-bold text-gray-800 text-xs leading-tight line-clamp-2 h-8">{product.name}</p>
         <div className="flex items-center justify-between mt-2">
-          <span className="text-teal-700 font-bold text-sm">{formatQAR(product.price)}</span>
+          <span className="text-purple-700 font-bold text-sm">{formatQAR(product.price)}</span>
           {isService ? (
             <span className="text-[11px] font-bold text-purple-600">Service</span>
           ) : (
@@ -519,7 +519,7 @@ export default function PosCheckoutPage() {
                   key={inv.id}
                   type="button"
                   onClick={() => { addLine(batchPicker.product, inv.batchNumber, inv.quantity, false); setBatchPicker(null); }}
-                  className="w-full flex justify-between items-center gap-6 px-4 py-2.5 border border-teal-200 bg-teal-50 hover:bg-teal-600 hover:text-white hover:border-teal-600 transition rounded-md text-teal-900"
+                  className="w-full flex justify-between items-center gap-6 px-4 py-2.5 border border-purple-200 bg-purple-50 hover:bg-purple-600 hover:text-white hover:border-purple-600 transition rounded-md text-purple-900"
                 >
                   <span className="font-mono font-bold">Batch {inv.batchNumber}</span>
                   <span className="font-bold">Qty: {inv.quantity}</span>
@@ -540,7 +540,7 @@ export default function PosCheckoutPage() {
             <div className="text-center">
               <span className="text-4xl">✅</span>
               <h3 className="text-xl font-bold text-gray-900 mt-2">Sale Complete</h3>
-              <p className="font-mono text-teal-700 font-bold mt-1">{lastSale.invoiceNumber}</p>
+              <p className="font-mono text-purple-700 font-bold mt-1">{lastSale.invoiceNumber}</p>
             </div>
             <div className="mt-4 border-t border-b border-gray-100 divide-y divide-gray-50 max-h-48 overflow-y-auto">
               {lastSale.items?.map((item: any) => (
@@ -559,7 +559,7 @@ export default function PosCheckoutPage() {
               )}
               <div className="flex justify-between text-lg">
                 <span className="font-bold text-gray-800">Total</span>
-                <span className="font-bold text-teal-700">{formatQAR(lastSale.totalAmount)}</span>
+                <span className="font-bold text-purple-700">{formatQAR(lastSale.totalAmount)}</span>
               </div>
             </div>
             <div className="flex gap-3 mt-5">
@@ -571,7 +571,7 @@ export default function PosCheckoutPage() {
               >
                 🖨️ Print Receipt
               </a>
-              <button onClick={() => setLastSale(null)} className="flex-1 px-4 py-2.5 rounded-md font-bold text-white bg-teal-600 hover:bg-teal-700">
+              <button onClick={() => setLastSale(null)} className="flex-1 px-4 py-2.5 rounded-md font-bold text-white bg-purple-600 hover:bg-purple-700">
                 New Sale
               </button>
             </div>
@@ -580,7 +580,7 @@ export default function PosCheckoutPage() {
       )}
 
       {/* HEADER BAR */}
-      <div className="bg-teal-600 px-5 py-3 flex items-center gap-4 shrink-0">
+      <div className="bg-purple-600 px-5 py-3 flex items-center gap-4 shrink-0">
         <span className="text-xl">🛒</span>
         <span className="text-white font-bold text-lg">POS</span>
         <select
@@ -612,7 +612,7 @@ export default function PosCheckoutPage() {
               type="button"
               onClick={() => switchOrder(o.id)}
               className={`shrink-0 flex items-center gap-2 px-3.5 py-2 text-xs font-bold border-b-2 transition-colors ${
-                o.id === activeOrderId ? 'border-teal-600 text-teal-700' : 'border-transparent text-gray-500 hover:text-gray-700'
+                o.id === activeOrderId ? 'border-purple-600 text-purple-700' : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
             >
               <span>{o.label}{o.cart.length > 0 ? ` (${o.cart.reduce((s, l) => s + l.quantity, 0)})` : ''}</span>
@@ -627,7 +627,7 @@ export default function PosCheckoutPage() {
               )}
             </button>
           ))}
-          <button type="button" onClick={addOrder} className="shrink-0 px-3 py-2 text-teal-600 hover:text-teal-800 font-bold text-sm">
+          <button type="button" onClick={addOrder} className="shrink-0 px-3 py-2 text-purple-600 hover:text-purple-800 font-bold text-sm">
             +
           </button>
         </div>
@@ -642,7 +642,7 @@ export default function PosCheckoutPage() {
       ) : !session ? (
         <div className="flex-1 flex flex-col items-center justify-center bg-gray-50 gap-3">
           <p className="text-amber-800 font-medium">No open session for this warehouse.</p>
-          <Link href="/dashboard/pos/sessions" className="text-teal-700 font-bold text-sm underline">Open one →</Link>
+          <Link href="/dashboard/pos/sessions" className="text-purple-700 font-bold text-sm underline">Open one →</Link>
         </div>
       ) : (
         <div className="flex-1 flex min-h-0">
@@ -664,7 +664,7 @@ export default function PosCheckoutPage() {
                     type="button"
                     onClick={() => setSelectedCategoryId('')}
                     className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-colors ${
-                      selectedCategoryId === '' ? 'bg-teal-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:border-teal-300'
+                      selectedCategoryId === '' ? 'bg-purple-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:border-purple-300'
                     }`}
                   >
                     All
@@ -675,7 +675,7 @@ export default function PosCheckoutPage() {
                       type="button"
                       onClick={() => setSelectedCategoryId(String(c.id))}
                       className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-colors ${
-                        selectedCategoryId === String(c.id) ? 'bg-teal-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:border-teal-300'
+                        selectedCategoryId === String(c.id) ? 'bg-purple-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:border-purple-300'
                       }`}
                     >
                       {c.name}
@@ -712,7 +712,7 @@ export default function PosCheckoutPage() {
             </div>
 
             <div className="px-4 py-2.5 border-b border-[#D8E9F5] flex items-center gap-2">
-              <span className="text-teal-700 text-sm">👤</span>
+              <span className="text-purple-700 text-sm">👤</span>
               <select
                 value={selectedCustomerId}
                 onChange={(e) => { setSelectedCustomerId(e.target.value); setRedeemPointsInput(''); setRedeemError(''); }}
@@ -743,7 +743,7 @@ export default function PosCheckoutPage() {
                     <button
                       onClick={redeemLoyaltyPoints}
                       disabled={redeeming || !redeemPointsInput}
-                      className="text-teal-700 hover:text-teal-900 font-bold text-xs underline disabled:opacity-40"
+                      className="text-purple-700 hover:text-purple-900 font-bold text-xs underline disabled:opacity-40"
                     >
                       {redeeming ? 'Redeeming...' : 'Redeem for discount'}
                     </button>
@@ -774,7 +774,7 @@ export default function PosCheckoutPage() {
                     <div className="flex items-center gap-1.5 shrink-0">
                       <QtyBtn symbol="-" color="bg-rose-100 text-rose-600 hover:bg-rose-200" onClick={() => decrementLine(item.productId, item.batchNumber)} />
                       <span className="w-6 text-center font-bold text-sm text-gray-800">{item.quantity}</span>
-                      <QtyBtn symbol="+" color="bg-teal-100 text-teal-700 hover:bg-teal-200" onClick={() => incrementLine(item.productId, item.batchNumber)} />
+                      <QtyBtn symbol="+" color="bg-purple-100 text-purple-700 hover:bg-purple-200" onClick={() => incrementLine(item.productId, item.batchNumber)} />
                     </div>
                   </div>
                 ))
@@ -819,7 +819,7 @@ export default function PosCheckoutPage() {
               )}
               <div className="flex items-center justify-between pt-1">
                 <span className="text-gray-800 font-bold">Total</span>
-                <span className="text-teal-700 font-bold text-xl">{formatQAR(totalAmount)}</span>
+                <span className="text-purple-700 font-bold text-xl">{formatQAR(totalAmount)}</span>
               </div>
             </div>
 
@@ -833,8 +833,8 @@ export default function PosCheckoutPage() {
                     onClick={() => { setSplitMode(false); setSelectedMethodId(String(m.id)); setAmountReceived(''); }}
                     className={`px-3.5 h-9 rounded-lg text-xs font-bold border transition-colors ${
                       !splitMode && selectedMethodId === String(m.id)
-                        ? 'bg-teal-600 border-teal-600 text-white'
-                        : 'bg-white border-gray-200 text-gray-600 hover:border-teal-300'
+                        ? 'bg-purple-600 border-purple-600 text-white'
+                        : 'bg-white border-gray-200 text-gray-600 hover:border-purple-300'
                     }`}
                   >
                     {m.name}
@@ -844,7 +844,7 @@ export default function PosCheckoutPage() {
                   type="button"
                   onClick={() => setSplitMode(true)}
                   className={`px-3.5 h-9 rounded-lg text-xs font-bold border transition-colors ${
-                    splitMode ? 'bg-teal-600 border-teal-600 text-white' : 'bg-white border-gray-200 text-gray-600 hover:border-teal-300'
+                    splitMode ? 'bg-purple-600 border-purple-600 text-white' : 'bg-white border-gray-200 text-gray-600 hover:border-purple-300'
                   }`}
                 >
                   Split
@@ -876,7 +876,7 @@ export default function PosCheckoutPage() {
                       </div>
                     );
                   })}
-                  <div className={`flex items-center justify-between text-xs font-bold ${Math.abs(splitRemaining) <= 0.01 ? 'text-emerald-600' : 'text-rose-500'}`}>
+                  <div className={`flex items-center justify-between text-xs font-bold ${Math.abs(splitRemaining) <= 0.01 ? 'text-purple-600' : 'text-rose-500'}`}>
                     <span>{splitRemaining > 0.01 ? 'Remaining' : splitRemaining < -0.01 ? 'Over' : 'Balanced'}</span>
                     <span>{formatQAR(Math.abs(splitRemaining))}</span>
                   </div>
@@ -889,7 +889,7 @@ export default function PosCheckoutPage() {
                         key={amt}
                         type="button"
                         onClick={() => setAmountReceived(String(amt))}
-                        className="flex-1 h-8 rounded-md text-xs font-bold bg-white border border-gray-200 text-gray-700 hover:border-teal-300"
+                        className="flex-1 h-8 rounded-md text-xs font-bold bg-white border border-gray-200 text-gray-700 hover:border-purple-300"
                       >
                         {amt}
                       </button>
@@ -916,7 +916,7 @@ export default function PosCheckoutPage() {
               <button
                 onClick={handleCharge}
                 disabled={!canCharge}
-                className="w-full h-12 rounded-lg font-bold text-white bg-teal-600 hover:bg-teal-700 disabled:bg-gray-300 transition-colors"
+                className="w-full h-12 rounded-lg font-bold text-white bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 transition-colors"
               >
                 {isSubmitting ? 'Processing...' : splitMode ? `Split · ${formatQAR(totalAmount)}` : `Charge · ${formatQAR(totalAmount)}`}
               </button>

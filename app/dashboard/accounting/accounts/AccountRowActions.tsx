@@ -87,13 +87,13 @@ export default function AccountRowActions({ account }: { account: any }) {
   return (
     <div className="flex flex-col items-end gap-1">
       <div className="flex gap-3 items-center">
-        <button onClick={() => setIsEditing(true)} className="text-teal-600 hover:text-teal-800 font-semibold text-sm">
+        <button onClick={() => setIsEditing(true)} className="text-purple-600 hover:text-purple-800 font-semibold text-sm">
           Edit
         </button>
         <button
           onClick={() => patch({ isActive: !account.isActive })}
           disabled={isSubmitting}
-          className={`font-semibold text-sm ${account.isActive ? 'text-amber-600 hover:text-amber-800' : 'text-emerald-600 hover:text-emerald-800'}`}
+          className={`font-semibold text-sm ${account.isActive ? 'text-amber-600 hover:text-amber-800' : 'text-purple-600 hover:text-purple-800'}`}
         >
           {account.isActive ? 'Deactivate' : 'Activate'}
         </button>

@@ -124,7 +124,7 @@ export default function PaymentTermsPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-6 rounded-md text-sm disabled:bg-gray-400"
+            className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-md text-sm disabled:bg-gray-400"
           >
             {isSubmitting ? 'Adding...' : 'Add Term'}
           </button>
@@ -155,7 +155,7 @@ export default function PaymentTermsPage() {
                   <td className="py-4 px-6 text-sm text-gray-600">{t.days} days</td>
                   <td className="py-4 px-6 text-sm">
                     {t.isDefault ? (
-                      <span className="px-2 py-1 rounded-full text-xs font-bold uppercase bg-teal-50 text-teal-700">Default</span>
+                      <span className="px-2 py-1 rounded-full text-xs font-bold uppercase bg-purple-50 text-purple-700">Default</span>
                     ) : (
                       <button onClick={() => setDefault(t)} className="text-slate-500 hover:text-slate-700 font-semibold text-xs underline">
                         Set default
@@ -163,7 +163,7 @@ export default function PaymentTermsPage() {
                     )}
                   </td>
                   <td className="py-4 px-6 text-sm">
-                    <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${t.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${t.isActive ? 'bg-purple-50 text-purple-700' : 'bg-gray-100 text-gray-500'}`}>
                       {t.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </td>

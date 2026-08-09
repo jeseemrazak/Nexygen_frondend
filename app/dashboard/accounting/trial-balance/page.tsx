@@ -64,7 +64,7 @@ export default async function TrialBalancePage({ searchParams }: { searchParams:
                 ))}
               </select>
             )}
-            <button type="submit" className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-md text-sm">Filter</button>
+            <button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md text-sm">Filter</button>
           </form>
           <Link
             href={`/dashboard/accounting/trial-balance/print?${printQuery.toString()}`}
@@ -75,7 +75,7 @@ export default async function TrialBalancePage({ searchParams }: { searchParams:
         </div>
       </div>
 
-      <div className={`p-4 rounded-lg border font-bold text-center ${isBalanced ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-rose-50 border-rose-200 text-rose-700'}`}>
+      <div className={`p-4 rounded-lg border font-bold text-center ${isBalanced ? 'bg-purple-50 border-purple-200 text-purple-700' : 'bg-rose-50 border-rose-200 text-rose-700'}`}>
         {isBalanced ? '✓ Books are balanced' : '✗ Books are NOT balanced — this should never happen'}
       </div>
 

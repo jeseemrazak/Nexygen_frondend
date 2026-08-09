@@ -48,7 +48,7 @@ export default function EosGratuityPage() {
           <h1 className="text-2xl font-bold text-gray-800">End of Service Gratuity</h1>
           <p className="text-sm text-gray-500 mt-1">Qatar Labour Law No. 14/2004 — non-Qatari employees, vests at 1 year of service.</p>
         </div>
-        <button onClick={handlePostAccrual} disabled={isPosting || totalPending <= 0.005} className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-6 rounded-md shadow-sm disabled:bg-gray-400">
+        <button onClick={handlePostAccrual} disabled={isPosting || totalPending <= 0.005} className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-md shadow-sm disabled:bg-gray-400">
           {isPosting ? 'Posting...' : `Post Accrual (${formatQAR(totalPending)})`}
         </button>
       </div>
@@ -84,7 +84,7 @@ export default function EosGratuityPage() {
                   </td>
                   <td className="py-4 px-6 text-right text-sm">{formatQAR(r.accruedToDate)}</td>
                   <td className="py-4 px-6 text-right text-sm text-gray-500">{formatQAR(r.alreadyPosted)}</td>
-                  <td className="py-4 px-6 text-right font-bold text-sm text-teal-700">{formatQAR(r.pendingIncrement)}</td>
+                  <td className="py-4 px-6 text-right font-bold text-sm text-purple-700">{formatQAR(r.pendingIncrement)}</td>
                 </tr>
               ))}
             </tbody>

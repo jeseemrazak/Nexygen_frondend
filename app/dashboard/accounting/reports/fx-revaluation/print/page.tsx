@@ -26,7 +26,7 @@ export default async function FxRevaluationPrintPage() {
   return (
     <div>
       <div className="no-print flex justify-between items-center p-4 max-w-5xl mx-auto">
-        <Link href="/dashboard/accounting/reports/fx-revaluation" className="text-teal-600 hover:text-teal-800 text-sm font-bold">← Back to FX Revaluation</Link>
+        <Link href="/dashboard/accounting/reports/fx-revaluation" className="text-purple-600 hover:text-purple-800 text-sm font-bold">← Back to FX Revaluation</Link>
         <PrintButton />
       </div>
       <div className="print-area print-landscape bg-white p-10 max-w-5xl mx-auto text-gray-900">

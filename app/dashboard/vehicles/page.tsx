@@ -37,7 +37,7 @@ export default async function VehiclesPage() {
       <div className="max-w-2xl mx-auto">
         <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 text-center">
           <p className="text-gray-500">The Vehicle Management module isn&apos;t installed yet.</p>
-          <Link href="/dashboard/settings/apps" className="text-teal-600 hover:text-teal-800 font-bold text-sm mt-3 inline-block">
+          <Link href="/dashboard/settings/apps" className="text-purple-600 hover:text-purple-800 font-bold text-sm mt-3 inline-block">
             ← Go to App Store
           </Link>
         </div>

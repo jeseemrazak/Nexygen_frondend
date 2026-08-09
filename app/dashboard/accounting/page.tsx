@@ -23,14 +23,14 @@ const formatQAR = (amount: number) => new Intl.NumberFormat('en-QA', { style: 'c
 const KPI_STYLES: Record<string, { icon: string; text: string; bg: string }> = {
   receivables: { icon: '↙️', text: 'text-orange-700', bg: 'bg-orange-50' },
   payables: { icon: '↗️', text: 'text-rose-700', bg: 'bg-rose-50' },
-  cash: { icon: '💰', text: 'text-emerald-700', bg: 'bg-emerald-50' },
-  income: { icon: '📈', text: 'text-teal-700', bg: 'bg-teal-50' },
+  cash: { icon: '💰', text: 'text-purple-700', bg: 'bg-purple-50' },
+  income: { icon: '📈', text: 'text-purple-700', bg: 'bg-purple-50' },
 };
 
 const JOURNAL_STYLES: Record<string, { icon: string; text: string; bg: string }> = {
-  CASH: { icon: '💵', text: 'text-emerald-700', bg: 'bg-emerald-50' },
+  CASH: { icon: '💵', text: 'text-purple-700', bg: 'bg-purple-50' },
   BANK: { icon: '🏦', text: 'text-indigo-700', bg: 'bg-indigo-50' },
-  SALE: { icon: '🧾', text: 'text-teal-700', bg: 'bg-teal-50' },
+  SALE: { icon: '🧾', text: 'text-purple-700', bg: 'bg-purple-50' },
   PURCHASE: { icon: '📦', text: 'text-orange-700', bg: 'bg-orange-50' },
   MISC: { icon: '📋', text: 'text-slate-700', bg: 'bg-slate-50' },
 };
@@ -68,7 +68,7 @@ function DocSummaryCard({
   overdueAmount: number;
 }) {
   return (
-    <Link href={href} className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 hover:border-teal-300 transition-colors block h-full">
+    <Link href={href} className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 hover:border-purple-300 transition-colors block h-full">
       <div className="flex items-center gap-2.5 mb-4">
         <span className="text-lg">{icon}</span>
         <h3 className="font-bold text-gray-800 text-sm">{title}</h3>
@@ -84,7 +84,7 @@ function DocSummaryCard({
         </div>
         <div>
           <p className="text-[11px] font-semibold text-gray-500 uppercase">Paid</p>
-          <p className="font-bold text-emerald-700 text-sm mt-0.5">{paid}</p>
+          <p className="font-bold text-purple-700 text-sm mt-0.5">{paid}</p>
         </div>
       </div>
       <div className="h-px bg-gray-100 my-4" />
@@ -152,7 +152,7 @@ export default async function AccountingOverviewPage() {
             overdueCount={purchaseBills.overdueCount}
             overdueAmount={purchaseBills.overdueAmount}
           />
-          <Link href="/dashboard/payroll/runs" className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 hover:border-teal-300 transition-colors block h-full">
+          <Link href="/dashboard/payroll/runs" className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 hover:border-purple-300 transition-colors block h-full">
             <div className="flex items-center gap-2.5 mb-4">
               <span className="text-lg">👤</span>
               <h3 className="font-bold text-gray-800 text-sm">Payroll</h3>
@@ -214,7 +214,7 @@ export default async function AccountingOverviewPage() {
                   <p className={`text-lg font-bold mt-0.5 ${s.text}`}>{formatQAR(row.amount)}</p>
                   <Link
                     href={`/dashboard/accounting/journal?journalId=${row.journal.id}&journalName=${encodeURIComponent(row.journal.name)}`}
-                    className="mt-4 block text-center text-xs font-bold text-gray-600 hover:text-teal-700 border border-gray-200 hover:border-teal-300 rounded-md py-2 transition-colors"
+                    className="mt-4 block text-center text-xs font-bold text-gray-600 hover:text-purple-700 border border-gray-200 hover:border-purple-300 rounded-md py-2 transition-colors"
                   >
                     Transactions
                   </Link>

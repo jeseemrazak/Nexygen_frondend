@@ -39,7 +39,7 @@ export default async function OutletPnlPage({ searchParams }: { searchParams: Pr
           <form action="/dashboard/accounting/reports/outlet-pnl" className="flex items-center gap-3">
             <input type="date" name="from" defaultValue={resolvedParams.from || ''} className="border border-gray-300 rounded-md px-3 py-2 text-sm text-black" />
             <input type="date" name="to" defaultValue={resolvedParams.to || ''} className="border border-gray-300 rounded-md px-3 py-2 text-sm text-black" />
-            <button type="submit" className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-md text-sm">Filter</button>
+            <button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md text-sm">Filter</button>
           </form>
           <Link href={`/dashboard/accounting/reports/outlet-pnl/print?${rangeQuery.toString()}`} className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-md text-sm whitespace-nowrap">🖨️ Print</Link>
         </div>
@@ -97,9 +97,9 @@ export default async function OutletPnlPage({ searchParams }: { searchParams: Pr
               <tr className="border-t-2 border-gray-800">
                 <td className="py-3 px-6 font-black">Net Profit</td>
                 {data.netByColumn.map((c: any) => (
-                  <td key={c.id ?? 'unassigned'} className={`py-3 px-6 text-right font-black ${c.net >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>{formatQAR(c.net)}</td>
+                  <td key={c.id ?? 'unassigned'} className={`py-3 px-6 text-right font-black ${c.net >= 0 ? 'text-purple-600' : 'text-rose-600'}`}>{formatQAR(c.net)}</td>
                 ))}
-                <td className={`py-3 px-6 text-right font-black ${data.netProfit >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>{formatQAR(data.netProfit)}</td>
+                <td className={`py-3 px-6 text-right font-black ${data.netProfit >= 0 ? 'text-purple-600' : 'text-rose-600'}`}>{formatQAR(data.netProfit)}</td>
               </tr>
             </tfoot>
           </table>

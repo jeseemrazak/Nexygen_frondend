@@ -46,7 +46,7 @@ function PaymentDetailContent() {
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <Link href="/dashboard/accounting/payments" className="text-teal-600 hover:text-teal-800 text-sm font-bold flex items-center gap-1 mb-3">
+        <Link href="/dashboard/accounting/payments" className="text-purple-600 hover:text-purple-800 text-sm font-bold flex items-center gap-1 mb-3">
           ← Back to Payments
         </Link>
         <div className="flex justify-between items-start flex-wrap gap-4">
@@ -81,7 +81,7 @@ function PaymentDetailContent() {
         </div>
         <div>
           <p className="text-xs font-bold text-gray-500 uppercase">Amount</p>
-          <p className="mt-1 font-bold text-teal-700 text-xl">{formatQAR(payment.amount)}</p>
+          <p className="mt-1 font-bold text-purple-700 text-xl">{formatQAR(payment.amount)}</p>
         </div>
         <div>
           <p className="text-xs font-bold text-gray-500 uppercase">Method</p>
@@ -119,7 +119,7 @@ function PaymentDetailContent() {
                 <td className="py-3 px-6 text-right text-sm">
                   <Link
                     href={a.sourceType === 'SALES_INVOICE' ? `/dashboard/sales-invoices/${a.sourceId}` : `/dashboard/bills/${a.sourceId}`}
-                    className="text-teal-600 hover:text-teal-800 font-bold"
+                    className="text-purple-600 hover:text-purple-800 font-bold"
                   >
                     View →
                   </Link>

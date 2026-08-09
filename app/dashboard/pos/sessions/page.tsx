@@ -84,13 +84,13 @@ export default async function PosSessionsPage() {
                   <td className="py-4 px-6 text-sm text-gray-600">{s.closedAt ? formatDateTime(s.closedAt) : '--'}</td>
                   <td className="py-4 px-6 text-sm text-center">{s._count?.sales ?? 0}</td>
                   <td className="py-4 px-6 text-sm">
-                    <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${s.status === 'OPEN' ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${s.status === 'OPEN' ? 'bg-purple-50 text-purple-700' : 'bg-gray-100 text-gray-500'}`}>
                       {s.status}
                     </span>
                   </td>
                   <td className="py-4 px-6 text-right">
                     <div className="flex items-center justify-end gap-3">
-                      <Link href={`/dashboard/pos/sessions/${s.id}`} className="text-teal-600 hover:text-teal-800 font-semibold text-sm">
+                      <Link href={`/dashboard/pos/sessions/${s.id}`} className="text-purple-600 hover:text-purple-800 font-semibold text-sm">
                         View
                       </Link>
                       {s.status === 'OPEN' && <CloseSessionButton sessionId={s.id} staff={staff} requireCashCount={requireCashCount} />}

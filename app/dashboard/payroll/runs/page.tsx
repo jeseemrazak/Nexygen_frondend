@@ -21,7 +21,7 @@ const formatDate = (dateString: string) => new Date(dateString).toLocaleDateStri
 const statusBadge: Record<string, string> = {
   DRAFT: 'bg-slate-100 text-slate-600',
   PROCESSED: 'bg-blue-50 text-blue-700',
-  PAID: 'bg-emerald-50 text-emerald-700',
+  PAID: 'bg-purple-50 text-purple-700',
 };
 
 export default async function PayrollRunsPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
@@ -48,7 +48,7 @@ export default async function PayrollRunsPage({ searchParams }: { searchParams: 
             <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Period End</label>
             <input type="date" name="periodEnd" required className="border border-gray-300 rounded-md p-3 text-black" />
           </div>
-          <button type="submit" className="bg-teal-600 hover:bg-teal-700 text-white font-bold px-6 py-3 rounded-md shadow-sm">
+          <button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-6 py-3 rounded-md shadow-sm">
             Generate Run
           </button>
         </form>
@@ -72,7 +72,7 @@ export default async function PayrollRunsPage({ searchParams }: { searchParams: 
             <tbody className="divide-y divide-gray-100 text-black">
               {runs.map((r: any) => (
                 <tr key={r.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="py-4 px-6 font-mono font-bold text-teal-700">{r.runNo || `#${r.id}`}</td>
+                  <td className="py-4 px-6 font-mono font-bold text-purple-700">{r.runNo || `#${r.id}`}</td>
                   <td className="py-4 px-6 text-sm">{formatDate(r.periodStart)} – {formatDate(r.periodEnd)}</td>
                   <td className="py-4 px-6 text-right text-sm">{formatQAR(r.totalGross)}</td>
                   <td className="py-4 px-6 text-right font-bold text-sm">{formatQAR(r.totalNet)}</td>

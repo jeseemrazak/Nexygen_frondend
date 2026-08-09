@@ -60,14 +60,14 @@ export default function PartnerLedgerPage() {
           <button
             type="button"
             onClick={() => handlePartyTypeChange('CUSTOMER')}
-            className={`px-4 py-2 rounded-md text-sm font-bold ${partyType === 'CUSTOMER' ? 'bg-teal-600 text-white' : 'bg-gray-100 text-gray-600'}`}
+            className={`px-4 py-2 rounded-md text-sm font-bold ${partyType === 'CUSTOMER' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-600'}`}
           >
             Customer
           </button>
           <button
             type="button"
             onClick={() => handlePartyTypeChange('SUPPLIER')}
-            className={`px-4 py-2 rounded-md text-sm font-bold ${partyType === 'SUPPLIER' ? 'bg-teal-600 text-white' : 'bg-gray-100 text-gray-600'}`}
+            className={`px-4 py-2 rounded-md text-sm font-bold ${partyType === 'SUPPLIER' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-600'}`}
           >
             Supplier
           </button>
@@ -103,7 +103,7 @@ export default function PartnerLedgerPage() {
           <div className="bg-gray-50 border-b border-gray-200 px-6 py-4 flex justify-between items-center gap-4">
             <h2 className="text-lg font-bold text-gray-800">{ledger.partyName}</h2>
             <div className="flex items-center gap-4">
-              <span className="font-bold text-teal-700">Ending balance: {formatQAR(ledger.endingBalance)}</span>
+              <span className="font-bold text-purple-700">Ending balance: {formatQAR(ledger.endingBalance)}</span>
               <a
                 href={`/dashboard/accounting/partner-ledger/print?partyType=${partyType}&partyName=${encodeURIComponent(partyName)}`}
                 target="_blank"

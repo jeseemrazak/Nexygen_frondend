@@ -85,7 +85,7 @@ export default function SuppliersTable({ initialSuppliers }: { initialSuppliers:
       <tbody className="divide-y divide-gray-100 text-black">
         {suppliers.map((supplier) =>
           editingId === supplier.id ? (
-            <tr key={supplier.id} className="bg-teal-50/40">
+            <tr key={supplier.id} className="bg-purple-50/40">
               <td colSpan={6} className="p-4">
                 {editError && <p className="text-rose-600 text-xs font-semibold mb-2">{editError}</p>}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -117,7 +117,7 @@ export default function SuppliersTable({ initialSuppliers }: { initialSuppliers:
                   <button
                     onClick={() => saveEdit(supplier.id)}
                     disabled={editSaving}
-                    className="bg-teal-600 hover:bg-teal-700 text-white font-bold px-4 py-1.5 rounded-md text-sm shadow-sm disabled:bg-gray-300"
+                    className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-1.5 rounded-md text-sm shadow-sm disabled:bg-gray-300"
                   >
                     {editSaving ? 'Saving...' : 'Save Changes'}
                   </button>
@@ -132,7 +132,7 @@ export default function SuppliersTable({ initialSuppliers }: { initialSuppliers:
               <td className="py-4 px-6 text-sm text-gray-500">{supplier.email || <Empty />}</td>
               <td className="py-4 px-6 text-sm text-gray-500">{supplier.address || <Empty />}</td>
               <td className="py-4 px-6 text-right">
-                <button onClick={() => startEdit(supplier)} className="text-teal-600 hover:text-teal-800 font-bold text-xs underline">
+                <button onClick={() => startEdit(supplier)} className="text-purple-600 hover:text-purple-800 font-bold text-xs underline">
                   Edit
                 </button>
               </td>

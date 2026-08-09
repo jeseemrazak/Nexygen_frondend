@@ -38,7 +38,7 @@ export default function FxRevaluationPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
               <p className="text-xs font-bold text-gray-500 uppercase">Unrealized Gain</p>
-              <p className="text-xl font-bold text-emerald-600 mt-1">{formatQAR(data?.totalGain || 0)}</p>
+              <p className="text-xl font-bold text-purple-600 mt-1">{formatQAR(data?.totalGain || 0)}</p>
             </div>
             <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
               <p className="text-xs font-bold text-gray-500 uppercase">Unrealized Loss</p>
@@ -46,7 +46,7 @@ export default function FxRevaluationPage() {
             </div>
             <div className="bg-slate-900 p-4 rounded-lg shadow-sm">
               <p className="text-xs font-bold text-slate-300 uppercase">Net</p>
-              <p className={`text-xl font-bold mt-1 ${data && data.netGainLoss >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>{formatQAR(data?.netGainLoss || 0)}</p>
+              <p className={`text-xl font-bold mt-1 ${data && data.netGainLoss >= 0 ? 'text-purple-400' : 'text-rose-400'}`}>{formatQAR(data?.netGainLoss || 0)}</p>
             </div>
           </div>
 
@@ -72,7 +72,7 @@ export default function FxRevaluationPage() {
                   {data.rows.map((r: any) => (
                     <tr key={`${r.type}-${r.documentId}`} className="hover:bg-gray-50">
                       <td className="py-4 px-6 font-mono font-bold text-sm">
-                        <Link href={r.type === 'AR' ? `/dashboard/sales-invoices/${r.documentId}` : `/dashboard/purchases/${r.documentId}`} className="text-teal-700 hover:underline">
+                        <Link href={r.type === 'AR' ? `/dashboard/sales-invoices/${r.documentId}` : `/dashboard/purchases/${r.documentId}`} className="text-purple-700 hover:underline">
                           {r.documentNumber || `#${r.documentId}`}
                         </Link>
                       </td>
@@ -85,7 +85,7 @@ export default function FxRevaluationPage() {
                       <td className="py-4 px-6 text-sm text-right text-gray-500">{r.originalRate} → {r.currentRate}</td>
                       <td className="py-4 px-6 text-sm text-right">{formatQAR(r.outstandingQAR)}</td>
                       <td className="py-4 px-6 text-sm text-right">{formatQAR(r.revaluedQAR)}</td>
-                      <td className={`py-4 px-6 text-sm text-right font-bold ${r.gainLoss >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>{formatQAR(r.gainLoss)}</td>
+                      <td className={`py-4 px-6 text-sm text-right font-bold ${r.gainLoss >= 0 ? 'text-purple-600' : 'text-rose-600'}`}>{formatQAR(r.gainLoss)}</td>
                     </tr>
                   ))}
                 </tbody>

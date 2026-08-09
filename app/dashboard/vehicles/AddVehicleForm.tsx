@@ -60,7 +60,7 @@ export default function AddVehicleForm({ customers }: { customers: any[] }) {
         </select>
       </div>
       {error && <p className="text-rose-600 text-sm font-semibold">{error}</p>}
-      <button type="submit" disabled={isSubmitting} className="bg-teal-600 hover:bg-teal-700 text-white font-bold px-6 py-2.5 rounded-md shadow-sm disabled:bg-gray-300">
+      <button type="submit" disabled={isSubmitting} className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-6 py-2.5 rounded-md shadow-sm disabled:bg-gray-300">
         {isSubmitting ? 'Adding...' : 'Add Vehicle'}
       </button>
     </form>

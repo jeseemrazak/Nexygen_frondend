@@ -26,7 +26,7 @@ export default async function EmployeesPage() {
           <h1 className="text-2xl font-bold text-gray-800">Employees</h1>
           <p className="text-sm text-gray-500 mt-1">HR/payroll records — separate from dashboard login accounts.</p>
         </div>
-        <Link href="/dashboard/payroll/employees/new" className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-md shadow-sm">
+        <Link href="/dashboard/payroll/employees/new" className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md shadow-sm">
           ➕ Add Employee
         </Link>
       </div>
@@ -53,14 +53,14 @@ export default async function EmployeesPage() {
                   <tr key={e.id} className={`hover:bg-gray-50 transition-colors ${!e.payrollActive ? 'opacity-50' : ''}`}>
                     <td className="py-4 px-6 font-bold text-gray-800">{e.name}</td>
                     <td className="py-4 px-6 text-sm">
-                      <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${e.isQatari ? 'bg-teal-50 text-teal-700' : 'bg-slate-100 text-slate-600'}`}>
+                      <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${e.isQatari ? 'bg-purple-50 text-purple-700' : 'bg-slate-100 text-slate-600'}`}>
                         {e.isQatari ? 'Qatari' : 'Expat'}
                       </span>
                     </td>
                     <td className="py-4 px-6 text-right text-sm">{formatQAR(e.basicSalary)}</td>
                     <td className="py-4 px-6 text-right text-sm text-gray-600">{formatQAR(totalAllowances)}</td>
                     <td className="py-4 px-6 text-sm">
-                      <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${e.payrollActive ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
+                      <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${e.payrollActive ? 'bg-purple-50 text-purple-700' : 'bg-gray-100 text-gray-500'}`}>
                         {e.payrollActive ? 'Active' : 'Inactive'}
                       </span>
                     </td>

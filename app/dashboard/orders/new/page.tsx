@@ -179,7 +179,7 @@ export default function NewSalesOrderPage() {
               <h3 className="text-xl font-bold text-gray-900">Confirm Sales Order</h3>
             </div>
             <p className="text-gray-600 mb-2">
-              You are about to create a sales order for <strong className="text-teal-700">{formatQAR(totalAmount)}</strong>. No stock is deducted yet — deliveries (with batch selection) happen after this order is confirmed.
+              You are about to create a sales order for <strong className="text-purple-700">{formatQAR(totalAmount)}</strong>. No stock is deducted yet — deliveries (with batch selection) happen after this order is confirmed.
             </p>
             {errorMessage && <p className="text-rose-600 text-sm font-semibold mb-4">{errorMessage}</p>}
             <div className="flex justify-end gap-3 mt-4">
@@ -309,7 +309,7 @@ export default function NewSalesOrderPage() {
             value={productSearch}
             onChange={(e) => setProductSearch(e.target.value)}
             placeholder="Type to search products..."
-            className="w-full border border-teal-500 rounded-md p-3 text-black shadow-inner"
+            className="w-full border border-purple-500 rounded-md p-3 text-black shadow-inner"
           />
 
           {filteredProducts.length > 0 && (
@@ -319,7 +319,7 @@ export default function NewSalesOrderPage() {
                   type="button"
                   key={product.id}
                   onClick={() => addToCart(product)}
-                  className="w-full text-left p-4 border-b border-gray-100 hover:bg-teal-50 transition flex justify-between items-center"
+                  className="w-full text-left p-4 border-b border-gray-100 hover:bg-purple-50 transition flex justify-between items-center"
                 >
                   <div>
                     <p className="font-bold text-gray-800">{product.name}</p>
@@ -396,7 +396,7 @@ export default function NewSalesOrderPage() {
                   <p className="text-sm text-gray-600 flex justify-between gap-8"><span>Tax ({selectedTax?.name})</span> <span className="font-semibold">{formatQAR(taxAmount)}</span></p>
                 )}
                 <p className="text-sm text-gray-500 uppercase tracking-wide pt-1">Total Order Value</p>
-                <p className="text-3xl font-bold text-teal-700">{formatQAR(totalAmount)}</p>
+                <p className="text-3xl font-bold text-purple-700">{formatQAR(totalAmount)}</p>
               </div>
               <button
                 type="submit"

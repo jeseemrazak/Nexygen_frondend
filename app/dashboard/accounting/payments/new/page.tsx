@@ -113,7 +113,7 @@ export default function RegisterPaymentPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <Link href="/dashboard/accounting/payments" className="text-teal-600 hover:text-teal-800 text-sm font-bold flex items-center gap-1 mb-3">
+        <Link href="/dashboard/accounting/payments" className="text-purple-600 hover:text-purple-800 text-sm font-bold flex items-center gap-1 mb-3">
           ← Back to Payments
         </Link>
         <h1 className="text-2xl font-bold text-gray-800">Register Payment</h1>
@@ -126,14 +126,14 @@ export default function RegisterPaymentPage() {
             <button
               type="button"
               onClick={() => handlePartyTypeChange('CUSTOMER')}
-              className={`px-4 py-2 rounded-md text-sm font-bold ${partyType === 'CUSTOMER' ? 'bg-teal-600 text-white' : 'bg-gray-100 text-gray-600'}`}
+              className={`px-4 py-2 rounded-md text-sm font-bold ${partyType === 'CUSTOMER' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-600'}`}
             >
               Customer (receive money)
             </button>
             <button
               type="button"
               onClick={() => handlePartyTypeChange('SUPPLIER')}
-              className={`px-4 py-2 rounded-md text-sm font-bold ${partyType === 'SUPPLIER' ? 'bg-teal-600 text-white' : 'bg-gray-100 text-gray-600'}`}
+              className={`px-4 py-2 rounded-md text-sm font-bold ${partyType === 'SUPPLIER' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-600'}`}
             >
               Supplier (pay money)
             </button>
@@ -255,7 +255,7 @@ export default function RegisterPaymentPage() {
           <div className="flex justify-between items-center pt-4 border-t border-gray-100">
             <div>
               <p className="text-xs text-gray-500 uppercase font-bold">Total to {partyType === 'CUSTOMER' ? 'receive' : 'pay'}</p>
-              <p className="text-2xl font-bold text-teal-700">{formatQAR(totalAllocated)}</p>
+              <p className="text-2xl font-bold text-purple-700">{formatQAR(totalAllocated)}</p>
             </div>
             <button
               onClick={handleSubmit}

@@ -110,7 +110,7 @@ export default function CustomerDetailPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <Link href="/dashboard/customers" className="text-teal-600 hover:text-teal-800 text-sm font-bold flex items-center gap-1 mb-3">
+        <Link href="/dashboard/customers" className="text-purple-600 hover:text-purple-800 text-sm font-bold flex items-center gap-1 mb-3">
           ← Back to Customers
         </Link>
         <div className="flex justify-between items-start">
@@ -124,7 +124,7 @@ export default function CustomerDetailPage() {
           </div>
           <div className="text-right">
             <p className="text-xs text-gray-500 uppercase font-bold">Account Balance</p>
-            <p className={`text-2xl font-bold ${balance > 0.01 ? 'text-rose-600' : 'text-emerald-600'}`}>{formatQAR(balance)}</p>
+            <p className={`text-2xl font-bold ${balance > 0.01 ? 'text-rose-600' : 'text-purple-600'}`}>{formatQAR(balance)}</p>
           </div>
         </div>
         <div className="mt-4 pt-4 border-t border-gray-100 flex items-center gap-3">
@@ -211,7 +211,7 @@ export default function CustomerDetailPage() {
           <div className="flex justify-between items-center pt-4 border-t border-gray-100">
             <div>
               <p className="text-xs text-gray-500 uppercase font-bold">Total to Settle</p>
-              <p className="text-2xl font-bold text-teal-700">{formatQAR(totalAllocated)}</p>
+              <p className="text-2xl font-bold text-purple-700">{formatQAR(totalAllocated)}</p>
             </div>
             <button
               onClick={handleSettle}
@@ -245,7 +245,7 @@ export default function CustomerDetailPage() {
               {history.map((p: any) => (
                 <tr key={`${p.source}-${p.id}`} className="hover:bg-gray-50">
                   <td className="py-3 px-6 font-mono font-bold text-sm">
-                    <Link href={`/dashboard/accounting/payments/${p.id}?source=${p.source}`} className="text-teal-600 hover:text-teal-800 underline">
+                    <Link href={`/dashboard/accounting/payments/${p.id}?source=${p.source}`} className="text-purple-600 hover:text-purple-800 underline">
                       {p.paymentNumber}
                     </Link>
                   </td>

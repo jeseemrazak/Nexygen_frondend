@@ -31,7 +31,7 @@ export default async function SalesOrderPrintPage({ params }: { params: Promise<
   return (
     <div>
       <div className="no-print flex justify-between items-center p-4 max-w-4xl mx-auto">
-        <Link href={`/dashboard/orders/${id}`} className="text-teal-600 hover:text-teal-800 text-sm font-bold">← Back to Sales Order</Link>
+        <Link href={`/dashboard/orders/${id}`} className="text-purple-600 hover:text-purple-800 text-sm font-bold">← Back to Sales Order</Link>
         <PrintButton />
       </div>
       <DocumentPrintView

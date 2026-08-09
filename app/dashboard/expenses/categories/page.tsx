@@ -88,7 +88,7 @@ export default function ExpenseCategoriesPage() {
           <h1 className="text-2xl font-bold text-gray-800">Expense Categories</h1>
           <p className="text-sm text-gray-500 mt-1">Each category posts to its own Expense GL account when approved.</p>
         </div>
-        <Link href="/dashboard/expenses" className="text-teal-600 hover:text-teal-800 font-semibold text-sm">
+        <Link href="/dashboard/expenses" className="text-purple-600 hover:text-purple-800 font-semibold text-sm">
           ← Back to Expenses
         </Link>
       </div>
@@ -120,7 +120,7 @@ export default function ExpenseCategoriesPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-6 rounded-md text-sm disabled:bg-gray-400"
+            className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-md text-sm disabled:bg-gray-400"
           >
             {isSubmitting ? 'Adding...' : 'Add Category'}
           </button>
@@ -149,7 +149,7 @@ export default function ExpenseCategoriesPage() {
                   <td className="py-4 px-6 font-bold">{cat.name}</td>
                   <td className="py-4 px-6 text-sm text-gray-600">{cat.account.code} - {cat.account.name}</td>
                   <td className="py-4 px-6 text-sm">
-                    <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${cat.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${cat.isActive ? 'bg-purple-50 text-purple-700' : 'bg-gray-100 text-gray-500'}`}>
                       {cat.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </td>

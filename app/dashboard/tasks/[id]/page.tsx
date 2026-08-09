@@ -10,7 +10,7 @@ const STATUS_LABELS: Record<string, string> = { TODO: 'To Do', IN_PROGRESS: 'In 
 const STATUS_STYLES: Record<string, string> = {
   TODO: 'bg-slate-100 text-slate-600',
   IN_PROGRESS: 'bg-blue-50 text-blue-700',
-  DONE: 'bg-emerald-50 text-emerald-700',
+  DONE: 'bg-purple-50 text-purple-700',
 };
 const PRIORITY_STYLES: Record<string, string> = {
   LOW: 'bg-gray-100 text-gray-500',
@@ -104,7 +104,7 @@ export default function TaskDetailPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <Link href="/dashboard/tasks" className="text-teal-600 hover:text-teal-800 text-sm font-bold mb-2 inline-block">← Back to Task Board</Link>
+        <Link href="/dashboard/tasks" className="text-purple-600 hover:text-purple-800 text-sm font-bold mb-2 inline-block">← Back to Task Board</Link>
         <div className="flex justify-between items-start flex-wrap gap-4">
           <div>
             <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-3 flex-wrap">
@@ -130,7 +130,7 @@ export default function TaskDetailPage() {
               onClick={() => handleStatusChange(s)}
               disabled={statusUpdating || s === task.status}
               className={`px-4 py-2 rounded-lg text-sm font-bold border transition disabled:cursor-default ${
-                s === task.status ? `${STATUS_STYLES[s]} border-transparent` : 'bg-white text-gray-500 border-gray-200 hover:border-teal-300 hover:text-teal-700'
+                s === task.status ? `${STATUS_STYLES[s]} border-transparent` : 'bg-white text-gray-500 border-gray-200 hover:border-purple-300 hover:text-purple-700'
               }`}
             >
               {STATUS_LABELS[s]}
@@ -171,7 +171,7 @@ export default function TaskDetailPage() {
               {users.map((u) => <option key={u.id} value={u.id}>{u.name || u.email}</option>)}
             </select>
           </div>
-          <button type="submit" disabled={saving} className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition disabled:opacity-50">
+          <button type="submit" disabled={saving} className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition disabled:opacity-50">
             {saving ? 'Saving...' : 'Save Changes'}
           </button>
         </form>

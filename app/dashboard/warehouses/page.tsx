@@ -45,7 +45,7 @@ export default async function WarehousesListPage() {
         
         <Link 
           href="/dashboard/warehouses/new" 
-          className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-md transition-colors shadow-sm flex items-center gap-2"
+          className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md transition-colors shadow-sm flex items-center gap-2"
         >
           <span>➕</span> Add Warehouse
         </Link>
@@ -72,13 +72,13 @@ export default async function WarehousesListPage() {
                 <tr key={warehouse.id} className="hover:bg-gray-50 transition-colors">
                   <td className="py-4 px-6 text-sm text-gray-500">#{warehouse.id}</td>
                   <td className="py-4 px-6 font-bold text-gray-800">
-                    <Link href={`/dashboard/warehouses/${warehouse.id}`} className="text-teal-700 hover:underline">
+                    <Link href={`/dashboard/warehouses/${warehouse.id}`} className="text-purple-700 hover:underline">
                       {warehouse.name}
                     </Link>
                   </td>
                   <td className="py-4 px-6 text-sm text-gray-500">{warehouse.location || <span className="italic text-gray-400">Not specified</span>}</td>
                   <td className="py-4 px-6 text-sm font-semibold text-right">
-                    <Link href={`/dashboard/warehouses/${warehouse.id}`} className="text-teal-700 hover:underline">
+                    <Link href={`/dashboard/warehouses/${warehouse.id}`} className="text-purple-700 hover:underline">
                       {warehouse.inventories?.length || 0}
                     </Link>
                   </td>

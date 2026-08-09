@@ -102,7 +102,7 @@ function LedgerContent() {
           <div className="bg-gray-50 border-b border-gray-200 px-6 py-4 flex justify-between items-center gap-4">
             <h2 className="text-lg font-bold text-gray-800">{ledger.account.code} - {ledger.account.name}</h2>
             <div className="flex items-center gap-4">
-              <span className="font-bold text-teal-700">Ending balance: {formatQAR(ledger.endingBalance)}</span>
+              <span className="font-bold text-purple-700">Ending balance: {formatQAR(ledger.endingBalance)}</span>
               <a
                 href={`/dashboard/accounting/ledger/print?${printQuery.toString()}`}
                 target="_blank"

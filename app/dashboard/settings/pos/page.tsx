@@ -43,7 +43,7 @@ export default async function PosSettingsPage({ searchParams }: { searchParams: 
       </div>
 
       {hasError && <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md"><p className="text-sm text-red-700 font-medium">Failed to save. Please try again.</p></div>}
-      {saved && <div className="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-md"><p className="text-sm text-emerald-700 font-medium">POS settings saved.</p></div>}
+      {saved && <div className="bg-purple-50 border-l-4 border-purple-500 p-4 rounded-md"><p className="text-sm text-purple-700 font-medium">POS settings saved.</p></div>}
 
       <form action={updatePosSettings} className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 space-y-6">
         <div>

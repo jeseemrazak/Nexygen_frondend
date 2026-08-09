@@ -128,7 +128,7 @@ export default function StockTransferPage() {
             <label className="block text-sm font-bold text-slate-700 mb-2">Operation Type</label>
             <div className="flex gap-4">
               {['TRANSFER', 'WRITE_OFF', 'ADJUSTMENT'].map((op) => (
-                <label key={op} className={`flex-1 flex items-center justify-center p-3 border rounded-lg cursor-pointer transition-all font-bold text-sm ${type === op ? 'bg-teal-50 border-teal-500 text-teal-700 ring-1 ring-teal-500' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}>
+                <label key={op} className={`flex-1 flex items-center justify-center p-3 border rounded-lg cursor-pointer transition-all font-bold text-sm ${type === op ? 'bg-purple-50 border-purple-500 text-purple-700 ring-1 ring-purple-500' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}>
                   <input 
                     type="radio" 
                     name="type" 
@@ -156,7 +156,7 @@ export default function StockTransferPage() {
                   required 
                   value={fromWarehouse} 
                   onChange={(e) => setFromWarehouse(e.target.value)} 
-                  className="w-full border border-slate-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-teal-500 outline-none bg-white"
+                  className="w-full border border-slate-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-purple-500 outline-none bg-white"
                 >
                   <option value="">-- Select Source --</option>
                   {warehouses.map(wh => (
@@ -173,7 +173,7 @@ export default function StockTransferPage() {
                   required 
                   value={toWarehouse} 
                   onChange={(e) => setToWarehouse(e.target.value)} 
-                  className="w-full border border-slate-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-teal-500 outline-none bg-white"
+                  className="w-full border border-slate-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-purple-500 outline-none bg-white"
                 >
                   <option value="">-- Select Destination --</option>
                   {warehouses.map(wh => (
@@ -199,11 +199,11 @@ export default function StockTransferPage() {
                     }
                   }}
                   onFocus={() => setShowSearchDropdown(true)}
-                  className={`w-full border ${selectedProduct ? 'border-teal-500 bg-teal-50/30' : 'border-slate-300'} rounded-md p-3 text-sm focus:ring-2 focus:ring-teal-500 outline-none`} 
+                  className={`w-full border ${selectedProduct ? 'border-purple-500 bg-purple-50/30' : 'border-slate-300'} rounded-md p-3 text-sm focus:ring-2 focus:ring-purple-500 outline-none`} 
                   placeholder="Scan PCS/Box barcode, or type product name..." 
                 />
                 {selectedProduct && (
-                  <span className="absolute right-3 top-3.5 text-teal-600 font-bold text-sm flex items-center gap-1">
+                  <span className="absolute right-3 top-3.5 text-purple-600 font-bold text-sm flex items-center gap-1">
                     <span>✓</span> Selected
                   </span>
                 )}
@@ -224,7 +224,7 @@ export default function StockTransferPage() {
                           setShowSearchDropdown(false);
                           setBatchNumber('');
                         }}
-                        className="p-3 hover:bg-teal-50 cursor-pointer transition-colors"
+                        className="p-3 hover:bg-purple-50 cursor-pointer transition-colors"
                       >
                         <div className="font-bold text-slate-800">{p.name} <span className="text-xs font-normal text-slate-400 ml-1">({p.sku})</span></div>
                         <div className="text-xs font-mono text-slate-500 mt-1 flex gap-3">
@@ -247,7 +247,7 @@ export default function StockTransferPage() {
                   type="text" 
                   value={batchNumber} 
                   onChange={(e) => setBatchNumber(e.target.value)} 
-                  className="w-full border border-slate-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-teal-500 outline-none" 
+                  className="w-full border border-slate-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-purple-500 outline-none" 
                   placeholder="Enter new batch (e.g., B-NEW)" 
                 />
               ) : (
@@ -255,7 +255,7 @@ export default function StockTransferPage() {
                   required 
                   value={batchNumber} 
                   onChange={(e) => setBatchNumber(e.target.value)} 
-                  className="w-full border border-slate-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-teal-500 outline-none bg-white"
+                  className="w-full border border-slate-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-purple-500 outline-none bg-white"
                   disabled={!selectedProduct}
                 >
                   <option value="">{selectedProduct ? '-- Select Available Batch --' : 'Select a product first'}</option>
@@ -281,7 +281,7 @@ export default function StockTransferPage() {
                   step="0.01"
                   value={unitCost}
                   onChange={(e) => setUnitCost(e.target.value)}
-                  className="w-full border border-slate-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-teal-500 outline-none"
+                  className="w-full border border-slate-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-purple-500 outline-none"
                   placeholder="Leave blank if unknown"
                 />
               </div>
@@ -290,17 +290,17 @@ export default function StockTransferPage() {
             {/* Quantity */}
             <div>
               <label className="block text-sm font-bold text-slate-700 mb-1">Quantity</label>
-              <input required type="number" min="1" value={quantity} onChange={(e) => setQuantity(e.target.value)} className="w-full border border-slate-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-teal-500 outline-none" placeholder="Amount to move" />
+              <input required type="number" min="1" value={quantity} onChange={(e) => setQuantity(e.target.value)} className="w-full border border-slate-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-purple-500 outline-none" placeholder="Amount to move" />
             </div>
 
             {/* Reason */}
             <div className="md:col-span-2">
               <label className="block text-sm font-bold text-slate-700 mb-1">Reason / Notes (Optional)</label>
-              <input type="text" value={reason} onChange={(e) => setReason(e.target.value)} className="w-full border border-slate-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-teal-500 outline-none" placeholder="e.g., Damaged boxes, routine transfer..." />
+              <input type="text" value={reason} onChange={(e) => setReason(e.target.value)} className="w-full border border-slate-300 rounded-md p-3 text-sm focus:ring-2 focus:ring-purple-500 outline-none" placeholder="e.g., Damaged boxes, routine transfer..." />
             </div>
           </div>
 
-          <button disabled={loading} type="submit" className="w-full bg-teal-600 hover:bg-teal-700 text-white font-black text-lg py-4 rounded-xl shadow-md transition-all">
+          <button disabled={loading} type="submit" className="w-full bg-purple-600 hover:bg-purple-700 text-white font-black text-lg py-4 rounded-xl shadow-md transition-all">
             {loading ? 'Processing Operation...' : 'Confirm Operation'}
           </button>
         </form>

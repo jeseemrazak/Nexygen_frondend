@@ -28,7 +28,7 @@ export default async function AppStorePage() {
                   <div className="flex items-center gap-2">
                     <h2 className="font-bold text-gray-800">{m.name}</h2>
                     {m.isActive && (
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-emerald-50 text-emerald-700">Installed</span>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-purple-50 text-purple-700">Installed</span>
                     )}
                   </div>
                   <p className="text-xs text-gray-400 mt-0.5">{m.category} · v{m.version}</p>
@@ -40,7 +40,7 @@ export default async function AppStorePage() {
                   <>
                     <Link
                       href={`/dashboard/settings/apps/${m.key}`}
-                      className="text-teal-600 hover:text-teal-800 font-bold text-sm"
+                      className="text-purple-600 hover:text-purple-800 font-bold text-sm"
                     >
                       Configure
                     </Link>
@@ -52,7 +52,7 @@ export default async function AppStorePage() {
                   </>
                 ) : (
                   <form action={installModule.bind(null, m.key)}>
-                    <button type="submit" className="bg-teal-600 hover:bg-teal-700 text-white font-bold px-4 py-2 rounded-md text-sm shadow-sm">
+                    <button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-2 rounded-md text-sm shadow-sm">
                       Install
                     </button>
                   </form>

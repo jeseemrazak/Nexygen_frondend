@@ -44,7 +44,7 @@ export default function ArchiveProductButton({ productId, isActive }: { productI
       onClick={handleToggle}
       disabled={isSaving}
       className={`font-semibold text-sm underline disabled:opacity-50 ${
-        isActive ? 'text-rose-600 hover:text-rose-800' : 'text-emerald-600 hover:text-emerald-800'
+        isActive ? 'text-rose-600 hover:text-rose-800' : 'text-purple-600 hover:text-purple-800'
       }`}
     >
       {isSaving ? 'Saving...' : isActive ? 'Archive' : 'Reactivate'}

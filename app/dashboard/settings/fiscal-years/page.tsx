@@ -119,7 +119,7 @@ export default function FiscalYearsPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-6 rounded-md text-sm disabled:bg-gray-400"
+            className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-md text-sm disabled:bg-gray-400"
           >
             {isSubmitting ? 'Adding...' : 'Add Fiscal Year'}
           </button>
@@ -150,7 +150,7 @@ export default function FiscalYearsPage() {
                   <td className="py-4 px-6 text-sm text-gray-600">{new Date(fy.startDate).toLocaleDateString()}</td>
                   <td className="py-4 px-6 text-sm text-gray-600">{new Date(fy.endDate).toLocaleDateString()}</td>
                   <td className="py-4 px-6 text-sm">
-                    <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${fy.status === 'LOCKED' ? 'bg-rose-50 text-rose-700' : 'bg-emerald-50 text-emerald-700'}`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${fy.status === 'LOCKED' ? 'bg-rose-50 text-rose-700' : 'bg-purple-50 text-purple-700'}`}>
                       {fy.status === 'LOCKED' ? 'Locked' : 'Open'}
                     </span>
                   </td>

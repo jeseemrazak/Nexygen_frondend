@@ -9,7 +9,7 @@ const STATUS_LABELS: Record<string, string> = { TODO: 'To Do', IN_PROGRESS: 'In 
 const STATUS_STYLES: Record<string, string> = {
   TODO: 'bg-slate-100 text-slate-600 border-slate-200',
   IN_PROGRESS: 'bg-blue-50 text-blue-700 border-blue-200',
-  DONE: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  DONE: 'bg-purple-50 text-purple-700 border-purple-200',
 };
 const PRIORITY_STYLES: Record<string, string> = {
   LOW: 'bg-gray-100 text-gray-500',
@@ -80,7 +80,7 @@ export default function TasksPage() {
       <div className="max-w-2xl mx-auto">
         <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 text-center">
           <p className="text-gray-500">The Todo List module isn&apos;t installed yet.</p>
-          <Link href="/dashboard/settings/apps" className="text-teal-600 hover:text-teal-800 font-bold text-sm mt-3 inline-block">
+          <Link href="/dashboard/settings/apps" className="text-purple-600 hover:text-purple-800 font-bold text-sm mt-3 inline-block">
             ← Go to App Store
           </Link>
         </div>
@@ -100,7 +100,7 @@ export default function TasksPage() {
             <option value="">All Assignees</option>
             {users.map((u) => <option key={u.id} value={u.id}>{u.name || u.email}</option>)}
           </select>
-          <Link href="/dashboard/tasks/new" className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition whitespace-nowrap">
+          <Link href="/dashboard/tasks/new" className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition whitespace-nowrap">
             + New Task
           </Link>
         </div>
@@ -121,18 +121,18 @@ export default function TasksPage() {
                 ) : (
                   columnTasks.map((task) => (
                     <div key={task.id} className="bg-gray-50 border border-gray-200 rounded-lg p-3">
-                      <Link href={`/dashboard/tasks/${task.id}`} className="font-bold text-gray-800 text-sm hover:text-teal-700">{task.title}</Link>
+                      <Link href={`/dashboard/tasks/${task.id}`} className="font-bold text-gray-800 text-sm hover:text-purple-700">{task.title}</Link>
                       <div className="flex items-center gap-2 mt-2 flex-wrap">
                         <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${PRIORITY_STYLES[task.priority]}`}>{task.priority}</span>
                         {task.dueDate && <span className="text-[11px] text-gray-500">📅 {fmtDate(task.dueDate)}</span>}
                       </div>
-                      {task.assignedTo && <p className="text-[11px] text-teal-600 font-semibold mt-1">👤 {task.assignedTo.name}</p>}
+                      {task.assignedTo && <p className="text-[11px] text-purple-600 font-semibold mt-1">👤 {task.assignedTo.name}</p>}
                       <div className="flex gap-1 mt-2">
                         {STATUSES.filter((s) => s !== status).map((s) => (
                           <button
                             key={s}
                             onClick={() => moveTask(task.id, s)}
-                            className="text-[10px] font-bold px-2 py-1 rounded bg-white border border-gray-200 text-gray-500 hover:border-teal-300 hover:text-teal-700 transition"
+                            className="text-[10px] font-bold px-2 py-1 rounded bg-white border border-gray-200 text-gray-500 hover:border-purple-300 hover:text-purple-700 transition"
                           >
                             → {STATUS_LABELS[s]}
                           </button>

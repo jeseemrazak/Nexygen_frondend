@@ -33,7 +33,7 @@ export default async function WarehouseDetailPage({ params }: { params: Promise<
     <div className="max-w-6xl mx-auto space-y-6">
 
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <Link href="/dashboard/warehouses" className="text-teal-600 hover:text-teal-800 text-sm font-bold flex items-center gap-1 mb-3">
+        <Link href="/dashboard/warehouses" className="text-purple-600 hover:text-purple-800 text-sm font-bold flex items-center gap-1 mb-3">
           ← Back to Warehouses
         </Link>
         <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
@@ -48,7 +48,7 @@ export default async function WarehouseDetailPage({ params }: { params: Promise<
             </div>
             <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-center">
               <p className="text-xs font-bold text-gray-500 uppercase">Total Units</p>
-              <p className="text-xl font-bold text-teal-700">{totalUnits}</p>
+              <p className="text-xl font-bold text-purple-700">{totalUnits}</p>
             </div>
           </div>
         </div>
@@ -84,7 +84,7 @@ export default async function WarehouseDetailPage({ params }: { params: Promise<
                     <td className="py-4 px-6 text-right">
                       <span className={`px-3 py-1 rounded text-sm font-bold ${
                         inv.quantity === 0 ? 'bg-red-100 text-red-700' :
-                        inv.quantity < 20 ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'
+                        inv.quantity < 20 ? 'bg-yellow-100 text-yellow-800' : 'bg-purple-100 text-purple-800'
                       }`}>
                         {inv.quantity}
                       </span>

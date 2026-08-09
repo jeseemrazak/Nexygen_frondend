@@ -37,7 +37,7 @@ const formatDate = (dateString: string) => new Date(dateString).toLocaleString('
 const statusBadge: Record<string, string> = {
   DRAFT: 'bg-slate-50 text-slate-700 ring-slate-600/20',
   CONFIRMED: 'bg-blue-50 text-blue-700 ring-blue-600/20',
-  DONE: 'bg-emerald-50 text-emerald-700 ring-emerald-600/20',
+  DONE: 'bg-purple-50 text-purple-700 ring-purple-600/20',
   CANCELLED: 'bg-rose-50 text-rose-700 ring-rose-600/20',
 };
 
@@ -76,7 +76,7 @@ export default async function SalesOrdersDashboard({ searchParams }: { searchPar
           )}
         </form>
 
-        <Link href="/dashboard/orders/new" className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-6 rounded-md shadow-sm transition whitespace-nowrap">
+        <Link href="/dashboard/orders/new" className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-md shadow-sm transition whitespace-nowrap">
           ➕ Create Sales Order
         </Link>
       </div>
@@ -101,7 +101,7 @@ export default async function SalesOrdersDashboard({ searchParams }: { searchPar
             <tbody className="divide-y divide-gray-100 text-black">
               {orders.map((order: any) => (
                 <tr key={order.id} className="hover:bg-gray-50">
-                  <td className="py-4 px-6 font-bold text-teal-700">SO-{String(order.id).padStart(4, '0')}</td>
+                  <td className="py-4 px-6 font-bold text-purple-700">SO-{String(order.id).padStart(4, '0')}</td>
                   <td className="py-4 px-6 text-sm text-gray-600">{formatDate(order.createdAt)}</td>
                   <td className="py-4 px-6 text-sm font-bold">{order.clientName || 'Walk-in'}</td>
                   <td className="py-4 px-6 text-sm text-gray-600">{order.user?.name || <span className="text-amber-600 font-semibold">Unassigned</span>}</td>

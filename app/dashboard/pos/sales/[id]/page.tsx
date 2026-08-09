@@ -28,7 +28,7 @@ export default async function PosSaleDetailPage({ params }: { params: Promise<{ 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <Link href="/dashboard/pos/sales" className="text-teal-600 hover:text-teal-800 text-sm font-bold flex items-center gap-1 mb-3">
+        <Link href="/dashboard/pos/sales" className="text-purple-600 hover:text-purple-800 text-sm font-bold flex items-center gap-1 mb-3">
           ← Back to POS Sales
         </Link>
         <div className="flex justify-between items-start flex-wrap gap-4">

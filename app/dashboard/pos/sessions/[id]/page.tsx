@@ -33,7 +33,7 @@ export default async function PosSessionDetailPage({ params }: { params: Promise
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex flex-col md:flex-row justify-between md:items-start gap-4 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
         <div>
-          <Link href="/dashboard/pos/sessions" className="text-teal-600 hover:text-teal-800 text-sm font-bold mb-2 inline-block">← Back to Sessions</Link>
+          <Link href="/dashboard/pos/sessions" className="text-purple-600 hover:text-purple-800 text-sm font-bold mb-2 inline-block">← Back to Sessions</Link>
           <h1 className="text-2xl font-bold text-gray-800">Session #{session.id} — {session.warehouse?.name}</h1>
           <p className="text-sm text-gray-500 mt-1">
             Opened {formatDateTime(session.openedAt)}{session.openedBy ? ` by ${session.openedBy.name}` : ''}
@@ -41,7 +41,7 @@ export default async function PosSessionDetailPage({ params }: { params: Promise
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${session.status === 'OPEN' ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
+          <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${session.status === 'OPEN' ? 'bg-purple-50 text-purple-700' : 'bg-gray-100 text-gray-500'}`}>
             {session.status}
           </span>
           <Link href={`/dashboard/pos/sessions/${id}/print`} className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 px-6 rounded-lg transition-all">
@@ -90,7 +90,7 @@ export default async function PosSessionDetailPage({ params }: { params: Promise
             <div>
               <p className="text-xs font-bold text-gray-500 uppercase">Variance</p>
               <p className={`text-lg font-bold mt-1 ${
-                session.cashVariance == null ? 'text-gray-800' : session.cashVariance === 0 ? 'text-emerald-600' : session.cashVariance > 0 ? 'text-amber-600' : 'text-rose-600'
+                session.cashVariance == null ? 'text-gray-800' : session.cashVariance === 0 ? 'text-purple-600' : session.cashVariance > 0 ? 'text-amber-600' : 'text-rose-600'
               }`}>
                 {session.cashVariance != null ? `${session.cashVariance > 0 ? '+' : ''}${formatQAR(session.cashVariance)}` : '—'}
               </p>
@@ -119,13 +119,13 @@ export default async function PosSessionDetailPage({ params }: { params: Promise
                 <tr key={s.id} className={s.cancelledAt ? 'opacity-50' : ''}>
                   <td className="py-3 px-6 text-sm text-gray-600">{formatTime(s.createdAt)}</td>
                   <td className="py-3 px-6 text-sm font-mono">
-                    <Link href={`/dashboard/pos/sales/${s.id}`} className="text-teal-600 hover:text-teal-800 font-bold">{s.invoiceNumber}</Link>
+                    <Link href={`/dashboard/pos/sales/${s.id}`} className="text-purple-600 hover:text-purple-800 font-bold">{s.invoiceNumber}</Link>
                   </td>
                   <td className="py-3 px-6 text-sm text-gray-600">{s.servedBy?.name || '—'}</td>
                   <td className="py-3 px-6 text-sm text-gray-600">{s.paymentMethod?.name}</td>
                   <td className="py-3 px-6 text-right font-bold text-sm">{formatQAR(s.totalAmount)}</td>
                   <td className="py-3 px-6 text-sm">
-                    {s.cancelledAt ? <span className="text-rose-600 font-bold text-xs">CANCELLED</span> : <span className="text-emerald-600 font-bold text-xs">OK</span>}
+                    {s.cancelledAt ? <span className="text-rose-600 font-bold text-xs">CANCELLED</span> : <span className="text-purple-600 font-bold text-xs">OK</span>}
                   </td>
                 </tr>
               ))}

@@ -10,7 +10,7 @@ const STAGE_STYLES: Record<string, string> = {
   NEW: 'bg-slate-100 text-slate-600 border-slate-200',
   CONTACTED: 'bg-blue-50 text-blue-700 border-blue-200',
   QUALIFIED: 'bg-amber-50 text-amber-700 border-amber-200',
-  WON: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  WON: 'bg-purple-50 text-purple-700 border-purple-200',
   LOST: 'bg-rose-50 text-rose-700 border-rose-200',
 };
 
@@ -46,7 +46,7 @@ export default function LeadsPage() {
       <div className="max-w-2xl mx-auto">
         <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 text-center">
           <p className="text-gray-500">The CRM module isn&apos;t installed yet.</p>
-          <Link href="/dashboard/settings/apps" className="text-teal-600 hover:text-teal-800 font-bold text-sm mt-3 inline-block">
+          <Link href="/dashboard/settings/apps" className="text-purple-600 hover:text-purple-800 font-bold text-sm mt-3 inline-block">
             ← Go to App Store
           </Link>
         </div>
@@ -63,7 +63,7 @@ export default function LeadsPage() {
         </div>
         <Link
           href="/dashboard/leads/new"
-          className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition"
+          className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition"
         >
           + Add Lead
         </Link>
@@ -86,11 +86,11 @@ export default function LeadsPage() {
                     <Link
                       key={lead.id}
                       href={`/dashboard/leads/${lead.id}`}
-                      className="block bg-gray-50 hover:bg-teal-50 border border-gray-200 hover:border-teal-200 rounded-lg p-3 transition"
+                      className="block bg-gray-50 hover:bg-purple-50 border border-gray-200 hover:border-purple-200 rounded-lg p-3 transition"
                     >
                       <p className="font-bold text-gray-800 text-sm">{lead.name}</p>
                       {lead.contactPerson && <p className="text-xs text-gray-500 mt-0.5">{lead.contactPerson}</p>}
-                      {lead.assignedTo && <p className="text-[11px] text-teal-600 font-semibold mt-1">👤 {lead.assignedTo.name}</p>}
+                      {lead.assignedTo && <p className="text-[11px] text-purple-600 font-semibold mt-1">👤 {lead.assignedTo.name}</p>}
                     </Link>
                   ))
                 )}

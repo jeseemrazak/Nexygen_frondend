@@ -11,7 +11,7 @@ const formatDateTime = (d: string) => new Date(d).toLocaleString('en-QA', { mont
 const STATUS_STYLES: Record<string, string> = {
   OPEN: 'bg-amber-50 text-amber-700',
   IN_PROGRESS: 'bg-blue-50 text-blue-700',
-  COMPLETED: 'bg-emerald-50 text-emerald-700',
+  COMPLETED: 'bg-purple-50 text-purple-700',
   CANCELLED: 'bg-gray-100 text-gray-500',
 };
 
@@ -142,12 +142,12 @@ export default function JobOrderDetailPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <Link href="/dashboard/job-orders" className="text-teal-600 hover:text-teal-800 text-sm font-bold mb-2 inline-block">← Back to Job Orders</Link>
+        <Link href="/dashboard/job-orders" className="text-purple-600 hover:text-purple-800 text-sm font-bold mb-2 inline-block">← Back to Job Orders</Link>
         <div className="flex justify-between items-start">
           <div>
             <h1 className="text-2xl font-bold text-gray-800 font-mono">{jobOrder.jobNumber}</h1>
             <p className="text-sm text-gray-500 mt-1">
-              <Link href={`/dashboard/vehicles/${jobOrder.vehicleId}`} className="font-mono text-teal-700 hover:underline">{jobOrder.vehicle?.plateNumber}</Link>
+              <Link href={`/dashboard/vehicles/${jobOrder.vehicleId}`} className="font-mono text-purple-700 hover:underline">{jobOrder.vehicle?.plateNumber}</Link>
               {jobOrder.customer && <> · {jobOrder.customer.name}</>}
               {jobOrder.technician && <> · Tech: {jobOrder.technician.name}</>}
             </p>
@@ -164,7 +164,7 @@ export default function JobOrderDetailPage() {
             </button>
           )}
           {jobOrder.status === 'IN_PROGRESS' && (
-            <button onClick={() => handleStatusChange('COMPLETED')} disabled={statusUpdating} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-md text-sm disabled:opacity-50">
+            <button onClick={() => handleStatusChange('COMPLETED')} disabled={statusUpdating} className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-2 rounded-md text-sm disabled:opacity-50">
               Mark Completed
             </button>
           )}
@@ -235,7 +235,7 @@ export default function JobOrderDetailPage() {
               <label className="block text-xs font-semibold text-gray-500 mb-1">Qty</label>
               <input type="number" min={1} value={partQty} onChange={(e) => setPartQty(e.target.value)} className="w-full border border-gray-300 rounded-md p-2 text-black text-sm" />
             </div>
-            <button onClick={handleAddPart} disabled={addingPart || !partProductId} className="bg-teal-600 hover:bg-teal-700 text-white font-bold px-4 py-2 rounded-md text-sm shadow-sm disabled:bg-gray-300">
+            <button onClick={handleAddPart} disabled={addingPart || !partProductId} className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-2 rounded-md text-sm shadow-sm disabled:bg-gray-300">
               {addingPart ? 'Adding...' : 'Add Part'}
             </button>
           </div>
@@ -293,7 +293,7 @@ export default function JobOrderDetailPage() {
               <label className="block text-xs font-semibold text-gray-500 mb-1">Or Flat Amount</label>
               <input type="number" value={laborAmount} onChange={(e) => setLaborAmount(e.target.value)} placeholder="QAR" className="w-full border border-gray-300 rounded-md p-2 text-black text-sm" />
             </div>
-            <button onClick={handleAddLabor} disabled={addingLabor || !laborDescription} className="bg-teal-600 hover:bg-teal-700 text-white font-bold px-4 py-2 rounded-md text-sm shadow-sm disabled:bg-gray-300">
+            <button onClick={handleAddLabor} disabled={addingLabor || !laborDescription} className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-2 rounded-md text-sm shadow-sm disabled:bg-gray-300">
               {addingLabor ? 'Adding...' : 'Add Labor'}
             </button>
           </div>
@@ -312,7 +312,7 @@ export default function JobOrderDetailPage() {
         </div>
         <div className="flex justify-between text-lg font-bold text-gray-800 pt-2 border-t border-gray-100 mt-2">
           <span>Total</span>
-          <span className="text-teal-700">{formatQAR(jobOrder.totalAmount)}</span>
+          <span className="text-purple-700">{formatQAR(jobOrder.totalAmount)}</span>
         </div>
       </div>
     </div>

@@ -88,7 +88,7 @@ export default function QuotationDetailsPage() {
 
       <div className="flex flex-col md:flex-row justify-between md:items-start gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
         <div>
-          <Link href="/dashboard/quotations" className="text-teal-600 hover:text-teal-800 text-sm font-bold flex items-center gap-1 mb-3 transition-colors">
+          <Link href="/dashboard/quotations" className="text-purple-600 hover:text-purple-800 text-sm font-bold flex items-center gap-1 mb-3 transition-colors">
             ← Back to Quotations
           </Link>
           <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
@@ -137,12 +137,12 @@ export default function QuotationDetailsPage() {
             )}
             {quotation.status === 'SENT' && (
               <>
-                <button onClick={() => updateStatus('ACCEPTED')} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition-all">Mark Accepted</button>
+                <button onClick={() => updateStatus('ACCEPTED')} className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition-all">Mark Accepted</button>
                 <button onClick={() => updateStatus('REJECTED')} className="bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold py-2.5 px-6 rounded-lg transition-all">Reject</button>
               </>
             )}
             {quotation.status === 'CONVERTED' && quotation.convertedOrder && (
-              <Link href={`/dashboard/orders/${quotation.convertedOrder.id}`} className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition-all">
+              <Link href={`/dashboard/orders/${quotation.convertedOrder.id}`} className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition-all">
                 View Order #{quotation.convertedOrder.id}
               </Link>
             )}
@@ -223,7 +223,7 @@ export default function QuotationDetailsPage() {
             <button
               onClick={handleConvert}
               disabled={isConverting}
-              className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-8 rounded-md shadow-sm disabled:bg-gray-400"
+              className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-md shadow-sm disabled:bg-gray-400"
             >
               {isConverting ? 'Converting...' : 'Convert to Sales Order'}
             </button>

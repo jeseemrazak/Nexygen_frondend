@@ -24,7 +24,7 @@ const formatDate = (dateString: string) => new Date(dateString).toLocaleString('
 const statusBadge: Record<string, string> = {
   PENDING: 'bg-amber-50 text-amber-700 ring-amber-600/20',
   SHIPPED: 'bg-blue-50 text-blue-700 ring-blue-600/20',
-  DELIVERED: 'bg-emerald-50 text-emerald-700 ring-emerald-600/20',
+  DELIVERED: 'bg-purple-50 text-purple-700 ring-purple-600/20',
   CANCELLED: 'bg-rose-50 text-rose-700 ring-rose-600/20',
 };
 
@@ -57,10 +57,10 @@ export default async function DeliveriesDashboard() {
             <tbody className="divide-y divide-gray-100 text-black">
               {deliveries.map((d: any) => (
                 <tr key={d.id} className="hover:bg-gray-50">
-                  <td className="py-4 px-6 font-bold text-teal-700">DEL-{String(d.id).padStart(4, '0')}</td>
+                  <td className="py-4 px-6 font-bold text-purple-700">DEL-{String(d.id).padStart(4, '0')}</td>
                   <td className="py-4 px-6 text-sm text-gray-600">{formatDate(d.createdAt)}</td>
                   <td className="py-4 px-6 text-sm">
-                    <Link href={`/dashboard/orders/${d.salesOrderId}`} className="text-teal-600 hover:underline font-bold">
+                    <Link href={`/dashboard/orders/${d.salesOrderId}`} className="text-purple-600 hover:underline font-bold">
                       SO-{String(d.salesOrderId).padStart(4, '0')}
                     </Link>
                   </td>

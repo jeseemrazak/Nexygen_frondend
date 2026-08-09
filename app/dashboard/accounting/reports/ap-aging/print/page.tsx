@@ -37,7 +37,7 @@ export default async function ApAgingPrintPage({ searchParams }: { searchParams:
   return (
     <div>
       <div className="no-print flex justify-between items-center p-4 max-w-4xl mx-auto">
-        <Link href="/dashboard/accounting/reports/ap-aging" className="text-teal-600 hover:text-teal-800 text-sm font-bold">← Back to AP Aging</Link>
+        <Link href="/dashboard/accounting/reports/ap-aging" className="text-purple-600 hover:text-purple-800 text-sm font-bold">← Back to AP Aging</Link>
         <PrintButton />
       </div>
       <TabularReportView

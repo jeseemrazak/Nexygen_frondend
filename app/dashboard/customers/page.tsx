@@ -34,7 +34,7 @@ export default async function CustomersListPage() {
 
         <Link
           href="/dashboard/customers/new"
-          className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-md transition-colors shadow-sm flex items-center gap-2"
+          className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md transition-colors shadow-sm flex items-center gap-2"
         >
           <span>➕</span> Add Customer
         </Link>

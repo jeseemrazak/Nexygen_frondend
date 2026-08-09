@@ -11,7 +11,7 @@ const STAGE_STYLES: Record<string, string> = {
   NEW: 'bg-slate-100 text-slate-600',
   CONTACTED: 'bg-blue-50 text-blue-700',
   QUALIFIED: 'bg-amber-50 text-amber-700',
-  WON: 'bg-emerald-50 text-emerald-700',
+  WON: 'bg-purple-50 text-purple-700',
   LOST: 'bg-rose-50 text-rose-700',
 };
 
@@ -86,14 +86,14 @@ export default function LeadDetailPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <Link href="/dashboard/leads" className="text-teal-600 hover:text-teal-800 text-sm font-bold mb-2 inline-block">← Back to Leads</Link>
+        <Link href="/dashboard/leads" className="text-purple-600 hover:text-purple-800 text-sm font-bold mb-2 inline-block">← Back to Leads</Link>
         <div className="flex justify-between items-start flex-wrap gap-4">
           <div>
             <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-3 flex-wrap">
               {lead.name}
               <span className={`text-xs font-bold px-3 py-1 rounded-full ${STAGE_STYLES[lead.stage]}`}>{lead.stage.replace('_', ' ')}</span>
               {lead.convertedCustomer && (
-                <Link href={`/dashboard/customers/${lead.convertedCustomer.id}`} className="text-xs font-bold px-3 py-1 rounded-full bg-teal-50 text-teal-700 hover:bg-teal-100">
+                <Link href={`/dashboard/customers/${lead.convertedCustomer.id}`} className="text-xs font-bold px-3 py-1 rounded-full bg-purple-50 text-purple-700 hover:bg-purple-100">
                   ✓ Converted to Customer
                 </Link>
               )}
@@ -117,7 +117,7 @@ export default function LeadDetailPage() {
               onClick={() => handleStageChange(s)}
               disabled={stageUpdating || s === lead.stage}
               className={`px-4 py-2 rounded-lg text-sm font-bold border transition disabled:cursor-default ${
-                s === lead.stage ? `${STAGE_STYLES[s]} border-transparent` : 'bg-white text-gray-500 border-gray-200 hover:border-teal-300 hover:text-teal-700'
+                s === lead.stage ? `${STAGE_STYLES[s]} border-transparent` : 'bg-white text-gray-500 border-gray-200 hover:border-purple-300 hover:text-purple-700'
               }`}
             >
               {s.replace('_', ' ')}
@@ -128,7 +128,7 @@ export default function LeadDetailPage() {
           <button
             onClick={handleConvert}
             disabled={converting}
-            className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition disabled:opacity-50"
+            className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition disabled:opacity-50"
           >
             {converting ? 'Converting...' : '→ Convert to Customer'}
           </button>
@@ -153,7 +153,7 @@ export default function LeadDetailPage() {
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
           <h2 className="font-bold text-gray-800">Appointments</h2>
-          <Link href={`/dashboard/appointments/new?leadId=${lead.id}`} className="text-teal-600 hover:text-teal-800 font-bold text-sm">+ Schedule</Link>
+          <Link href={`/dashboard/appointments/new?leadId=${lead.id}`} className="text-purple-600 hover:text-purple-800 font-bold text-sm">+ Schedule</Link>
         </div>
         {lead.appointments?.length === 0 ? (
           <div className="p-6 text-center text-gray-400 text-sm">No appointments yet.</div>

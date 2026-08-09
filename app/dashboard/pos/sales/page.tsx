@@ -48,7 +48,7 @@ export default async function PosSalesPage() {
             <tbody className="divide-y divide-gray-100 text-black">
               {sales.map((s: any) => (
                 <tr key={s.id} className={`hover:bg-gray-50 transition-colors ${s.cancelledAt ? 'opacity-50' : ''}`}>
-                  <td className="py-4 px-6 font-mono font-bold text-teal-700">
+                  <td className="py-4 px-6 font-mono font-bold text-purple-700">
                     <Link href={`/dashboard/pos/sales/${s.id}`} className="hover:underline">{s.invoiceNumber}</Link>
                     {s.cancelledAt && <span className="ml-2 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-rose-50 text-rose-700">Cancelled</span>}
                   </td>

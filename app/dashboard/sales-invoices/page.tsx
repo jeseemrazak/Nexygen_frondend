@@ -50,14 +50,14 @@ export default async function SalesInvoicesPage() {
             <tbody className="divide-y divide-gray-100 text-black">
               {invoiced.map((inv: any) => (
                 <tr key={inv.id} className="hover:bg-gray-50">
-                  <td className="py-4 px-6 font-bold text-teal-700 font-mono">{inv.invoiceNumber}</td>
+                  <td className="py-4 px-6 font-bold text-purple-700 font-mono">{inv.invoiceNumber}</td>
                   <td className="py-4 px-6 text-sm text-gray-600">{formatDate(inv.createdAt)}</td>
                   <td className="py-4 px-6 text-sm font-bold">{inv.salesOrder?.clientName || 'Walk-in'}</td>
                   <td className="py-4 px-6 text-right font-bold text-sm">{formatQAR(inv.totalAmount)}</td>
                   <td className="py-4 px-6 text-right text-sm text-gray-600">{formatQAR(inv.amountPaid || 0)}</td>
                   <td className="py-4 px-6 text-sm">
                     <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${
-                      inv.paymentStatus === 'PAID' ? 'bg-emerald-50 text-emerald-700' :
+                      inv.paymentStatus === 'PAID' ? 'bg-purple-50 text-purple-700' :
                       inv.paymentStatus === 'PARTIAL' ? 'bg-amber-50 text-amber-700' :
                       'bg-rose-50 text-rose-700'
                     }`}>

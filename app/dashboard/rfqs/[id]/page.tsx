@@ -116,7 +116,7 @@ export default function RfqDetailsPage() {
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
         <div className="flex justify-between items-start gap-4">
           <div>
-            <Link href="/dashboard/rfqs" className="text-teal-600 hover:text-teal-800 text-sm font-bold flex items-center gap-1 mb-3 transition-colors">
+            <Link href="/dashboard/rfqs" className="text-purple-600 hover:text-purple-800 text-sm font-bold flex items-center gap-1 mb-3 transition-colors">
               ← Back to RFQs
             </Link>
             <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
@@ -185,12 +185,12 @@ export default function RfqDetailsPage() {
             </thead>
             <tbody className="divide-y divide-slate-100 text-sm">
               {rfq.responses.map((response: any) => (
-                <tr key={response.id} className={response.status === 'SELECTED' ? 'bg-emerald-50/50' : ''}>
+                <tr key={response.id} className={response.status === 'SELECTED' ? 'bg-purple-50/50' : ''}>
                   <td className="py-4 px-6 font-bold text-slate-800">{response.supplier?.name}</td>
                   <td className="py-4 px-6 text-right font-bold">{formatQAR(response.totalAmount)}</td>
                   <td className="py-4 px-6">
                     <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${
-                      response.status === 'SELECTED' ? 'bg-emerald-100 text-emerald-700' :
+                      response.status === 'SELECTED' ? 'bg-purple-100 text-purple-700' :
                       response.status === 'REJECTED' ? 'bg-rose-50 text-rose-700' :
                       'bg-slate-100 text-slate-700'
                     }`}>
@@ -199,14 +199,14 @@ export default function RfqDetailsPage() {
                   </td>
                   <td className="py-4 px-6 text-right">
                     {response.status === 'SELECTED' && response.convertedPurchaseOrderId ? (
-                      <Link href={`/dashboard/purchases/${response.convertedPurchaseOrderId}`} className="text-teal-600 underline text-xs font-bold">
+                      <Link href={`/dashboard/purchases/${response.convertedPurchaseOrderId}`} className="text-purple-600 underline text-xs font-bold">
                         View PO
                       </Link>
                     ) : response.status === 'PENDING' && rfq.status !== 'CONVERTED' && rfq.status !== 'CANCELLED' ? (
                       <button
                         onClick={() => handleConvert(response.id)}
                         disabled={convertingId === response.id}
-                        className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded text-xs font-bold transition disabled:bg-gray-400"
+                        className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded text-xs font-bold transition disabled:bg-gray-400"
                       >
                         {convertingId === response.id ? 'Converting...' : 'Convert to PO'}
                       </button>

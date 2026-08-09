@@ -100,7 +100,7 @@ export default function ReceiptDetailsPage() {
       {/* HEADER */}
       <div className="flex flex-col md:flex-row justify-between md:items-start gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
         <div>
-          <Link href={`/dashboard/purchases/${receipt.purchaseOrderId}`} className="text-teal-600 hover:text-teal-800 text-sm font-bold flex items-center gap-1 mb-3 transition-colors">
+          <Link href={`/dashboard/purchases/${receipt.purchaseOrderId}`} className="text-purple-600 hover:text-purple-800 text-sm font-bold flex items-center gap-1 mb-3 transition-colors">
             ← Back to Purchase Order #{receipt.purchaseOrderId.toString().padStart(4, '0')}
           </Link>
           <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3 flex-wrap">

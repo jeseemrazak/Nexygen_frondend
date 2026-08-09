@@ -51,7 +51,7 @@ export default async function RfqsPage({ searchParams }: { searchParams: Promise
             ))}
           </div>
 
-          <Link href="/dashboard/rfqs/new" className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-6 rounded-md shadow-sm transition whitespace-nowrap">
+          <Link href="/dashboard/rfqs/new" className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-md shadow-sm transition whitespace-nowrap">
             ➕ New RFQ
           </Link>
         </div>
@@ -76,14 +76,14 @@ export default async function RfqsPage({ searchParams }: { searchParams: Promise
             <tbody className="divide-y divide-gray-100 text-black">
               {rfqs.map((rfq: any) => (
                 <tr key={rfq.id} className="hover:bg-gray-50">
-                  <td className="py-4 px-6 font-bold text-teal-700">RFQ-{String(rfq.id).padStart(4, '0')}</td>
+                  <td className="py-4 px-6 font-bold text-purple-700">RFQ-{String(rfq.id).padStart(4, '0')}</td>
                   <td className="py-4 px-6 text-sm text-gray-600">{formatDate(rfq.createdAt)}</td>
                   <td className="py-4 px-6 text-sm text-gray-600">{rfq.warehouse?.name || 'Unknown'}</td>
                   <td className="py-4 px-6 text-sm text-gray-600">{rfq.items?.length || 0} line(s)</td>
                   <td className="py-4 px-6 text-sm text-gray-600">{rfq.responses?.length || 0} supplier(s)</td>
                   <td className="py-4 px-6 text-sm">
                     <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${
-                      rfq.status === 'CONVERTED' ? 'bg-emerald-50 text-emerald-700' :
+                      rfq.status === 'CONVERTED' ? 'bg-purple-50 text-purple-700' :
                       rfq.status === 'CANCELLED' ? 'bg-rose-50 text-rose-700' :
                       'bg-slate-100 text-slate-700'
                     }`}>

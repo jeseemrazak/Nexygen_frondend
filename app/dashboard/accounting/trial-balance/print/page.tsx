@@ -58,7 +58,7 @@ export default async function TrialBalancePrintPage({ searchParams }: { searchPa
   return (
     <div>
       <div className="no-print flex justify-between items-center p-4 max-w-4xl mx-auto">
-        <Link href="/dashboard/accounting/trial-balance" className="text-teal-600 hover:text-teal-800 text-sm font-bold">← Back to Trial Balance</Link>
+        <Link href="/dashboard/accounting/trial-balance" className="text-purple-600 hover:text-purple-800 text-sm font-bold">← Back to Trial Balance</Link>
         <PrintButton />
       </div>
       <TabularReportView

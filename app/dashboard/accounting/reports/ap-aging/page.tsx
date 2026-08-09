@@ -10,7 +10,7 @@ const formatDate = (dateString: string) => new Date(dateString).toLocaleDateStri
 
 const BUCKET_LABELS: Record<string, string> = { current: '0-30 days', '31-60': '31-60 days', '61-90': '61-90 days', '90+': '90+ days' };
 const BUCKET_COLORS: Record<string, string> = {
-  current: 'bg-emerald-50 text-emerald-700',
+  current: 'bg-purple-50 text-purple-700',
   '31-60': 'bg-amber-50 text-amber-700',
   '61-90': 'bg-orange-50 text-orange-700',
   '90+': 'bg-rose-50 text-rose-700',
@@ -63,7 +63,7 @@ export default function ApAgingPage() {
         </div>
         <div className="flex items-center gap-3">
           <input type="date" value={asOf} onChange={(e) => setAsOf(e.target.value)} className="border border-gray-300 rounded-md px-3 py-2 text-sm text-black" />
-          <button onClick={exportCsv} disabled={!data || data.rows.length === 0} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-md text-sm disabled:bg-gray-300">
+          <button onClick={exportCsv} disabled={!data || data.rows.length === 0} className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md text-sm disabled:bg-gray-300">
             📊 Export
           </button>
           <Link href={`/dashboard/accounting/reports/ap-aging/print${asOf ? `?asOf=${asOf}` : ''}`} className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-md text-sm whitespace-nowrap">
@@ -108,7 +108,7 @@ export default function ApAgingPage() {
                   {data.rows.map((r: any) => (
                     <tr key={r.purchaseOrderId} className="hover:bg-gray-50">
                       <td className="py-4 px-6">
-                        <Link href={`/dashboard/purchases/${r.purchaseOrderId}`} className="font-bold text-teal-700 font-mono hover:underline">{r.invoiceNumber}</Link>
+                        <Link href={`/dashboard/purchases/${r.purchaseOrderId}`} className="font-bold text-purple-700 font-mono hover:underline">{r.invoiceNumber}</Link>
                       </td>
                       <td className="py-4 px-6 text-sm font-bold">{r.supplierName}</td>
                       <td className="py-4 px-6 text-sm text-gray-600">{formatDate(r.invoiceDate)}</td>

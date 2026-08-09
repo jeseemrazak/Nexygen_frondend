@@ -20,7 +20,7 @@ export default async function ModuleConfigPage({
       <div className="max-w-2xl mx-auto">
         <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 text-center">
           <p className="text-gray-500">This module isn&apos;t installed yet.</p>
-          <Link href="/dashboard/settings/apps" className="text-teal-600 hover:text-teal-800 font-bold text-sm mt-3 inline-block">
+          <Link href="/dashboard/settings/apps" className="text-purple-600 hover:text-purple-800 font-bold text-sm mt-3 inline-block">
             ← Back to App Store
           </Link>
         </div>
@@ -34,7 +34,7 @@ export default async function ModuleConfigPage({
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <Link href="/dashboard/settings/apps" className="text-teal-600 hover:text-teal-800 text-sm font-bold mb-2 inline-block">
+        <Link href="/dashboard/settings/apps" className="text-purple-600 hover:text-purple-800 text-sm font-bold mb-2 inline-block">
           ← Back to App Store
         </Link>
         <div className="flex items-center gap-3">
@@ -46,7 +46,7 @@ export default async function ModuleConfigPage({
         </div>
       </div>
 
-      {saved && <div className="bg-emerald-50 text-emerald-700 text-sm font-semibold px-4 py-3 rounded-lg">Settings saved.</div>}
+      {saved && <div className="bg-purple-50 text-purple-700 text-sm font-semibold px-4 py-3 rounded-lg">Settings saved.</div>}
       {error && <div className="bg-rose-50 text-rose-700 text-sm font-semibold px-4 py-3 rounded-lg">Failed to save settings.</div>}
 
       <form action={boundAction} className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 space-y-4">
@@ -87,7 +87,7 @@ export default async function ModuleConfigPage({
           );
         })}
 
-        <button type="submit" className="bg-teal-600 hover:bg-teal-700 text-white font-bold px-6 py-2.5 rounded-md shadow-sm">
+        <button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-6 py-2.5 rounded-md shadow-sm">
           Save Settings
         </button>
       </form>

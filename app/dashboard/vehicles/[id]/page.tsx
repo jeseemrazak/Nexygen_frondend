@@ -20,7 +20,7 @@ const formatDate = (d: string) => new Date(d).toLocaleDateString('en-US', { mont
 const STATUS_STYLES: Record<string, string> = {
   OPEN: 'bg-amber-50 text-amber-700',
   IN_PROGRESS: 'bg-blue-50 text-blue-700',
-  COMPLETED: 'bg-emerald-50 text-emerald-700',
+  COMPLETED: 'bg-purple-50 text-purple-700',
   CANCELLED: 'bg-gray-100 text-gray-500',
 };
 
@@ -34,7 +34,7 @@ export default async function VehicleDetailPage({ params }: { params: Promise<{ 
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 flex justify-between items-start">
         <div>
-          <Link href="/dashboard/vehicles" className="text-teal-600 hover:text-teal-800 text-sm font-bold mb-2 inline-block">← Back to Vehicles</Link>
+          <Link href="/dashboard/vehicles" className="text-purple-600 hover:text-purple-800 text-sm font-bold mb-2 inline-block">← Back to Vehicles</Link>
           <h1 className="text-2xl font-bold text-gray-800 font-mono">{vehicle.plateNumber}</h1>
           <p className="text-sm text-gray-500 mt-1">
             {[vehicle.make, vehicle.model, vehicle.year].filter(Boolean).join(' ') || 'No make/model on file'}
@@ -44,7 +44,7 @@ export default async function VehicleDetailPage({ params }: { params: Promise<{ 
         </div>
         <Link
           href={`/dashboard/job-orders/new?vehicleId=${vehicle.id}`}
-          className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm whitespace-nowrap"
+          className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm whitespace-nowrap"
         >
           + New Job Order
         </Link>
@@ -70,7 +70,7 @@ export default async function VehicleDetailPage({ params }: { params: Promise<{ 
               {vehicle.jobOrders.map((jo: any) => (
                 <tr key={jo.id} className="hover:bg-gray-50 transition-colors">
                   <td className="py-3 px-6 font-mono">
-                    <Link href={`/dashboard/job-orders/${jo.id}`} className="text-teal-600 hover:text-teal-800 font-bold">{jo.jobNumber}</Link>
+                    <Link href={`/dashboard/job-orders/${jo.id}`} className="text-purple-600 hover:text-purple-800 font-bold">{jo.jobNumber}</Link>
                   </td>
                   <td className="py-3 px-6 text-sm text-gray-500">{formatDate(jo.createdAt)}</td>
                   <td className="py-3 px-6">

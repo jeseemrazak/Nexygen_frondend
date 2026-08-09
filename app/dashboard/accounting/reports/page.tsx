@@ -84,12 +84,12 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
               ))}
             </select>
           )}
-          <button type="submit" className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-md text-sm">Filter</button>
+          <button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md text-sm">Filter</button>
         </form>
       </div>
 
       {selectedWarehouseName && (
-        <div className="bg-teal-50 border-l-4 border-teal-500 p-3 rounded-md text-sm text-teal-800">
+        <div className="bg-purple-50 border-l-4 border-purple-500 p-3 rounded-md text-sm text-purple-800">
           Showing <strong>{selectedWarehouseName}</strong> only — P&amp;L and Balance Sheet are scoped to this outlet's POS/Invoice/Delivery activity. Purchases, payroll, and manual entries carry no outlet tag and won't appear. Cash Flow Statement below always stays company-wide.
         </div>
       )}
@@ -122,7 +122,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
             </div>
             <div className="border-t-2 border-gray-300 pt-4 flex justify-between">
               <span className="font-black text-gray-800">Net Profit</span>
-              <span className={`font-black ${pl && pl.netProfit >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+              <span className={`font-black ${pl && pl.netProfit >= 0 ? 'text-purple-600' : 'text-rose-600'}`}>
                 {formatQAR(pl?.netProfit || 0)}
               </span>
             </div>
@@ -174,7 +174,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
             </div>
             <div className="border-t-2 border-gray-300 pt-4 flex justify-between">
               <span className="font-black text-gray-800">Assets = Liabilities + Equity</span>
-              <span className={`font-black ${bs && Math.abs(bs.totalAssets - (bs.totalLiabilities + bs.totalEquity)) < 0.01 ? 'text-emerald-600' : 'text-rose-600'}`}>
+              <span className={`font-black ${bs && Math.abs(bs.totalAssets - (bs.totalLiabilities + bs.totalEquity)) < 0.01 ? 'text-purple-600' : 'text-rose-600'}`}>
                 {formatQAR(bs?.totalAssets || 0)} = {formatQAR((bs?.totalLiabilities || 0) + (bs?.totalEquity || 0))}
               </span>
             </div>
@@ -213,7 +213,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
                   <div className="flex justify-between text-sm text-black py-1"><span>Opening Cash &amp; Bank</span><span>{formatQAR(cf.openingCash)}</span></div>
                   <div className="flex justify-between text-sm text-black py-1"><span>Closing Cash &amp; Bank</span><span>{formatQAR(cf.closingCash)}</span></div>
                   <div className="flex justify-between text-sm font-black border-t border-gray-100 mt-2 pt-2"><span>Net Change in Cash</span><span>{formatQAR(cf.netChangeInCash)}</span></div>
-                  <p className={`text-xs font-bold mt-2 ${cf.reconciles ? 'text-emerald-600' : 'text-rose-600'}`}>{cf.reconciles ? '✓ Reconciles' : '✗ Does not reconcile'}</p>
+                  <p className={`text-xs font-bold mt-2 ${cf.reconciles ? 'text-purple-600' : 'text-rose-600'}`}>{cf.reconciles ? '✓ Reconciles' : '✗ Does not reconcile'}</p>
                 </div>
               </div>
             )}

@@ -74,7 +74,7 @@ export default async function InventoryReportPage({
             <option value="inStock">Available</option>
             <option value="empty">Out of Stock</option>
           </select>
-          <button type="submit" className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-md text-sm">
+          <button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md text-sm">
             Filter
           </button>
           {(searchQuery || statusFilter !== 'all' || warehouseFilter !== 'all') && (
@@ -131,7 +131,7 @@ export default async function InventoryReportPage({
           <td className="py-4 px-6 text-sm text-gray-400">--</td>
           <td className="py-4 px-6 text-right font-bold text-red-600">0</td>
           <td className="py-4 px-6 text-right">
-            <Link href={`/dashboard/inventory/add?productId=${product.id}&warehouseId=${warehouse.id}`} className="text-teal-600 underline text-sm font-semibold">+ Add Stock</Link>
+            <Link href={`/dashboard/inventory/add?productId=${product.id}&warehouseId=${warehouse.id}`} className="text-purple-600 underline text-sm font-semibold">+ Add Stock</Link>
           </td>
         </tr>
                   );

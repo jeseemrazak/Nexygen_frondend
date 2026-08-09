@@ -23,7 +23,7 @@ export default async function NewJobOrderPage({ searchParams }: { searchParams: 
       <div className="max-w-2xl mx-auto">
         <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 text-center">
           <p className="text-gray-500">The Job Order module isn&apos;t installed yet.</p>
-          <Link href="/dashboard/settings/apps" className="text-teal-600 hover:text-teal-800 font-bold text-sm mt-3 inline-block">
+          <Link href="/dashboard/settings/apps" className="text-purple-600 hover:text-purple-800 font-bold text-sm mt-3 inline-block">
             ← Go to App Store
           </Link>
         </div>
@@ -41,7 +41,7 @@ export default async function NewJobOrderPage({ searchParams }: { searchParams: 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <Link href="/dashboard/job-orders" className="text-teal-600 hover:text-teal-800 text-sm font-bold mb-2 inline-block">← Back to Job Orders</Link>
+        <Link href="/dashboard/job-orders" className="text-purple-600 hover:text-purple-800 text-sm font-bold mb-2 inline-block">← Back to Job Orders</Link>
         <h1 className="text-2xl font-bold text-gray-800">New Job Order</h1>
         <p className="text-sm text-gray-500 mt-1">Parts and labor are added once the job order is created.</p>
       </div>

@@ -31,7 +31,7 @@ export default async function CashFlowPrintPage({ searchParams }: { searchParams
   return (
     <div>
       <div className="no-print flex justify-between items-center p-4 max-w-4xl mx-auto">
-        <Link href="/dashboard/accounting/reports" className="text-teal-600 hover:text-teal-800 text-sm font-bold">← Back to Reports</Link>
+        <Link href="/dashboard/accounting/reports" className="text-purple-600 hover:text-purple-800 text-sm font-bold">← Back to Reports</Link>
         <PrintButton />
       </div>
       <div className="print-area bg-white p-10 max-w-4xl mx-auto text-gray-900">
@@ -61,7 +61,7 @@ export default async function CashFlowPrintPage({ searchParams }: { searchParams
             <div className="flex justify-between text-sm text-gray-600 py-1">
               <span>Closing Cash &amp; Bank</span><span>{formatQAR(cf.closingCash)}</span>
             </div>
-            <div className={`flex justify-between text-xs font-bold py-1 ${cf.reconciles ? 'text-emerald-600' : 'text-rose-600'}`}>
+            <div className={`flex justify-between text-xs font-bold py-1 ${cf.reconciles ? 'text-purple-600' : 'text-rose-600'}`}>
               <span>{cf.reconciles ? '✓ Reconciles to actual cash movement' : '✗ Does not reconcile — check data'}</span>
               <span>{formatQAR(cf.actualCashMovement)}</span>
             </div>

@@ -52,7 +52,7 @@ export default async function PurchaseOrdersPage({ searchParams }: { searchParam
             ))}
           </div>
 
-          <Link href="/dashboard/purchases/new" className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-6 rounded-md shadow-sm transition whitespace-nowrap">
+          <Link href="/dashboard/purchases/new" className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-md shadow-sm transition whitespace-nowrap">
             ➕ New Purchase Order
           </Link>
         </div>
@@ -77,13 +77,13 @@ export default async function PurchaseOrdersPage({ searchParams }: { searchParam
             <tbody className="divide-y divide-gray-100 text-black">
               {purchaseOrders.map((po: any) => (
                 <tr key={po.id} className="hover:bg-gray-50">
-                  <td className="py-4 px-6 font-bold text-teal-700">PO-{String(po.id).padStart(4, '0')}</td>
+                  <td className="py-4 px-6 font-bold text-purple-700">PO-{String(po.id).padStart(4, '0')}</td>
                   <td className="py-4 px-6 text-sm text-gray-600">{formatDate(po.createdAt)}</td>
                   <td className="py-4 px-6 text-sm font-bold">{po.supplier?.name || 'Unknown'}</td>
                   <td className="py-4 px-6 text-sm text-gray-600">{po.warehouse?.name || 'Unknown'}</td>
                   <td className="py-4 px-6 text-sm">
                     <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${
-                      po.status === 'RECEIVED' ? 'bg-emerald-50 text-emerald-700' :
+                      po.status === 'RECEIVED' ? 'bg-purple-50 text-purple-700' :
                       po.status === 'ORDERED' ? 'bg-blue-50 text-blue-700' :
                       po.status === 'CANCELLED' ? 'bg-rose-50 text-rose-700' :
                       'bg-slate-100 text-slate-700'

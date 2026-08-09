@@ -94,7 +94,7 @@ export default function TaxesPage() {
           <h1 className="text-2xl font-bold text-gray-800">Taxes</h1>
           <p className="text-sm text-gray-500 mt-1">Flat-rate taxes selectable on POS sales, sales orders/invoices, and purchase orders/bills. Applied on top of the discounted subtotal.</p>
         </div>
-        <Link href="/dashboard/settings/account-mappings" className="text-teal-600 hover:text-teal-800 font-semibold text-sm">
+        <Link href="/dashboard/settings/account-mappings" className="text-purple-600 hover:text-purple-800 font-semibold text-sm">
           Account Mappings →
         </Link>
       </div>
@@ -131,7 +131,7 @@ export default function TaxesPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-6 rounded-md text-sm disabled:bg-gray-400"
+            className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-md text-sm disabled:bg-gray-400"
           >
             {isSubmitting ? 'Adding...' : 'Add Tax'}
           </button>
@@ -162,7 +162,7 @@ export default function TaxesPage() {
                   <td className="py-4 px-6 text-sm text-gray-600">{t.rate}%</td>
                   <td className="py-4 px-6 text-sm">
                     {t.isDefault ? (
-                      <span className="px-2 py-1 rounded-full text-xs font-bold uppercase bg-teal-50 text-teal-700">Default</span>
+                      <span className="px-2 py-1 rounded-full text-xs font-bold uppercase bg-purple-50 text-purple-700">Default</span>
                     ) : (
                       <button onClick={() => setDefault(t)} className="text-slate-500 hover:text-slate-700 font-semibold text-xs underline">
                         Set default
@@ -170,7 +170,7 @@ export default function TaxesPage() {
                     )}
                   </td>
                   <td className="py-4 px-6 text-sm">
-                    <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${t.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${t.isActive ? 'bg-purple-50 text-purple-700' : 'bg-gray-100 text-gray-500'}`}>
                       {t.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </td>

@@ -52,7 +52,7 @@ export default async function QuotationsPage({ searchParams }: { searchParams: P
             ))}
           </div>
 
-          <Link href="/dashboard/quotations/new" className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-6 rounded-md shadow-sm transition whitespace-nowrap">
+          <Link href="/dashboard/quotations/new" className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-md shadow-sm transition whitespace-nowrap">
             ➕ New Quotation
           </Link>
         </div>
@@ -76,12 +76,12 @@ export default async function QuotationsPage({ searchParams }: { searchParams: P
             <tbody className="divide-y divide-gray-100 text-black">
               {quotations.map((q: any) => (
                 <tr key={q.id} className="hover:bg-gray-50">
-                  <td className="py-4 px-6 font-bold text-teal-700">QT-{String(q.id).padStart(4, '0')}</td>
+                  <td className="py-4 px-6 font-bold text-purple-700">QT-{String(q.id).padStart(4, '0')}</td>
                   <td className="py-4 px-6 text-sm text-gray-600">{formatDate(q.createdAt)}</td>
                   <td className="py-4 px-6 text-sm font-bold">{q.clientName || 'Walk-in'}</td>
                   <td className="py-4 px-6 text-sm">
                     <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${
-                      q.status === 'CONVERTED' ? 'bg-emerald-50 text-emerald-700' :
+                      q.status === 'CONVERTED' ? 'bg-purple-50 text-purple-700' :
                       q.status === 'ACCEPTED' ? 'bg-blue-50 text-blue-700' :
                       q.status === 'REJECTED' ? 'bg-rose-50 text-rose-700' :
                       'bg-slate-100 text-slate-700'

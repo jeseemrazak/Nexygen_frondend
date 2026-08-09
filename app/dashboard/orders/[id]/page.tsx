@@ -18,14 +18,14 @@ const formatQAR = (amount: number) => new Intl.NumberFormat('en-QA', { style: 'c
 const soStatusBadge: Record<string, string> = {
   DRAFT: 'bg-slate-100 text-slate-600 ring-slate-200',
   CONFIRMED: 'bg-blue-50 text-blue-700 ring-blue-600/20',
-  DONE: 'bg-emerald-50 text-emerald-700 ring-emerald-600/20',
+  DONE: 'bg-purple-50 text-purple-700 ring-purple-600/20',
   CANCELLED: 'bg-rose-50 text-rose-700 ring-rose-600/20',
 };
 
 const deliveryStatusBadge: Record<string, string> = {
   PENDING: 'bg-amber-50 text-amber-700 ring-amber-600/20',
   SHIPPED: 'bg-blue-50 text-blue-700 ring-blue-600/20',
-  DELIVERED: 'bg-emerald-50 text-emerald-700 ring-emerald-600/20',
+  DELIVERED: 'bg-purple-50 text-purple-700 ring-purple-600/20',
   CANCELLED: 'bg-rose-50 text-rose-700 ring-rose-600/20',
 };
 
@@ -262,7 +262,7 @@ export default function SalesOrderDetailsPage() {
       {/* HEADER */}
       <div className="flex flex-col md:flex-row justify-between md:items-start gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
         <div>
-          <Link href="/dashboard/orders" className="text-teal-600 hover:text-teal-800 text-sm font-bold flex items-center gap-1 mb-3 transition-colors">
+          <Link href="/dashboard/orders" className="text-purple-600 hover:text-purple-800 text-sm font-bold flex items-center gap-1 mb-3 transition-colors">
             ← Back to Sales Orders
           </Link>
           <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3 flex-wrap">
@@ -342,7 +342,7 @@ export default function SalesOrderDetailsPage() {
               <button
                 onClick={handleConfirm}
                 disabled={isConfirming}
-                className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-8 rounded-md shadow-sm disabled:bg-gray-400"
+                className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-md shadow-sm disabled:bg-gray-400"
               >
                 {isConfirming ? 'Confirming...' : 'Confirm Order'}
               </button>
@@ -392,12 +392,12 @@ export default function SalesOrderDetailsPage() {
                       <span className="font-black text-slate-700 bg-slate-100 px-3 py-1 rounded-md">{item.quantity}</span>
                     </td>
                     <td className="py-4 px-6 text-center">
-                      <span className={`font-black px-3 py-1 rounded-md ${item.quantityDelivered >= item.quantity ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
+                      <span className={`font-black px-3 py-1 rounded-md ${item.quantityDelivered >= item.quantity ? 'bg-purple-100 text-purple-700' : 'bg-amber-50 text-amber-700'}`}>
                         {item.quantityDelivered}
                       </span>
                     </td>
                     <td className="py-4 px-6 text-center">
-                      <span className={`font-black px-3 py-1 rounded-md ${item.quantityInvoiced >= item.quantity ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
+                      <span className={`font-black px-3 py-1 rounded-md ${item.quantityInvoiced >= item.quantity ? 'bg-purple-100 text-purple-700' : 'bg-amber-50 text-amber-700'}`}>
                         {item.quantityInvoiced}
                       </span>
                     </td>
@@ -433,7 +433,7 @@ export default function SalesOrderDetailsPage() {
                             )}
                           </div>
                         ) : (
-                          <span className="text-emerald-600 text-xs font-bold">Fully delivered</span>
+                          <span className="text-purple-600 text-xs font-bold">Fully delivered</span>
                         )}
                       </td>
                     )}
@@ -451,7 +451,7 @@ export default function SalesOrderDetailsPage() {
                             className="w-20 border border-slate-300 rounded-md p-2 text-sm"
                           />
                         ) : (
-                          <span className="text-emerald-600 text-xs font-bold">Fully invoiced</span>
+                          <span className="text-purple-600 text-xs font-bold">Fully invoiced</span>
                         )}
                       </td>
                     )}
@@ -547,7 +547,7 @@ export default function SalesOrderDetailsPage() {
               <button
                 onClick={handleCreateInvoice}
                 disabled={isInvoicing}
-                className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-8 rounded-md shadow-sm disabled:bg-gray-400"
+                className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-md shadow-sm disabled:bg-gray-400"
               >
                 {isInvoicing ? 'Creating Invoice...' : '🧾 Create Invoice'}
               </button>
@@ -609,7 +609,7 @@ export default function SalesOrderDetailsPage() {
                   <p className="text-[11px] text-slate-500 mt-0.5">{formatDateTime(inv.createdAt)} · {formatQAR(inv.totalAmount)}</p>
                 </div>
                 <span className={`text-xs font-bold px-3 py-1 rounded-full ring-1 ring-inset ${
-                  inv.paymentStatus === 'PAID' ? 'bg-emerald-50 text-emerald-700 ring-emerald-600/20' :
+                  inv.paymentStatus === 'PAID' ? 'bg-purple-50 text-purple-700 ring-purple-600/20' :
                   inv.paymentStatus === 'PARTIAL' ? 'bg-amber-50 text-amber-700 ring-amber-600/20' :
                   'bg-rose-50 text-rose-700 ring-rose-600/20'
                 }`}>

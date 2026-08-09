@@ -158,9 +158,9 @@ function JournalEntriesPageInner() {
         <h1 className="text-2xl font-bold text-gray-800">Journal Entries</h1>
         <p className="text-sm text-gray-500 mt-1">Every posting — automatic or manual — lives here.</p>
         {journalIdParam && (
-          <div className="mt-3 inline-flex items-center gap-2 bg-teal-50 text-teal-700 text-sm font-bold px-3 py-1.5 rounded-full">
+          <div className="mt-3 inline-flex items-center gap-2 bg-purple-50 text-purple-700 text-sm font-bold px-3 py-1.5 rounded-full">
             Filtered to journal: {journalNameParam || `#${journalIdParam}`}
-            <Link href="/dashboard/accounting/journal" className="text-teal-500 hover:text-teal-800">✕</Link>
+            <Link href="/dashboard/accounting/journal" className="text-purple-500 hover:text-purple-800">✕</Link>
           </div>
         )}
       </div>
@@ -221,12 +221,12 @@ function JournalEntriesPageInner() {
             </tbody>
           </table>
 
-          <button type="button" onClick={() => setLines([...lines, { accountId: '', debit: '', credit: '', description: '', costCenterId: '' }])} className="text-teal-600 text-sm font-bold hover:underline">
+          <button type="button" onClick={() => setLines([...lines, { accountId: '', debit: '', credit: '', description: '', costCenterId: '' }])} className="text-purple-600 text-sm font-bold hover:underline">
             + Add Line
           </button>
 
           <div className="flex justify-between items-center pt-4 border-t border-gray-100">
-            <div className={`text-sm font-bold ${isBalanced ? 'text-emerald-600' : 'text-rose-600'}`}>
+            <div className={`text-sm font-bold ${isBalanced ? 'text-purple-600' : 'text-rose-600'}`}>
               Debits: {formatQAR(totalDebit)} | Credits: {formatQAR(totalCredit)} {isBalanced ? '✓ Balanced' : '✗ Unbalanced'}
             </div>
             <button type="submit" disabled={isSubmitting || !isBalanced} className="bg-gray-900 hover:bg-black text-white font-bold py-2.5 px-6 rounded-md transition disabled:bg-gray-400">
@@ -275,7 +275,7 @@ function JournalEntriesPageInner() {
           <button
             onClick={exportCsv}
             disabled={entries.length === 0}
-            className="ml-auto bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-md text-sm disabled:bg-gray-300"
+            className="ml-auto bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md text-sm disabled:bg-gray-300"
           >
             📊 Export
           </button>

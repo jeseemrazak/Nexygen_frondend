@@ -77,7 +77,7 @@ export default function BarcodeLabelsPage() {
       <div className="max-w-2xl mx-auto">
         <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 text-center">
           <p className="text-gray-500">The Barcode &amp; Label Printing module isn&apos;t installed yet.</p>
-          <Link href="/dashboard/settings/apps" className="text-teal-600 hover:text-teal-800 font-bold text-sm mt-3 inline-block">
+          <Link href="/dashboard/settings/apps" className="text-purple-600 hover:text-purple-800 font-bold text-sm mt-3 inline-block">
             ← Go to App Store
           </Link>
         </div>
@@ -113,7 +113,7 @@ export default function BarcodeLabelsPage() {
                   key={p.id}
                   type="button"
                   onClick={() => addProduct(p)}
-                  className="w-full text-left px-4 py-2.5 hover:bg-teal-50 border-b border-gray-100 last:border-0 flex justify-between items-center"
+                  className="w-full text-left px-4 py-2.5 hover:bg-purple-50 border-b border-gray-100 last:border-0 flex justify-between items-center"
                 >
                   <span className="text-sm font-semibold text-gray-800">{p.name}</span>
                   <span className="text-xs text-gray-400 font-mono">{p.sku}</span>
@@ -179,7 +179,7 @@ export default function BarcodeLabelsPage() {
                     <span className="text-[9px] text-gray-400">No barcode value</span>
                   )}
                   <span className="text-[8px] font-mono text-gray-600">{label.barcodeValue}</span>
-                  {showPrice && <span className="text-[9px] font-bold text-teal-700">{formatQAR(label.price)}</span>}
+                  {showPrice && <span className="text-[9px] font-bold text-purple-700">{formatQAR(label.price)}</span>}
                 </div>
               );
             })}

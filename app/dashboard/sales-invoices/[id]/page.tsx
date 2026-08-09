@@ -125,7 +125,7 @@ export default function SalesInvoiceDetailsPage() {
 
       {/* HEADER */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-        <Link href="/dashboard/sales-invoices" className="text-teal-600 hover:text-teal-800 text-sm font-bold flex items-center gap-1 mb-3 transition-colors">
+        <Link href="/dashboard/sales-invoices" className="text-purple-600 hover:text-purple-800 text-sm font-bold flex items-center gap-1 mb-3 transition-colors">
           ← Back to Sales Invoices
         </Link>
         <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3 flex-wrap">
@@ -136,7 +136,7 @@ export default function SalesInvoiceDetailsPage() {
             </span>
           ) : (
             <span className={`text-xs font-bold px-3 py-1 rounded-full ring-1 ring-inset ${
-              invoice.paymentStatus === 'PAID' ? 'bg-emerald-50 text-emerald-700 ring-emerald-600/20' :
+              invoice.paymentStatus === 'PAID' ? 'bg-purple-50 text-purple-700 ring-purple-600/20' :
               invoice.paymentStatus === 'PARTIAL' ? 'bg-amber-50 text-amber-700 ring-amber-600/20' :
               'bg-rose-50 text-rose-700 ring-rose-600/20'
             }`}>
@@ -153,7 +153,7 @@ export default function SalesInvoiceDetailsPage() {
             <span className="text-slate-400">🏢</span> Client: <span className="font-bold text-slate-800">{invoice.salesOrder?.clientName || 'Walk-in'}</span>
           </p>
           <p className="flex items-center gap-1.5 text-slate-600 font-medium">
-            <span className="text-slate-400">📦</span> <Link href={`/dashboard/orders/${invoice.salesOrderId}`} className="text-teal-600 hover:underline font-bold">View Sales Order #{invoice.salesOrderId}</Link>
+            <span className="text-slate-400">📦</span> <Link href={`/dashboard/orders/${invoice.salesOrderId}`} className="text-purple-600 hover:underline font-bold">View Sales Order #{invoice.salesOrderId}</Link>
           </p>
           <Link
             href={`/dashboard/sales-invoices/${invoice.id}/print`}

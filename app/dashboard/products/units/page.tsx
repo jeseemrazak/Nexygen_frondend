@@ -82,7 +82,7 @@ export default function UnitsOfMeasurementPage() {
           <h1 className="text-2xl font-bold text-gray-800">Units of Measurement</h1>
           <p className="text-sm text-gray-500 mt-1">e.g. Pieces, Kilogram, Box, Litre — assignable to any product.</p>
         </div>
-        <Link href="/dashboard/configuration" className="text-teal-600 hover:text-teal-800 font-semibold text-sm">
+        <Link href="/dashboard/configuration" className="text-purple-600 hover:text-purple-800 font-semibold text-sm">
           ← Back to Configuration
         </Link>
       </div>
@@ -113,7 +113,7 @@ export default function UnitsOfMeasurementPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-6 rounded-md text-sm disabled:bg-gray-400"
+            className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-md text-sm disabled:bg-gray-400"
           >
             {isSubmitting ? 'Adding...' : 'Add Unit'}
           </button>
@@ -142,7 +142,7 @@ export default function UnitsOfMeasurementPage() {
                   <td className="py-4 px-6 font-bold">{unit.name}</td>
                   <td className="py-4 px-6 text-sm font-mono">{unit.abbreviation}</td>
                   <td className="py-4 px-6 text-sm">
-                    <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${unit.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${unit.isActive ? 'bg-purple-50 text-purple-700' : 'bg-gray-100 text-gray-500'}`}>
                       {unit.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </td>

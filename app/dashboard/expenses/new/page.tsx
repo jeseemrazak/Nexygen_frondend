@@ -63,7 +63,7 @@ export default function NewExpensePage() {
   return (
     <div className="max-w-xl mx-auto space-y-6">
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <Link href="/dashboard/expenses" className="text-teal-600 hover:text-teal-800 text-sm font-bold flex items-center gap-1 mb-3">
+        <Link href="/dashboard/expenses" className="text-purple-600 hover:text-purple-800 text-sm font-bold flex items-center gap-1 mb-3">
           ← Back to Expenses
         </Link>
         <h1 className="text-2xl font-bold text-gray-800">New Expense</h1>

@@ -57,7 +57,7 @@ export default function AdjustStockForm({ inv }: { inv: any }) {
               Change quantity for batch <strong className="font-mono">{batchNumber}</strong> from{' '}
               <strong>{inv.quantity}</strong> to <strong>{newQty}</strong>
               {delta !== 0 && (
-                <span className={delta > 0 ? 'text-emerald-700 font-bold' : 'text-rose-700 font-bold'}>
+                <span className={delta > 0 ? 'text-purple-700 font-bold' : 'text-rose-700 font-bold'}>
                   {' '}({delta > 0 ? '+' : ''}{delta})
                 </span>
               )}

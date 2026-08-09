@@ -95,7 +95,7 @@ export default function VehiclesTable({ initialVehicles, customers }: { initialV
       <tbody className="divide-y divide-gray-100 text-black">
         {vehicles.map((v) =>
           editingId === v.id ? (
-            <tr key={v.id} className="bg-teal-50/40">
+            <tr key={v.id} className="bg-purple-50/40">
               <td colSpan={5} className="p-4">
                 {editError && <p className="text-rose-600 text-xs font-semibold mb-2">{editError}</p>}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -112,7 +112,7 @@ export default function VehiclesTable({ initialVehicles, customers }: { initialV
                 </div>
                 <div className="flex justify-end gap-3 mt-3">
                   <button onClick={cancelEdit} disabled={editSaving} className="text-gray-500 hover:text-gray-700 font-semibold text-sm disabled:opacity-50">Cancel</button>
-                  <button onClick={() => saveEdit(v.id)} disabled={editSaving} className="bg-teal-600 hover:bg-teal-700 text-white font-bold px-4 py-1.5 rounded-md text-sm shadow-sm disabled:bg-gray-300">
+                  <button onClick={() => saveEdit(v.id)} disabled={editSaving} className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-1.5 rounded-md text-sm shadow-sm disabled:bg-gray-300">
                     {editSaving ? 'Saving...' : 'Save Changes'}
                   </button>
                 </div>
@@ -125,8 +125,8 @@ export default function VehiclesTable({ initialVehicles, customers }: { initialV
               <td className="py-4 px-6 text-sm text-gray-500">{v.year || <Empty />}</td>
               <td className="py-4 px-6 text-sm text-gray-500">{v.customer?.name || <Empty />}</td>
               <td className="py-4 px-6 text-right space-x-3">
-                <Link href={`/dashboard/vehicles/${v.id}`} className="text-teal-600 hover:text-teal-800 font-bold text-xs underline">View</Link>
-                <button onClick={() => startEdit(v)} className="text-teal-600 hover:text-teal-800 font-bold text-xs underline">Edit</button>
+                <Link href={`/dashboard/vehicles/${v.id}`} className="text-purple-600 hover:text-purple-800 font-bold text-xs underline">View</Link>
+                <button onClick={() => startEdit(v)} className="text-purple-600 hover:text-purple-800 font-bold text-xs underline">Edit</button>
               </td>
             </tr>
           ),

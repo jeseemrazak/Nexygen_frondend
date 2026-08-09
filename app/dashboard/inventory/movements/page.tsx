@@ -84,7 +84,7 @@ export default function StockMovementsPage() {
                       <span className={`px-3 py-1 text-[10px] font-black uppercase tracking-wider rounded-md border ${
                         log.type === 'TRANSFER' ? 'bg-blue-50 text-blue-700 border-blue-200' :
                         log.type === 'WRITE_OFF' ? 'bg-rose-50 text-rose-700 border-rose-200' :
-                        'bg-emerald-50 text-emerald-700 border-emerald-200'
+                        'bg-purple-50 text-purple-700 border-purple-200'
                       }`}>
                         {log.type}
                       </span>
@@ -106,7 +106,7 @@ export default function StockMovementsPage() {
                         <span className="text-rose-600 font-medium text-xs">Removed from WH-{log.fromWarehouseId}</span>
                       )}
                       {log.type === 'ADJUSTMENT' && (
-                        <span className="text-emerald-600 font-medium text-xs">Added to WH-{log.toWarehouseId}</span>
+                        <span className="text-purple-600 font-medium text-xs">Added to WH-{log.toWarehouseId}</span>
                       )}
                     </td>
 

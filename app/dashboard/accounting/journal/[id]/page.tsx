@@ -64,7 +64,7 @@ export default function JournalEntryDetailPage() {
 
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
         <div className="flex justify-between items-start gap-4">
-          <Link href="/dashboard/accounting/journal" className="text-teal-600 hover:text-teal-800 text-sm font-bold flex items-center gap-1 mb-3 transition-colors">
+          <Link href="/dashboard/accounting/journal" className="text-purple-600 hover:text-purple-800 text-sm font-bold flex items-center gap-1 mb-3 transition-colors">
             ← Back to Journal
           </Link>
           <a
@@ -91,12 +91,12 @@ export default function JournalEntryDetailPage() {
           {entry.memo && <p className="text-slate-600 font-medium">📝 {entry.memo}</p>}
           {entry.reversalOf && (
             <p className="text-slate-600 font-medium">
-              ↩ Reverses <Link href={`/dashboard/accounting/journal/${entry.reversalOf.id}`} className="text-teal-600 hover:underline font-bold">Entry #{entry.reversalOf.id}</Link>
+              ↩ Reverses <Link href={`/dashboard/accounting/journal/${entry.reversalOf.id}`} className="text-purple-600 hover:underline font-bold">Entry #{entry.reversalOf.id}</Link>
             </p>
           )}
           {entry.reversedBy && (
             <p className="text-slate-600 font-medium">
-              ↪ Reversed by <Link href={`/dashboard/accounting/journal/${entry.reversedBy.id}`} className="text-teal-600 hover:underline font-bold">Entry #{entry.reversedBy.id}</Link>
+              ↪ Reversed by <Link href={`/dashboard/accounting/journal/${entry.reversedBy.id}`} className="text-purple-600 hover:underline font-bold">Entry #{entry.reversedBy.id}</Link>
             </p>
           )}
         </div>

@@ -98,7 +98,7 @@ export default function NewRfqPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Type to search products..."
-            className="w-full border border-teal-500 rounded-md p-3 text-black shadow-inner"
+            className="w-full border border-purple-500 rounded-md p-3 text-black shadow-inner"
           />
           {searchResults.length > 0 && (
             <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 shadow-xl rounded-md max-h-96 overflow-y-auto left-0">
@@ -107,7 +107,7 @@ export default function NewRfqPage() {
                   type="button"
                   key={product.id}
                   onClick={() => addToCart(product)}
-                  className="w-full text-left p-4 border-b border-gray-100 hover:bg-teal-50 transition"
+                  className="w-full text-left p-4 border-b border-gray-100 hover:bg-purple-50 transition"
                 >
                   <p className="font-bold text-gray-800">{product.name}</p>
                   {product.sku && <p className="text-xs text-gray-500 font-mono mt-1">SKU: {product.sku}</p>}

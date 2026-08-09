@@ -6,7 +6,7 @@ import { API_BASE_URL, getClientToken } from '@/lib/config';
 
 const STATUS_STYLES: Record<string, string> = {
   SCHEDULED: 'bg-blue-50 text-blue-700',
-  COMPLETED: 'bg-emerald-50 text-emerald-700',
+  COMPLETED: 'bg-purple-50 text-purple-700',
   CANCELLED: 'bg-gray-100 text-gray-500',
   NO_SHOW: 'bg-rose-50 text-rose-700',
 };
@@ -90,7 +90,7 @@ export default function AppointmentsPage() {
       <div className="max-w-2xl mx-auto">
         <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 text-center">
           <p className="text-gray-500">The Appointments module isn&apos;t installed yet.</p>
-          <Link href="/dashboard/settings/apps" className="text-teal-600 hover:text-teal-800 font-bold text-sm mt-3 inline-block">
+          <Link href="/dashboard/settings/apps" className="text-purple-600 hover:text-purple-800 font-bold text-sm mt-3 inline-block">
             ← Go to App Store
           </Link>
         </div>
@@ -105,15 +105,15 @@ export default function AppointmentsPage() {
           <h1 className="text-2xl font-bold text-gray-800">Appointments</h1>
           <p className="text-sm text-gray-500 mt-1">Meetings, site visits, and calls with customers and leads.</p>
         </div>
-        <Link href="/dashboard/appointments/new" className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition">
+        <Link href="/dashboard/appointments/new" className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition">
           + Schedule
         </Link>
       </div>
 
       <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-wrap items-center gap-3">
         <div className="flex bg-gray-100 rounded-lg p-1">
-          <button onClick={() => setView('list')} className={`px-4 py-1.5 rounded-md text-sm font-bold transition ${view === 'list' ? 'bg-white shadow-sm text-teal-700' : 'text-gray-500'}`}>List</button>
-          <button onClick={() => setView('calendar')} className={`px-4 py-1.5 rounded-md text-sm font-bold transition ${view === 'calendar' ? 'bg-white shadow-sm text-teal-700' : 'text-gray-500'}`}>Calendar</button>
+          <button onClick={() => setView('list')} className={`px-4 py-1.5 rounded-md text-sm font-bold transition ${view === 'list' ? 'bg-white shadow-sm text-purple-700' : 'text-gray-500'}`}>List</button>
+          <button onClick={() => setView('calendar')} className={`px-4 py-1.5 rounded-md text-sm font-bold transition ${view === 'calendar' ? 'bg-white shadow-sm text-purple-700' : 'text-gray-500'}`}>Calendar</button>
         </div>
         <select value={staffFilter} onChange={(e) => setStaffFilter(e.target.value)} className="border border-gray-300 rounded-md px-3 py-2 text-sm text-black bg-white">
           <option value="">All Staff</option>
@@ -147,7 +147,7 @@ export default function AppointmentsPage() {
                 {appointments.map((a) => (
                   <tr key={a.id} className="hover:bg-gray-50 transition-colors">
                     <td className="py-3 px-6 text-sm">
-                      <Link href={`/dashboard/appointments/${a.id}`} className="text-teal-600 hover:text-teal-800 font-bold">{fmtDateTime(a.appointmentAt)}</Link>
+                      <Link href={`/dashboard/appointments/${a.id}`} className="text-purple-600 hover:text-purple-800 font-bold">{fmtDateTime(a.appointmentAt)}</Link>
                     </td>
                     <td className="py-3 px-6 text-sm font-semibold">{a.title}</td>
                     <td className="py-3 px-6 text-sm text-gray-600">{a.customer?.name || a.lead?.name || '--'}</td>
@@ -179,7 +179,7 @@ export default function AppointmentsPage() {
                 <div key={i} className={`min-h-[90px] border rounded-md p-1.5 ${day ? 'border-gray-200' : 'border-transparent'}`}>
                   {day && (
                     <>
-                      <p className={`text-xs font-bold mb-1 ${isToday ? 'text-teal-600' : 'text-gray-500'}`}>{day.getDate()}</p>
+                      <p className={`text-xs font-bold mb-1 ${isToday ? 'text-purple-600' : 'text-gray-500'}`}>{day.getDate()}</p>
                       <div className="space-y-0.5">
                         {dayAppts.slice(0, 3).map((a) => (
                           <Link key={a.id} href={`/dashboard/appointments/${a.id}`} className={`block text-[10px] font-semibold px-1 py-0.5 rounded truncate ${STATUS_STYLES[a.status]}`}>

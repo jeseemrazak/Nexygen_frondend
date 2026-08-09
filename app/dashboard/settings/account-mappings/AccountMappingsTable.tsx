@@ -80,7 +80,7 @@ export default function AccountMappingsTable({ mappings, accounts }: { mappings:
                       <button
                         onClick={() => save(m.role)}
                         disabled={!dirty || savingRole === m.role || !selections[m.role]}
-                        className="bg-teal-600 hover:bg-teal-700 disabled:bg-gray-300 text-white font-bold text-sm py-2 px-4 rounded-md whitespace-nowrap transition-colors"
+                        className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 text-white font-bold text-sm py-2 px-4 rounded-md whitespace-nowrap transition-colors"
                       >
                         {savingRole === m.role ? 'Saving...' : savedRole === m.role ? '✓ Saved' : 'Save'}
                       </button>

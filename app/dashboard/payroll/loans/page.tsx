@@ -106,7 +106,7 @@ export default function EmployeeLoansPage() {
             {journals.map((j: any) => <option key={j.id} value={j.id}>{j.name}</option>)}
           </select>
         </div>
-        <button type="submit" disabled={isIssuing} className="bg-teal-600 hover:bg-teal-700 text-white font-bold px-6 py-3 rounded-md shadow-sm disabled:bg-gray-400">
+        <button type="submit" disabled={isIssuing} className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-6 py-3 rounded-md shadow-sm disabled:bg-gray-400">
           {isIssuing ? 'Issuing...' : 'Issue Loan'}
         </button>
       </form>
@@ -135,12 +135,12 @@ export default function EmployeeLoansPage() {
             <tbody className="divide-y divide-gray-100 text-black">
               {loans.map((l: any) => (
                 <tr key={l.id} className={`hover:bg-gray-50 ${l.status === 'CLOSED' ? 'opacity-50' : ''}`}>
-                  <td className="py-4 px-6 font-mono font-bold text-teal-700">{l.loanNo || `#${l.id}`}</td>
+                  <td className="py-4 px-6 font-mono font-bold text-purple-700">{l.loanNo || `#${l.id}`}</td>
                   <td className="py-4 px-6 text-sm font-bold">{l.employee?.name}</td>
                   <td className="py-4 px-6 text-right text-sm">{formatQAR(l.principalAmount)}</td>
                   <td className="py-4 px-6 text-right font-bold text-sm">{formatQAR(l.outstandingBalance)}</td>
                   <td className="py-4 px-6 text-sm">
-                    <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${l.status === 'ACTIVE' ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${l.status === 'ACTIVE' ? 'bg-purple-50 text-purple-700' : 'bg-gray-100 text-gray-500'}`}>
                       {l.status}
                     </span>
                   </td>
@@ -154,7 +154,7 @@ export default function EmployeeLoansPage() {
                           placeholder="Amount"
                           className="w-28 border border-gray-300 rounded p-2 text-right text-sm"
                         />
-                        <button onClick={() => handleRepay(l.id)} className="text-teal-600 hover:text-teal-800 font-bold text-sm underline">
+                        <button onClick={() => handleRepay(l.id)} className="text-purple-600 hover:text-purple-800 font-bold text-sm underline">
                           Repay
                         </button>
                       </div>

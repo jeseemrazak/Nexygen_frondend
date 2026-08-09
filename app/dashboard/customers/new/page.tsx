@@ -54,7 +54,7 @@ export default async function NewCustomerPage({
               name="name"
               required
               placeholder="e.g., City Center Mall"
-              className="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-teal-500 focus:border-teal-500 text-black"
+              className="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-purple-500 focus:border-purple-500 text-black"
             />
           </div>
 
@@ -65,7 +65,7 @@ export default async function NewCustomerPage({
                 type="text"
                 name="contactPerson"
                 placeholder="e.g., Ahmed"
-                className="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-teal-500 focus:border-teal-500 text-black"
+                className="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-purple-500 focus:border-purple-500 text-black"
               />
             </div>
             <div>
@@ -74,7 +74,7 @@ export default async function NewCustomerPage({
                 type="text"
                 name="phone"
                 placeholder="e.g., +974 5555 1234"
-                className="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-teal-500 focus:border-teal-500 text-black"
+                className="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-purple-500 focus:border-purple-500 text-black"
               />
             </div>
           </div>
@@ -85,7 +85,7 @@ export default async function NewCustomerPage({
               type="email"
               name="email"
               placeholder="e.g., accounts@customer.com"
-              className="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-teal-500 focus:border-teal-500 text-black"
+              className="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-purple-500 focus:border-purple-500 text-black"
             />
           </div>
 
@@ -97,7 +97,7 @@ export default async function NewCustomerPage({
               type="text"
               name="address"
               placeholder="e.g., Industrial Area, Doha"
-              className="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-teal-500 focus:border-teal-500 text-black"
+              className="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-purple-500 focus:border-purple-500 text-black"
             />
           </div>
 
@@ -108,7 +108,7 @@ export default async function NewCustomerPage({
             <select
               name="paymentTermId"
               defaultValue=""
-              className="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-teal-500 focus:border-teal-500 text-black"
+              className="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-purple-500 focus:border-purple-500 text-black"
             >
               <option value="">-- None --</option>
               {paymentTerms.map((t: any) => (
@@ -120,7 +120,7 @@ export default async function NewCustomerPage({
           <div className="pt-4 border-t border-gray-100">
             <button
               type="submit"
-              className="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-4 rounded-md transition-colors shadow-sm"
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-md transition-colors shadow-sm"
             >
               Save Customer
             </button>

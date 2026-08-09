@@ -8,7 +8,7 @@ import { API_BASE_URL, getClientToken, safeJson } from '@/lib/config';
 const STATUSES = ['SCHEDULED', 'COMPLETED', 'CANCELLED', 'NO_SHOW'];
 const STATUS_STYLES: Record<string, string> = {
   SCHEDULED: 'bg-blue-50 text-blue-700',
-  COMPLETED: 'bg-emerald-50 text-emerald-700',
+  COMPLETED: 'bg-purple-50 text-purple-700',
   CANCELLED: 'bg-gray-100 text-gray-500',
   NO_SHOW: 'bg-rose-50 text-rose-700',
 };
@@ -92,7 +92,7 @@ export default function AppointmentDetailPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <Link href="/dashboard/appointments" className="text-teal-600 hover:text-teal-800 text-sm font-bold mb-2 inline-block">← Back to Appointments</Link>
+        <Link href="/dashboard/appointments" className="text-purple-600 hover:text-purple-800 text-sm font-bold mb-2 inline-block">← Back to Appointments</Link>
         <div className="flex justify-between items-start flex-wrap gap-4">
           <div>
             <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-3 flex-wrap">
@@ -117,7 +117,7 @@ export default function AppointmentDetailPage() {
               onClick={() => handleStatusChange(s)}
               disabled={statusUpdating || s === appt.status}
               className={`px-4 py-2 rounded-lg text-sm font-bold border transition disabled:cursor-default ${
-                s === appt.status ? `${STATUS_STYLES[s]} border-transparent` : 'bg-white text-gray-500 border-gray-200 hover:border-teal-300 hover:text-teal-700'
+                s === appt.status ? `${STATUS_STYLES[s]} border-transparent` : 'bg-white text-gray-500 border-gray-200 hover:border-purple-300 hover:text-purple-700'
               }`}
             >
               {s.replace('_', ' ')}
@@ -141,7 +141,7 @@ export default function AppointmentDetailPage() {
             <label className="block text-sm font-bold text-gray-700 mb-1">Notes</label>
             <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} className="w-full border border-gray-300 rounded-md px-4 py-2 text-black" />
           </div>
-          <button type="submit" disabled={saving} className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition disabled:opacity-50">
+          <button type="submit" disabled={saving} className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition disabled:opacity-50">
             {saving ? 'Saving...' : 'Save Changes'}
           </button>
         </form>

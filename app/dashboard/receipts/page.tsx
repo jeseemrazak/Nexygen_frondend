@@ -48,10 +48,10 @@ export default async function ReceiptsDashboard() {
             <tbody className="divide-y divide-gray-100 text-black">
               {receipts.map((r: any) => (
                 <tr key={r.id} className="hover:bg-gray-50">
-                  <td className="py-4 px-6 font-bold text-teal-700 font-mono">{r.receiptNumber || `RCPT-${String(r.id).padStart(6, '0')}`}</td>
+                  <td className="py-4 px-6 font-bold text-purple-700 font-mono">{r.receiptNumber || `RCPT-${String(r.id).padStart(6, '0')}`}</td>
                   <td className="py-4 px-6 text-sm text-gray-600">{formatDate(r.createdAt)}</td>
                   <td className="py-4 px-6 text-sm">
-                    <Link href={`/dashboard/purchases/${r.purchaseOrderId}`} className="text-teal-600 hover:underline font-bold">
+                    <Link href={`/dashboard/purchases/${r.purchaseOrderId}`} className="text-purple-600 hover:underline font-bold">
                       PO-{String(r.purchaseOrderId).padStart(4, '0')}
                     </Link>
                   </td>

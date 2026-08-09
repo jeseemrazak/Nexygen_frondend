@@ -10,7 +10,7 @@ const formatDate = (dateString: string) => new Date(dateString).toLocaleDateStri
 const STATUS_STYLE: Record<string, string> = {
   DRAFT: 'bg-gray-100 text-gray-600',
   APPROVED: 'bg-amber-50 text-amber-700',
-  PAID: 'bg-emerald-50 text-emerald-700',
+  PAID: 'bg-purple-50 text-purple-700',
   REJECTED: 'bg-rose-50 text-rose-700',
 };
 
@@ -75,7 +75,7 @@ export default function ExpensesPage() {
           <Link href="/dashboard/expenses/categories" className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-md text-sm transition">
             Categories
           </Link>
-          <Link href="/dashboard/expenses/new" className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-md text-sm transition">
+          <Link href="/dashboard/expenses/new" className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md text-sm transition">
             ➕ New Expense
           </Link>
         </div>
@@ -87,7 +87,7 @@ export default function ExpensesPage() {
             <button
               key={s}
               onClick={() => setStatusFilter(s)}
-              className={`px-4 py-2 rounded-md text-sm font-bold transition ${statusFilter === s ? 'bg-teal-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+              className={`px-4 py-2 rounded-md text-sm font-bold transition ${statusFilter === s ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
             >
               {s}
             </button>
@@ -116,7 +116,7 @@ export default function ExpensesPage() {
             <tbody className="divide-y divide-gray-100 text-black">
               {expenses.map((exp: any) => (
                 <tr key={exp.id} className="hover:bg-gray-50">
-                  <td className="py-4 px-6 font-bold text-teal-700 font-mono">{exp.expenseNumber || `#${exp.id}`}</td>
+                  <td className="py-4 px-6 font-bold text-purple-700 font-mono">{exp.expenseNumber || `#${exp.id}`}</td>
                   <td className="py-4 px-6 text-sm text-gray-600">{formatDate(exp.createdAt)}</td>
                   <td className="py-4 px-6 text-sm">{exp.category.name}</td>
                   <td className="py-4 px-6 text-sm font-bold">{exp.payeeName}</td>
@@ -133,7 +133,7 @@ export default function ExpensesPage() {
                           <button
                             onClick={() => runAction(exp.id, 'approve')}
                             disabled={busyId === exp.id}
-                            className="bg-teal-600 hover:bg-teal-700 text-white px-3 py-1.5 rounded text-xs font-bold disabled:opacity-50"
+                            className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 rounded text-xs font-bold disabled:opacity-50"
                           >
                             Approve
                           </button>
@@ -153,7 +153,7 @@ export default function ExpensesPage() {
                         <button
                           onClick={() => runAction(exp.id, 'pay')}
                           disabled={busyId === exp.id}
-                          className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded text-xs font-bold disabled:opacity-50"
+                          className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 rounded text-xs font-bold disabled:opacity-50"
                         >
                           {busyId === exp.id ? 'Paying...' : 'Mark Paid'}
                         </button>

@@ -87,7 +87,7 @@ const formatQAR = (amount: number) => new Intl.NumberFormat('en-QA', { style: 'c
 const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
 const billPaymentBadge: Record<string, string> = {
-  PAID: 'bg-emerald-50 text-emerald-700 ring-emerald-600/20',
+  PAID: 'bg-purple-50 text-purple-700 ring-purple-600/20',
   PARTIAL: 'bg-amber-50 text-amber-700 ring-amber-600/20',
   UNPAID: 'bg-rose-50 text-rose-700 ring-rose-600/20',
 };
@@ -117,7 +117,7 @@ export default async function PurchaseOrderDetailPage({
       {/* HEADER */}
       <div className="flex flex-col md:flex-row justify-between md:items-start gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
         <div>
-          <Link href="/dashboard/purchases" className="text-teal-600 hover:text-teal-800 text-sm font-bold flex items-center gap-1 mb-3 transition-colors">
+          <Link href="/dashboard/purchases" className="text-purple-600 hover:text-purple-800 text-sm font-bold flex items-center gap-1 mb-3 transition-colors">
             ← Back to Purchase Orders
           </Link>
           <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3 flex-wrap">
@@ -203,12 +203,12 @@ export default async function PurchaseOrderDetailPage({
                   </td>
                   <td className="py-4 px-6 text-center font-black text-slate-700">{item.quantityOrdered}</td>
                   <td className="py-4 px-6 text-center">
-                    <span className={`font-black ${item.quantityReceived >= item.quantityOrdered ? 'text-emerald-600' : 'text-amber-600'}`}>
+                    <span className={`font-black ${item.quantityReceived >= item.quantityOrdered ? 'text-purple-600' : 'text-amber-600'}`}>
                       {item.quantityReceived}
                     </span>
                   </td>
                   <td className="py-4 px-6 text-center">
-                    <span className={`font-black ${item.quantityBilled >= item.quantityOrdered ? 'text-emerald-600' : 'text-amber-600'}`}>
+                    <span className={`font-black ${item.quantityBilled >= item.quantityOrdered ? 'text-purple-600' : 'text-amber-600'}`}>
                       {item.quantityBilled}
                     </span>
                   </td>
@@ -257,7 +257,7 @@ export default async function PurchaseOrderDetailPage({
                 </div>
               );
             })}
-            <button type="submit" className="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-4 rounded-md shadow-sm">
+            <button type="submit" className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-md shadow-sm">
               Confirm Receipt
             </button>
           </form>

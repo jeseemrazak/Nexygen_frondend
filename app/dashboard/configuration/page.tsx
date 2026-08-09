@@ -16,7 +16,7 @@ function IconWarehouse({ className }: { className?: string }) {
 }
 
 const TINT: Record<string, { bg: string; text: string }> = {
-  teal: { bg: 'bg-teal-50', text: 'text-teal-600' },
+  teal: { bg: 'bg-purple-50', text: 'text-purple-600' },
   amber: { bg: 'bg-amber-50', text: 'text-amber-600' },
   slate: { bg: 'bg-slate-100', text: 'text-slate-600' },
 };
@@ -40,7 +40,7 @@ function ConfigCard({
   return (
     <Link
       href={href}
-      className="bg-white border border-gray-200 rounded-lg p-6 flex flex-col gap-4 hover:border-teal-300 hover:shadow-sm transition-all"
+      className="bg-white border border-gray-200 rounded-lg p-6 flex flex-col gap-4 hover:border-purple-300 hover:shadow-sm transition-all"
     >
       <div className={`w-11 h-11 rounded-lg ${t.bg} ${t.text} flex items-center justify-center`}>
         {icon}
@@ -49,7 +49,7 @@ function ConfigCard({
         <h2 className="text-lg font-bold text-gray-800">{title}</h2>
         <p className="text-sm text-gray-500 mt-1">{description}</p>
       </div>
-      <span className="text-teal-600 font-semibold text-sm mt-auto">{actionLabel} →</span>
+      <span className="text-purple-600 font-semibold text-sm mt-auto">{actionLabel} →</span>
     </Link>
   );
 }

@@ -11,7 +11,7 @@ const formatDate = (dateString: string) => new Date(dateString).toLocaleDateStri
 const statusBadge: Record<string, string> = {
   DRAFT: 'bg-slate-100 text-slate-600',
   PROCESSED: 'bg-blue-50 text-blue-700',
-  PAID: 'bg-emerald-50 text-emerald-700',
+  PAID: 'bg-purple-50 text-purple-700',
 };
 
 export default function PayrollRunDetailPage() {
@@ -108,7 +108,7 @@ export default function PayrollRunDetailPage() {
 
       <div className="flex flex-col md:flex-row justify-between md:items-start gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
         <div>
-          <Link href="/dashboard/payroll/runs" className="text-teal-600 hover:text-teal-800 text-sm font-bold flex items-center gap-1 mb-3">
+          <Link href="/dashboard/payroll/runs" className="text-purple-600 hover:text-purple-800 text-sm font-bold flex items-center gap-1 mb-3">
             ← Back to Runs
           </Link>
           <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3 flex-wrap">
@@ -134,7 +134,7 @@ export default function PayrollRunDetailPage() {
                 <option value="">Journal: default (Cash)</option>
                 {journals.map((j: any) => <option key={j.id} value={j.id}>{j.name}</option>)}
               </select>
-              <button onClick={handleMarkPaid} disabled={isActing} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm disabled:bg-gray-400">
+              <button onClick={handleMarkPaid} disabled={isActing} className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm disabled:bg-gray-400">
                 {isActing ? 'Paying...' : 'Mark as Paid'}
               </button>
             </div>
@@ -169,7 +169,7 @@ export default function PayrollRunDetailPage() {
                 <tr key={p.id} className="hover:bg-slate-50/50">
                   <td className="py-3 px-4 font-bold text-slate-800">
                     {p.employee.name}
-                    {p.isQatari && <span className="ml-1.5 text-[10px] font-bold text-teal-600 uppercase">QA</span>}
+                    {p.isQatari && <span className="ml-1.5 text-[10px] font-bold text-purple-600 uppercase">QA</span>}
                   </td>
                   <td className="py-3 px-4 text-right">{formatQAR(p.basicSalary)}</td>
                   <td className="py-3 px-4 text-right text-slate-600">{formatQAR(p.allowancesTotal)}</td>
@@ -207,7 +207,7 @@ export default function PayrollRunDetailPage() {
                   <td className="py-3 px-4 text-right text-slate-600">{p.isQatari ? formatQAR(p.grsiaEmployeeAmount) : '--'}</td>
                   <td className="py-3 px-4 text-right text-slate-600">{p.loanDeduction > 0 ? formatQAR(p.loanDeduction) : '--'}</td>
                   <td className="py-3 px-4 text-right text-rose-600">{formatQAR(p.totalDeductions)}</td>
-                  <td className="py-3 px-4 text-right font-black text-emerald-700">{formatQAR(p.netPay)}</td>
+                  <td className="py-3 px-4 text-right font-black text-purple-700">{formatQAR(p.netPay)}</td>
                 </tr>
               ))}
             </tbody>

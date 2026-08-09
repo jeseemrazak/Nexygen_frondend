@@ -20,9 +20,9 @@ async function getJournals() {
 }
 
 const typeBadge: Record<string, string> = {
-  SALE: 'bg-teal-50 text-teal-700',
+  SALE: 'bg-purple-50 text-purple-700',
   PURCHASE: 'bg-blue-50 text-blue-700',
-  CASH: 'bg-emerald-50 text-emerald-700',
+  CASH: 'bg-purple-50 text-purple-700',
   BANK: 'bg-indigo-50 text-indigo-700',
   MISC: 'bg-slate-100 text-slate-600',
 };
@@ -47,7 +47,7 @@ export default async function JournalsPage() {
           )}
           <Link
             href="/dashboard/accounting/journals/new"
-            className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-md transition-colors shadow-sm flex items-center gap-2"
+            className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md transition-colors shadow-sm flex items-center gap-2"
           >
             <span>➕</span> Add Journal
           </Link>
@@ -89,7 +89,7 @@ export default async function JournalsPage() {
                   <td className="py-4 px-6 text-sm text-gray-500 font-mono">{j.defaultDebitAccount ? `${j.defaultDebitAccount.code} ${j.defaultDebitAccount.name}` : '--'}</td>
                   <td className="py-4 px-6 text-sm text-gray-500 font-mono">{j.defaultCreditAccount ? `${j.defaultCreditAccount.code} ${j.defaultCreditAccount.name}` : '--'}</td>
                   <td className="py-4 px-6 text-sm">
-                    <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${j.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${j.isActive ? 'bg-purple-50 text-purple-700' : 'bg-gray-100 text-gray-500'}`}>
                       {j.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </td>

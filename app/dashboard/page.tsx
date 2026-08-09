@@ -46,17 +46,17 @@ async function getDocumentStatusSummary(searchParams: any) {
 const STATUS_STYLE: Record<string, string> = {
   DRAFT: 'bg-slate-100 text-slate-600',
   SENT: 'bg-blue-50 text-blue-700',
-  ACCEPTED: 'bg-emerald-50 text-emerald-700',
+  ACCEPTED: 'bg-purple-50 text-purple-700',
   REJECTED: 'bg-rose-50 text-rose-700',
   CONVERTED: 'bg-purple-50 text-purple-700',
   CONFIRMED: 'bg-blue-50 text-blue-700',
-  DONE: 'bg-emerald-50 text-emerald-700',
+  DONE: 'bg-purple-50 text-purple-700',
   CANCELLED: 'bg-rose-50 text-rose-700',
   ORDERED: 'bg-blue-50 text-blue-700',
-  RECEIVED: 'bg-emerald-50 text-emerald-700',
+  RECEIVED: 'bg-purple-50 text-purple-700',
   UNPAID: 'bg-rose-50 text-rose-700',
   PARTIAL: 'bg-amber-50 text-amber-700',
-  PAID: 'bg-emerald-50 text-emerald-700',
+  PAID: 'bg-purple-50 text-purple-700',
 };
 
 // --- Minimal inline icon set (kept dependency-free, matches the rest of the dashboard) ---
@@ -112,8 +112,8 @@ function SectionHeader({ title, hint }: { title: string; hint?: string }) {
 const TINT: Record<string, { bg: string; text: string }> = {
   slate: { bg: 'bg-slate-100', text: 'text-slate-600' },
   amber: { bg: 'bg-amber-50', text: 'text-amber-600' },
-  emerald: { bg: 'bg-emerald-50', text: 'text-emerald-600' },
-  teal: { bg: 'bg-teal-50', text: 'text-teal-600' },
+  emerald: { bg: 'bg-purple-50', text: 'text-purple-600' },
+  teal: { bg: 'bg-purple-50', text: 'text-purple-600' },
   rose: { bg: 'bg-rose-50', text: 'text-rose-600' },
 };
 
@@ -204,8 +204,8 @@ export default async function DashboardHomePage({ searchParams }: { searchParams
   const { kpis, merchandisersList = [], lowStockItems = [], recentOrders = [] } = data;
   const filterActive = Boolean(resolvedParams.range || resolvedParams.merchandiserId || resolvedParams.status);
 
-  const selectClass = "bg-white border border-slate-300 text-slate-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500/40 focus:border-teal-500 outline-none transition-all cursor-pointer";
-  const inputClass = "bg-white border border-slate-300 text-slate-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500/40 focus:border-teal-500 outline-none transition-all";
+  const selectClass = "bg-white border border-slate-300 text-slate-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500/40 focus:border-purple-500 outline-none transition-all cursor-pointer";
+  const inputClass = "bg-white border border-slate-300 text-slate-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500/40 focus:border-purple-500 outline-none transition-all";
   const labelClass = "text-[11px] font-medium text-slate-500";
 
   return (
@@ -219,8 +219,8 @@ export default async function DashboardHomePage({ searchParams }: { searchParams
         </div>
         <div className="inline-flex items-center gap-2 text-xs font-medium text-slate-500 bg-white border border-slate-200 rounded-full px-3 py-1.5 w-fit">
           <span className="relative flex h-1.5 w-1.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-purple-500"></span>
           </span>
           Live data
         </div>
@@ -274,7 +274,7 @@ export default async function DashboardHomePage({ searchParams }: { searchParams
           </div>
 
           <div className="flex gap-2 ml-auto">
-            <button type="submit" className="bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 px-5 rounded-lg transition-colors text-sm">
+            <button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-5 rounded-lg transition-colors text-sm">
               Apply Filters
             </button>
             <Link href="/dashboard" className={`font-semibold py-2 px-4 rounded-lg border transition-colors text-sm flex items-center justify-center ${filterActive ? 'text-slate-700 border-slate-300 hover:bg-slate-50' : 'text-slate-300 border-slate-200 pointer-events-none'}`}>
@@ -393,7 +393,7 @@ export default async function DashboardHomePage({ searchParams }: { searchParams
                     let badgeClass = "bg-slate-50 text-slate-700 ring-1 ring-inset ring-slate-600/20";
                     if (order.status === 'PENDING') badgeClass = "bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/20";
                     if (order.status === 'SHIPPED') badgeClass = "bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-600/20";
-                    if (order.status === 'DELIVERED') badgeClass = "bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/20";
+                    if (order.status === 'DELIVERED') badgeClass = "bg-purple-50 text-purple-700 ring-1 ring-inset ring-purple-600/20";
 
                     return (
                       <tr key={order.id} className="hover:bg-slate-50/80 transition-colors group">
@@ -435,7 +435,7 @@ export default async function DashboardHomePage({ searchParams }: { searchParams
                         {/* Proof of Delivery */}
                         <td className="py-3.5 px-5 text-center">
                           {order.proofOfDelivery ? (
-                            <a href={uploadUrl(order.proofOfDelivery)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[11px] text-teal-700 hover:text-teal-900 font-semibold bg-teal-50 hover:bg-teal-100 px-3 py-1.5 rounded-md transition-all border border-teal-200">
+                            <a href={uploadUrl(order.proofOfDelivery)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[11px] text-purple-700 hover:text-purple-900 font-semibold bg-purple-50 hover:bg-purple-100 px-3 py-1.5 rounded-md transition-all border border-purple-200">
                               <IconEye className="w-3.5 h-3.5" />
                               View
                             </a>
@@ -470,8 +470,8 @@ export default async function DashboardHomePage({ searchParams }: { searchParams
           <div className="overflow-y-auto flex-1 p-4 custom-scrollbar">
             {lowStockItems.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-center">
-                <div className="w-14 h-14 bg-emerald-50 rounded-full flex items-center justify-center mb-4">
-                  <IconCheckCircle className="w-6 h-6 text-emerald-500" />
+                <div className="w-14 h-14 bg-purple-50 rounded-full flex items-center justify-center mb-4">
+                  <IconCheckCircle className="w-6 h-6 text-purple-500" />
                 </div>
                 <p className="text-slate-800 font-semibold">All inventory is stable.</p>
                 <p className="text-slate-500 text-sm mt-1">No critical stock alerts right now.</p>

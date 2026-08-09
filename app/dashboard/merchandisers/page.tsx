@@ -129,8 +129,8 @@ export default function MerchandisersPage() {
 
         {/* LEFT: ADD FORM (Takes 1/3 space) */}
         <div className="lg:col-span-1 bg-white rounded-xl shadow-sm border border-gray-200 h-fit overflow-hidden">
-          <div className="bg-teal-50 border-b border-teal-100 px-6 py-4">
-            <h2 className="text-lg font-bold text-teal-800 flex items-center gap-2">
+          <div className="bg-purple-50 border-b border-purple-100 px-6 py-4">
+            <h2 className="text-lg font-bold text-purple-800 flex items-center gap-2">
               ➕ Add Merchandiser
             </h2>
           </div>
@@ -138,7 +138,7 @@ export default function MerchandisersPage() {
           <form onSubmit={handleCreate} className="p-6 space-y-4">
 
             {message.text && (
-              <div className={`p-3 rounded text-sm font-bold border ${message.type === 'success' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'}`}>
+              <div className={`p-3 rounded text-sm font-bold border ${message.type === 'success' ? 'bg-purple-50 text-purple-700 border-purple-200' : 'bg-red-50 text-red-700 border-red-200'}`}>
                 {message.text}
               </div>
             )}
@@ -150,7 +150,7 @@ export default function MerchandisersPage() {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full border border-gray-300 rounded-md px-4 py-2 text-black focus:ring-2 focus:ring-teal-500 focus:outline-none transition"
+                className="w-full border border-gray-300 rounded-md px-4 py-2 text-black focus:ring-2 focus:ring-purple-500 focus:outline-none transition"
                 placeholder="e.g. John Doe"
               />
             </div>
@@ -162,7 +162,7 @@ export default function MerchandisersPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full border border-gray-300 rounded-md px-4 py-2 text-black focus:ring-2 focus:ring-teal-500 focus:outline-none transition"
+                className="w-full border border-gray-300 rounded-md px-4 py-2 text-black focus:ring-2 focus:ring-purple-500 focus:outline-none transition"
                 placeholder="john@example.com"
               />
             </div>
@@ -174,7 +174,7 @@ export default function MerchandisersPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full border border-gray-300 rounded-md px-4 py-2 text-black focus:ring-2 focus:ring-teal-500 focus:outline-none transition"
+                className="w-full border border-gray-300 rounded-md px-4 py-2 text-black focus:ring-2 focus:ring-purple-500 focus:outline-none transition"
                 placeholder="Assign a secure password"
               />
             </div>
@@ -182,7 +182,7 @@ export default function MerchandisersPage() {
             <button
               type="submit"
               disabled={saving}
-              className="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 rounded-md shadow-sm transition mt-4 flex justify-center"
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-md shadow-sm transition mt-4 flex justify-center"
             >
               {saving ? 'Creating User...' : 'Create Merchandiser'}
             </button>
@@ -219,7 +219,7 @@ export default function MerchandisersPage() {
                 <tbody className="divide-y divide-gray-100 text-sm">
                   {merchandisers.map((m) =>
                     editingId === m.id ? (
-                      <tr key={m.id} className="bg-teal-50/40">
+                      <tr key={m.id} className="bg-purple-50/40">
                         <td colSpan={5} className="py-4 px-6">
                           {editError && (
                             <div className="mb-3 p-2 rounded text-xs font-bold text-red-700 bg-red-50 border border-red-200">
@@ -267,7 +267,7 @@ export default function MerchandisersPage() {
                             <button
                               onClick={() => saveEdit(m.id)}
                               disabled={editSaving}
-                              className="px-5 py-2 rounded-md font-bold text-white bg-teal-600 hover:bg-teal-700 text-sm disabled:bg-gray-400"
+                              className="px-5 py-2 rounded-md font-bold text-white bg-purple-600 hover:bg-purple-700 text-sm disabled:bg-gray-400"
                             >
                               {editSaving ? 'Saving...' : 'Save Changes'}
                             </button>
@@ -279,7 +279,7 @@ export default function MerchandisersPage() {
                         <td className="py-4 px-6 font-mono font-bold text-gray-400">#{m.id}</td>
                         <td className="py-4 px-6 font-bold text-gray-800">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center font-bold text-xs uppercase">
+                            <div className="w-8 h-8 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-xs uppercase">
                               {m.name.charAt(0)}
                             </div>
                             {m.name}
@@ -292,7 +292,7 @@ export default function MerchandisersPage() {
                         <td className="py-4 px-6 text-right">
                           <button
                             onClick={() => startEdit(m)}
-                            className="text-teal-600 hover:text-teal-800 font-bold text-xs underline"
+                            className="text-purple-600 hover:text-purple-800 font-bold text-xs underline"
                           >
                             Edit
                           </button>

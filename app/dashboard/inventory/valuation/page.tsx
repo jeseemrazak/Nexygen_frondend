@@ -62,7 +62,7 @@ export default async function StockValuationPage({
                 <option key={w.id} value={w.id}>{w.name}</option>
               ))}
             </select>
-            <button type="submit" className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-md text-sm">
+            <button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md text-sm">
               Filter
             </button>
             {warehouseFilter !== 'all' && (
@@ -85,7 +85,7 @@ export default async function StockValuationPage({
           <div key={wh.warehouseId} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
               <h2 className="font-bold text-gray-800">🏭 {wh.warehouseName}</h2>
-              <span className="text-sm font-bold text-teal-700">{formatQAR(wh.total)}</span>
+              <span className="text-sm font-bold text-purple-700">{formatQAR(wh.total)}</span>
             </div>
             <table className="w-full text-left border-collapse">
               <thead className="bg-gray-50 border-b border-gray-200">

@@ -69,7 +69,7 @@ export default function OpenSessionForm({ warehouses, staff }: { warehouses: any
         >
           Skip PIN
         </button>
-        <button type="submit" disabled={!warehouseId || isSubmitting} className="bg-teal-600 hover:bg-teal-700 text-white font-bold px-6 rounded-md shadow-sm whitespace-nowrap disabled:bg-gray-300">
+        <button type="submit" disabled={!warehouseId || isSubmitting} className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-6 rounded-md shadow-sm whitespace-nowrap disabled:bg-gray-300">
           {isSubmitting ? 'Opening...' : 'Open Session'}
         </button>
       </form>

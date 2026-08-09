@@ -45,7 +45,7 @@ export default async function PosStaffPage({ searchParams }: { searchParams: Pro
             placeholder="PIN (4-6 digits)"
             className="w-48 border border-gray-300 rounded-md p-3 text-black"
           />
-          <button type="submit" className="bg-teal-600 hover:bg-teal-700 text-white font-bold px-6 rounded-md shadow-sm whitespace-nowrap">
+          <button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-6 rounded-md shadow-sm whitespace-nowrap">
             Add
           </button>
         </form>
@@ -68,7 +68,7 @@ export default async function PosStaffPage({ searchParams }: { searchParams: Pro
                 <tr key={s.id} className={`hover:bg-gray-50 transition-colors ${!s.isActive ? 'opacity-50' : ''}`}>
                   <td className="py-4 px-6 font-bold text-gray-800">{s.name}</td>
                   <td className="py-4 px-6 text-sm">
-                    <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${s.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${s.isActive ? 'bg-purple-50 text-purple-700' : 'bg-gray-100 text-gray-500'}`}>
                       {s.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </td>

@@ -69,7 +69,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [isSettingsOpen, setIsSettingsOpen] = useState(isSettingsSectionActive);
 
   // 🔥 THE EXACT MENU STYLE YOU REQUESTED
-  const linkStyle = "flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-teal-50 hover:text-teal-700 rounded-lg font-semibold transition-colors";
+  const linkStyle = "flex items-center gap-3 px-4 py-3 text-[#CECBF6] hover:bg-white/10 hover:text-white rounded-lg font-semibold transition-colors";
 
   // 🔥 THE PURPLE ICON STYLE
   const iconStyle = "w-6 h-6 text-black-600";
@@ -77,9 +77,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="flex min-h-screen bg-gray-50 text-black">
 
-      {/* Sidebar - Changed to bg-white so your text-gray-600 menus look great! */}
-      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col z-10">
-        <div className="p-6">
+      {/* Sidebar — white logo header band over a solid deep-purple nav body */}
+      <aside className="w-64 bg-[#3C3489] border-r border-[#2D2768] flex flex-col z-10">
+        <div className="p-6 bg-white">
           <img src="/axon-logo.png" alt="AXON ERP" className="w-full h-auto" />
         </div>
 
@@ -97,7 +97,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             <button
               onClick={() => setIsSalesOpen(!isSalesOpen)}
-              className="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-teal-50 transition font-semibold text-gray-600 hover:text-teal-700"
+              className="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-white/10 transition font-semibold text-[#CECBF6] hover:text-white"
             >
               <div className="flex items-center gap-3">
                 <svg className={iconStyle} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -107,7 +107,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </div>
 
               <svg
-                className={`w-4 h-4 transition-transform duration-300 ${isSalesOpen ? 'rotate-180 text-teal-600' : 'text-gray-400'}`}
+                className={`w-4 h-4 transition-transform duration-300 ${isSalesOpen ? 'rotate-180 text-white' : 'text-[#8F86C9]'}`}
                 fill="none" viewBox="0 0 24 24" stroke="currentColor"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -121,8 +121,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             >
               <Link
                 href="/dashboard/quotations"
-                className={`block px-4 py-2 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm pl-[3.25rem] ${
-                  pathname?.startsWith('/dashboard/quotations') ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 rounded-md hover:bg-white/10 hover:text-white transition text-sm pl-[3.25rem] ${
+                  pathname?.startsWith('/dashboard/quotations') ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Quotations
@@ -130,8 +130,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/orders"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname?.startsWith('/dashboard/orders') ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname?.startsWith('/dashboard/orders') ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Sales Orders
@@ -139,8 +139,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/deliveries"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname?.startsWith('/dashboard/deliveries') ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname?.startsWith('/dashboard/deliveries') ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Deliveries
@@ -148,8 +148,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/sales-invoices"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname?.startsWith('/dashboard/sales-invoices') ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname?.startsWith('/dashboard/sales-invoices') ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Sales Invoices
@@ -157,8 +157,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/customers"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname?.startsWith('/dashboard/customers') ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname?.startsWith('/dashboard/customers') ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Customers
@@ -172,7 +172,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             <button
               onClick={() => setIsPurchasesOpen(!isPurchasesOpen)}
-              className="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-teal-50 transition font-semibold text-gray-600 hover:text-teal-700"
+              className="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-white/10 transition font-semibold text-[#CECBF6] hover:text-white"
             >
               <div className="flex items-center gap-3">
                 <svg className={iconStyle} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -182,7 +182,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </div>
 
               <svg
-                className={`w-4 h-4 transition-transform duration-300 ${isPurchasesOpen ? 'rotate-180 text-teal-600' : 'text-gray-400'}`}
+                className={`w-4 h-4 transition-transform duration-300 ${isPurchasesOpen ? 'rotate-180 text-white' : 'text-[#8F86C9]'}`}
                 fill="none" viewBox="0 0 24 24" stroke="currentColor"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -196,8 +196,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             >
               <Link
                 href="/dashboard/rfqs"
-                className={`block px-4 py-2 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm pl-[3.25rem] ${
-                  pathname === '/dashboard/rfqs' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 rounded-md hover:bg-white/10 hover:text-white transition text-sm pl-[3.25rem] ${
+                  pathname === '/dashboard/rfqs' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 RFQs
@@ -205,8 +205,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/purchases"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/purchases' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/purchases' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Purchase Orders
@@ -214,8 +214,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/receipts"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/receipts' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/receipts' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Receipts
@@ -223,8 +223,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/purchases/invoices"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/purchases/invoices' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/purchases/invoices' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Purchase Invoices
@@ -232,8 +232,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/suppliers"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/suppliers' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/suppliers' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Suppliers
@@ -247,7 +247,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             <button
               onClick={() => setIsPosOpen(!isPosOpen)}
-              className="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-teal-50 transition font-semibold text-gray-600 hover:text-teal-700"
+              className="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-white/10 transition font-semibold text-[#CECBF6] hover:text-white"
             >
               <div className="flex items-center gap-3">
                 <svg className={iconStyle} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -257,7 +257,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </div>
 
               <svg
-                className={`w-4 h-4 transition-transform duration-300 ${isPosOpen ? 'rotate-180 text-teal-600' : 'text-gray-400'}`}
+                className={`w-4 h-4 transition-transform duration-300 ${isPosOpen ? 'rotate-180 text-white' : 'text-[#8F86C9]'}`}
                 fill="none" viewBox="0 0 24 24" stroke="currentColor"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -271,8 +271,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             >
               <Link
                 href="/dashboard/pos"
-                className={`block px-4 py-2 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm pl-[3.25rem] ${
-                  pathname === '/dashboard/pos' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 rounded-md hover:bg-white/10 hover:text-white transition text-sm pl-[3.25rem] ${
+                  pathname === '/dashboard/pos' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Checkout
@@ -280,8 +280,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/pos/sessions"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/pos/sessions' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/pos/sessions' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Sessions
@@ -289,8 +289,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/pos/sales"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/pos/sales' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/pos/sales' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Sales History
@@ -298,8 +298,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/pos/staff"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/pos/staff' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/pos/staff' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Staff
@@ -307,8 +307,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/pos/reports"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/pos/reports' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/pos/reports' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Reports
@@ -322,7 +322,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             <button
               onClick={() => setIsInventoryOpen(!isInventoryOpen)}
-              className="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-teal-50 transition font-semibold text-gray-600 hover:text-teal-700"
+              className="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-white/10 transition font-semibold text-[#CECBF6] hover:text-white"
             >
               <div className="flex items-center gap-3">
                 <svg className={iconStyle} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -332,7 +332,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </div>
 
               <svg
-                className={`w-4 h-4 transition-transform duration-300 ${isInventoryOpen ? 'rotate-180 text-teal-600' : 'text-gray-400'}`}
+                className={`w-4 h-4 transition-transform duration-300 ${isInventoryOpen ? 'rotate-180 text-white' : 'text-[#8F86C9]'}`}
                 fill="none" viewBox="0 0 24 24" stroke="currentColor"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -346,8 +346,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             >
               <Link
                 href="/dashboard/products"
-                className={`block px-4 py-2 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm pl-[3.25rem] ${
-                  pathname?.startsWith('/dashboard/products') ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 rounded-md hover:bg-white/10 hover:text-white transition text-sm pl-[3.25rem] ${
+                  pathname?.startsWith('/dashboard/products') ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Products
@@ -355,8 +355,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/products/labels"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/products/labels' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/products/labels' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Barcode Labels
@@ -364,8 +364,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/configuration"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname?.startsWith('/dashboard/configuration') ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname?.startsWith('/dashboard/configuration') ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Configuration
@@ -373,8 +373,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/warehouses"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/warehouses' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/warehouses' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 All Warehouses
@@ -382,8 +382,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/inventory"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/inventory' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/inventory' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Stock Report
@@ -391,8 +391,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/inventory/valuation"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/inventory/valuation' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/inventory/valuation' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Stock Value
@@ -400,8 +400,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/inventory/transfer"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/inventory/transfer' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/inventory/transfer' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Stock Operations
@@ -409,8 +409,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/inventory/movements"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/inventory/movements' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/inventory/movements' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Audit Log
@@ -421,14 +421,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
 
           {/* DIVIDER */}
-          <div className="my-3 border-t border-gray-100" />
+          <div className="my-3 border-t border-white/10" />
 
           {/* ACCOUNTING COLLAPSIBLE GROUP */}
           <div>
 
             <button
               onClick={() => setIsAccountingOpen(!isAccountingOpen)}
-              className="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-teal-50 transition font-semibold text-gray-600 hover:text-teal-700"
+              className="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-white/10 transition font-semibold text-[#CECBF6] hover:text-white"
             >
               <div className="flex items-center gap-3">
                 <svg className={iconStyle} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -438,7 +438,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </div>
 
               <svg
-                className={`w-4 h-4 transition-transform duration-300 ${isAccountingOpen ? 'rotate-180 text-teal-600' : 'text-gray-400'}`}
+                className={`w-4 h-4 transition-transform duration-300 ${isAccountingOpen ? 'rotate-180 text-white' : 'text-[#8F86C9]'}`}
                 fill="none" viewBox="0 0 24 24" stroke="currentColor"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -452,8 +452,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             >
               <Link
                 href="/dashboard/accounting"
-                className={`block px-4 py-2 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm pl-[3.25rem] ${
-                  pathname === '/dashboard/accounting' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 rounded-md hover:bg-white/10 hover:text-white transition text-sm pl-[3.25rem] ${
+                  pathname === '/dashboard/accounting' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Overview
@@ -461,8 +461,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/accounting/accounts"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm pl-[3.25rem] ${
-                  pathname === '/dashboard/accounting/accounts' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm pl-[3.25rem] ${
+                  pathname === '/dashboard/accounting/accounts' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Chart of Accounts
@@ -470,8 +470,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/accounting/journal"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/accounting/journal' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/accounting/journal' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Journal Entries
@@ -479,8 +479,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/accounting/ledger"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/accounting/ledger' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/accounting/ledger' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Ledger / Account Inquiry
@@ -488,8 +488,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/accounting/trial-balance"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/accounting/trial-balance' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/accounting/trial-balance' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Trial Balance
@@ -497,8 +497,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/accounting/reports"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/accounting/reports' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/accounting/reports' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Financial Statements
@@ -506,8 +506,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/accounting/reports/outlet-pnl"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/accounting/reports/outlet-pnl' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/accounting/reports/outlet-pnl' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Outlet P&amp;L
@@ -515,8 +515,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/accounting/reports/fx-revaluation"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/accounting/reports/fx-revaluation' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/accounting/reports/fx-revaluation' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 FX Revaluation
@@ -524,8 +524,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/accounting/reports/ar-aging"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/accounting/reports/ar-aging' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/accounting/reports/ar-aging' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 AR Aging
@@ -533,8 +533,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/accounting/reports/ap-aging"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/accounting/reports/ap-aging' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/accounting/reports/ap-aging' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 AP Aging
@@ -542,8 +542,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/accounting/payments"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname?.startsWith('/dashboard/accounting/payments') ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname?.startsWith('/dashboard/accounting/payments') ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Payments
@@ -551,8 +551,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/accounting/partner-ledger"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/accounting/partner-ledger' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/accounting/partner-ledger' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Partner Ledger
@@ -560,8 +560,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/accounting/journals"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/accounting/journals' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/accounting/journals' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Journals
@@ -569,8 +569,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/accounting/payment-methods"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/accounting/payment-methods' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/accounting/payment-methods' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Payment Methods
@@ -584,7 +584,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             <button
               onClick={() => setIsPayrollOpen(!isPayrollOpen)}
-              className="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-teal-50 transition font-semibold text-gray-600 hover:text-teal-700"
+              className="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-white/10 transition font-semibold text-[#CECBF6] hover:text-white"
             >
               <div className="flex items-center gap-3">
                 <svg className={iconStyle} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -594,7 +594,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </div>
 
               <svg
-                className={`w-4 h-4 transition-transform duration-300 ${isPayrollOpen ? 'rotate-180 text-teal-600' : 'text-gray-400'}`}
+                className={`w-4 h-4 transition-transform duration-300 ${isPayrollOpen ? 'rotate-180 text-white' : 'text-[#8F86C9]'}`}
                 fill="none" viewBox="0 0 24 24" stroke="currentColor"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -608,8 +608,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             >
               <Link
                 href="/dashboard/payroll/employees"
-                className={`block px-4 py-2 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm pl-[3.25rem] ${
-                  pathname?.startsWith('/dashboard/payroll/employees') ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 rounded-md hover:bg-white/10 hover:text-white transition text-sm pl-[3.25rem] ${
+                  pathname?.startsWith('/dashboard/payroll/employees') ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Employees
@@ -617,8 +617,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/payroll/runs"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname?.startsWith('/dashboard/payroll/runs') ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname?.startsWith('/dashboard/payroll/runs') ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Payroll Runs
@@ -626,8 +626,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/payroll/loans"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/payroll/loans' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/payroll/loans' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Loans
@@ -635,8 +635,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/payroll/eos-gratuity"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/payroll/eos-gratuity' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/payroll/eos-gratuity' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 EOS Gratuity
@@ -644,8 +644,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/payroll/config"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/payroll/config' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/payroll/config' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Settings
@@ -659,7 +659,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             <button
               onClick={() => setIsExpensesOpen(!isExpensesOpen)}
-              className="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-teal-50 transition font-semibold text-gray-600 hover:text-teal-700"
+              className="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-white/10 transition font-semibold text-[#CECBF6] hover:text-white"
             >
               <div className="flex items-center gap-3">
                 <svg className={iconStyle} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -669,7 +669,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </div>
 
               <svg
-                className={`w-4 h-4 transition-transform duration-300 ${isExpensesOpen ? 'rotate-180 text-teal-600' : 'text-gray-400'}`}
+                className={`w-4 h-4 transition-transform duration-300 ${isExpensesOpen ? 'rotate-180 text-white' : 'text-[#8F86C9]'}`}
                 fill="none" viewBox="0 0 24 24" stroke="currentColor"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -683,8 +683,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             >
               <Link
                 href="/dashboard/expenses"
-                className={`block px-4 py-2 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm pl-[3.25rem] ${
-                  pathname === '/dashboard/expenses' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 rounded-md hover:bg-white/10 hover:text-white transition text-sm pl-[3.25rem] ${
+                  pathname === '/dashboard/expenses' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 All Expenses
@@ -692,8 +692,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/expenses/categories"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/expenses/categories' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/expenses/categories' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Categories
@@ -708,7 +708,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             <button
               onClick={() => setIsFleetOpen(!isFleetOpen)}
-              className="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-teal-50 transition font-semibold text-gray-600 hover:text-teal-700"
+              className="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-white/10 transition font-semibold text-[#CECBF6] hover:text-white"
             >
               <div className="flex items-center gap-3">
                 <svg className={iconStyle} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -718,7 +718,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </div>
 
               <svg
-                className={`w-4 h-4 transition-transform duration-300 ${isFleetOpen ? 'rotate-180 text-teal-600' : 'text-gray-400'}`}
+                className={`w-4 h-4 transition-transform duration-300 ${isFleetOpen ? 'rotate-180 text-white' : 'text-[#8F86C9]'}`}
                 fill="none" viewBox="0 0 24 24" stroke="currentColor"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -732,8 +732,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             >
               <Link
                 href="/dashboard/vehicles"
-                className={`block px-4 py-2 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm pl-[3.25rem] ${
-                  pathname?.startsWith('/dashboard/vehicles') ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 rounded-md hover:bg-white/10 hover:text-white transition text-sm pl-[3.25rem] ${
+                  pathname?.startsWith('/dashboard/vehicles') ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Vehicles
@@ -741,8 +741,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/job-orders"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname?.startsWith('/dashboard/job-orders') ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname?.startsWith('/dashboard/job-orders') ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Job Orders
@@ -758,7 +758,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             <button
               onClick={() => setIsCrmOpen(!isCrmOpen)}
-              className="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-teal-50 transition font-semibold text-gray-600 hover:text-teal-700"
+              className="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-white/10 transition font-semibold text-[#CECBF6] hover:text-white"
             >
               <div className="flex items-center gap-3">
                 <svg className={iconStyle} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -768,7 +768,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </div>
 
               <svg
-                className={`w-4 h-4 transition-transform duration-300 ${isCrmOpen ? 'rotate-180 text-teal-600' : 'text-gray-400'}`}
+                className={`w-4 h-4 transition-transform duration-300 ${isCrmOpen ? 'rotate-180 text-white' : 'text-[#8F86C9]'}`}
                 fill="none" viewBox="0 0 24 24" stroke="currentColor"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -783,8 +783,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               {showLeadsLink && (
                 <Link
                   href="/dashboard/leads"
-                  className={`block px-4 py-2 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm pl-[3.25rem] ${
-                    pathname?.startsWith('/dashboard/leads') ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                  className={`block px-4 py-2 rounded-md hover:bg-white/10 hover:text-white transition text-sm pl-[3.25rem] ${
+                    pathname?.startsWith('/dashboard/leads') ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                   }`}
                 >
                   Leads
@@ -794,8 +794,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               {showAppointmentsLink && (
                 <Link
                   href="/dashboard/appointments"
-                  className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm pl-[3.25rem] ${
-                    pathname?.startsWith('/dashboard/appointments') ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                  className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm pl-[3.25rem] ${
+                    pathname?.startsWith('/dashboard/appointments') ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                   }`}
                 >
                   Appointments
@@ -805,8 +805,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               {showTasksLink && (
                 <Link
                   href="/dashboard/tasks"
-                  className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm pl-[3.25rem] ${
-                    pathname?.startsWith('/dashboard/tasks') ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                  className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm pl-[3.25rem] ${
+                    pathname?.startsWith('/dashboard/tasks') ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                   }`}
                 >
                   Tasks
@@ -825,14 +825,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </Link>
 
           {/* DIVIDER */}
-          <div className="my-3 border-t border-gray-100" />
+          <div className="my-3 border-t border-white/10" />
 
           {/* SETTINGS COLLAPSIBLE GROUP */}
           <div>
 
             <button
               onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-              className="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-teal-50 transition font-semibold text-gray-600 hover:text-teal-700"
+              className="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-white/10 transition font-semibold text-[#CECBF6] hover:text-white"
             >
               <div className="flex items-center gap-3">
                 <svg className={iconStyle} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -843,7 +843,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </div>
 
               <svg
-                className={`w-4 h-4 transition-transform duration-300 ${isSettingsOpen ? 'rotate-180 text-teal-600' : 'text-gray-400'}`}
+                className={`w-4 h-4 transition-transform duration-300 ${isSettingsOpen ? 'rotate-180 text-white' : 'text-[#8F86C9]'}`}
                 fill="none" viewBox="0 0 24 24" stroke="currentColor"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -857,8 +857,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             >
               <Link
                 href="/dashboard/settings/company"
-                className={`block px-4 py-2 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm pl-[3.25rem] ${
-                  pathname === '/dashboard/settings/company' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 rounded-md hover:bg-white/10 hover:text-white transition text-sm pl-[3.25rem] ${
+                  pathname === '/dashboard/settings/company' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Company Profile
@@ -866,8 +866,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/settings/reports"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/settings/reports' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/settings/reports' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Report Designer
@@ -875,8 +875,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/settings/account-mappings"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/settings/account-mappings' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/settings/account-mappings' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Account Mappings
@@ -884,8 +884,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/settings/taxes"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/settings/taxes' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/settings/taxes' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Taxes
@@ -893,8 +893,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/settings/payment-terms"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/settings/payment-terms' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/settings/payment-terms' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Payment Terms
@@ -902,8 +902,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/settings/cost-centers"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/settings/cost-centers' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/settings/cost-centers' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Cost Centers
@@ -911,8 +911,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/settings/fiscal-years"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/settings/fiscal-years' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/settings/fiscal-years' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Fiscal Years
@@ -920,8 +920,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/settings/currencies"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/settings/currencies' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/settings/currencies' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Currencies
@@ -929,8 +929,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/settings/pos"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '/dashboard/settings/pos' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '/dashboard/settings/pos' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 Configure POS
@@ -938,8 +938,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <Link
                 href="/dashboard/settings/apps"
-                className={`block px-4 py-2 mt-1 rounded-md hover:bg-teal-50 hover:text-teal-700 transition text-sm relative pl-[3.25rem] ${
-                  pathname === '\dashboard\settings\apps' ? 'text-teal-700 font-bold bg-teal-50' : 'text-gray-500'
+                className={`block px-4 py-2 mt-1 rounded-md hover:bg-white/10 hover:text-white transition text-sm relative pl-[3.25rem] ${
+                  pathname === '\dashboard\settings\apps' ? 'text-white font-bold bg-white/15' : 'text-[#B3A9E8]'
                 }`}
               >
                 App Store
@@ -949,11 +949,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </nav>
 
-        <div className="p-4 border-t border-gray-100">
+        <div className="p-4 border-t border-white/10">
           {/* Plain POST form, not a <Link> — logout must never be reachable via GET,
               since Next.js prefetches <Link> hrefs in the background. */}
           <form action="/logout" method="POST">
-            <button type="submit" className="w-full flex items-center gap-3 px-4 py-3 text-gray-500 hover:bg-red-50 hover:text-red-600 rounded-lg font-semibold transition-colors text-left">
+            <button type="submit" className="w-full flex items-center gap-3 px-4 py-3 text-[#CECBF6] hover:bg-red-500/20 hover:text-red-200 rounded-lg font-semibold transition-colors text-left">
               <svg className={iconStyle} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>

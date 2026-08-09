@@ -158,7 +158,7 @@ export default async function EditProductPage({
           </div>
 
           <div className="pt-4 border-t border-gray-100">
-            <button type="submit" className="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-4 rounded-md">Save Changes</button>
+            <button type="submit" className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-md">Save Changes</button>
           </div>
         </form>
       </div>

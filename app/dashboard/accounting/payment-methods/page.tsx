@@ -64,13 +64,13 @@ export default async function PaymentMethodsPage() {
                 <tr key={m.id} className={`hover:bg-gray-50 transition-colors ${!m.isActive ? 'opacity-50' : ''}`}>
                   <td className="py-4 px-6 font-bold text-gray-800">{m.name}</td>
                   <td className="py-4 px-6 text-sm">
-                    <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${m.type === 'ACCOUNT_RECEIVABLE' ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700'}`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${m.type === 'ACCOUNT_RECEIVABLE' ? 'bg-amber-50 text-amber-700' : 'bg-purple-50 text-purple-700'}`}>
                       {m.type === 'ACCOUNT_RECEIVABLE' ? 'On Credit' : 'Cash/Bank'}
                     </span>
                   </td>
                   <td className="py-4 px-6 text-sm text-gray-500">{m.journal?.name || '--'}</td>
                   <td className="py-4 px-6 text-sm">
-                    <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${m.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${m.isActive ? 'bg-purple-50 text-purple-700' : 'bg-gray-100 text-gray-500'}`}>
                       {m.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </td>

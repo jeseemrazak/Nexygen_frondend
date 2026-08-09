@@ -84,7 +84,7 @@ export default function ProductCategoriesPage() {
           <Link href="/dashboard/products/pos-categories" className="text-gray-500 hover:text-gray-800 font-semibold text-sm underline">
             POS Categories →
           </Link>
-          <Link href="/dashboard/products" className="text-teal-600 hover:text-teal-800 font-semibold text-sm">
+          <Link href="/dashboard/products" className="text-purple-600 hover:text-purple-800 font-semibold text-sm">
             ← Back to Products
           </Link>
         </div>
@@ -106,7 +106,7 @@ export default function ProductCategoriesPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-6 rounded-md text-sm disabled:bg-gray-400"
+            className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-md text-sm disabled:bg-gray-400"
           >
             {isSubmitting ? 'Adding...' : 'Add Category'}
           </button>
@@ -133,7 +133,7 @@ export default function ProductCategoriesPage() {
                 <tr key={cat.id} className={`hover:bg-gray-50 ${!cat.isActive ? 'opacity-50' : ''}`}>
                   <td className="py-4 px-6 font-bold">{cat.name}</td>
                   <td className="py-4 px-6 text-sm">
-                    <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${cat.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${cat.isActive ? 'bg-purple-50 text-purple-700' : 'bg-gray-100 text-gray-500'}`}>
                       {cat.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </td>

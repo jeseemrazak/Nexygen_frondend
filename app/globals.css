@@ -2,13 +2,27 @@
 
 @theme {
   /* Nexygen Color Palette */
-  --color-primary: #0d9488;        /* Teal 600 */
-  --color-primary-hover: #0f766e;   /* Teal 700 */
+  --color-primary: #3C3489;        /* Deep plum (matches sidebar) */
+  --color-primary-hover: #2D2768;   /* Deep plum (darker, matches sidebar border) */
   --color-surface: #ffffff;
-  --color-background: #f8fafc;      /* Slate 50 */
+  --color-background: #F7F6FE;      /* Light purple */
   --color-text-main: #1e293b;       /* Slate 800 */
   --color-text-muted: #64748b;      /* Slate 500 */
-  
+
+  /* Override Tailwind's default purple scale to match the sidebar's deep-plum brand color,
+     so every purple utility class used across the app (buttons, links, badges) stays
+     visually consistent with the sidebar instead of stock Tailwind purple/violet. */
+  --color-purple-50: #F7F6FE;
+  --color-purple-100: #EDEBFB;
+  --color-purple-200: #D6D2F3;
+  --color-purple-300: #B4ACE7;
+  --color-purple-400: #8D80D6;
+  --color-purple-500: #6A5DC0;
+  --color-purple-600: #3C3489;
+  --color-purple-700: #2D2768;
+  --color-purple-800: #221D50;
+  --color-purple-900: #171339;
+
   /* Standardized Border Radius */
   --radius-xl: 1rem;
   --radius-lg: 0.75rem;

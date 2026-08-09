@@ -95,7 +95,7 @@ export default function ReportDesignerPage() {
         <p className="text-sm text-gray-500 mt-1">Choose which columns each report shows, and the color/density/layout used across every printed report.</p>
       </div>
 
-      {saved && <div className="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-md"><p className="text-sm text-emerald-700 font-medium">Report Designer settings saved.</p></div>}
+      {saved && <div className="bg-purple-50 border-l-4 border-purple-500 p-4 rounded-md"><p className="text-sm text-purple-700 font-medium">Report Designer settings saved.</p></div>}
       {error && <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md"><p className="text-sm text-red-700 font-medium">{error}</p></div>}
 
       {/* COLUMN VISIBILITY */}

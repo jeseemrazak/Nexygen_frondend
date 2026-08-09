@@ -63,7 +63,7 @@ export default async function ProductCatalogPage({
               name="q" 
               defaultValue={searchQuery}
               placeholder="Search name, SKU, or barcode..." 
-              className="border border-gray-300 rounded-md px-4 py-2 text-sm text-black focus:outline-teal-500 w-full md:w-72 shadow-sm"
+              className="border border-gray-300 rounded-md px-4 py-2 text-sm text-black focus:outline-purple-500 w-full md:w-72 shadow-sm"
               autoFocus
             />
             <button type="submit" className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-6 rounded-md border border-gray-300 shadow-sm transition">
@@ -95,7 +95,7 @@ export default async function ProductCatalogPage({
 
           <Link
             href="/dashboard/products/new"
-            className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-6 rounded-md shadow-sm transition whitespace-nowrap w-full md:w-auto text-center"
+            className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-md shadow-sm transition whitespace-nowrap w-full md:w-auto text-center"
           >
             ➕ Add Product
           </Link>
@@ -178,7 +178,7 @@ export default async function ProductCatalogPage({
                     <td className="py-4 px-6 text-right">
                       <span className={`px-3 py-1 rounded text-sm font-bold ${
                         totalStock === 0 ? 'bg-red-100 text-red-700' : 
-                        totalStock < 20 ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'
+                        totalStock < 20 ? 'bg-yellow-100 text-yellow-800' : 'bg-purple-100 text-purple-800'
                       }`}>
                         {totalStock}
                       </span>
@@ -188,7 +188,7 @@ export default async function ProductCatalogPage({
                       <div className="flex items-center justify-end gap-4">
                         <Link
                           href={`/dashboard/products/${product.id}/edit`}
-                          className="text-teal-600 hover:text-teal-800 font-semibold text-sm underline"
+                          className="text-purple-600 hover:text-purple-800 font-semibold text-sm underline"
                         >
                           Edit Details
                         </Link>

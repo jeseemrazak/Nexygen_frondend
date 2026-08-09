@@ -50,14 +50,14 @@ export default async function PurchaseInvoicesPage() {
             <tbody className="divide-y divide-gray-100 text-black">
               {bills.map((bill: any) => (
                 <tr key={bill.id} className="hover:bg-gray-50">
-                  <td className="py-4 px-6 font-bold text-teal-700 font-mono">{bill.billNumber || `BILL-${String(bill.id).padStart(6, '0')}`}</td>
+                  <td className="py-4 px-6 font-bold text-purple-700 font-mono">{bill.billNumber || `BILL-${String(bill.id).padStart(6, '0')}`}</td>
                   <td className="py-4 px-6 text-sm text-gray-600">{formatDate(bill.createdAt)}</td>
                   <td className="py-4 px-6 text-sm font-bold">{bill.purchaseOrder?.supplier?.name || 'Unknown'}</td>
                   <td className="py-4 px-6 text-right font-bold text-sm">{formatQAR(bill.totalAmount)}</td>
                   <td className="py-4 px-6 text-right text-sm text-gray-600">{formatQAR(bill.amountPaid || 0)}</td>
                   <td className="py-4 px-6 text-sm">
                     <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${
-                      bill.paymentStatus === 'PAID' ? 'bg-emerald-50 text-emerald-700' :
+                      bill.paymentStatus === 'PAID' ? 'bg-purple-50 text-purple-700' :
                       bill.paymentStatus === 'PARTIAL' ? 'bg-amber-50 text-amber-700' :
                       'bg-rose-50 text-rose-700'
                     }`}>

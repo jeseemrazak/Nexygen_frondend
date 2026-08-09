@@ -10,7 +10,7 @@ const formatDateTime = (dateString: string) => new Date(dateString).toLocaleDate
 const SOURCE_LABELS: Record<string, string> = { PARTY: 'Register Payment', SALES_INVOICE: 'Invoice Payment', PURCHASE_BILL: 'Bill Payment' };
 const SOURCE_COLORS: Record<string, string> = {
   PARTY: 'bg-purple-50 text-purple-700',
-  SALES_INVOICE: 'bg-emerald-50 text-emerald-700',
+  SALES_INVOICE: 'bg-purple-50 text-purple-700',
   PURCHASE_BILL: 'bg-amber-50 text-amber-700',
 };
 
@@ -35,7 +35,7 @@ export default function PaymentsPage() {
           <h1 className="text-2xl font-bold text-gray-800">Payments</h1>
           <p className="text-sm text-gray-500 mt-1">Record one payment and allocate it across multiple open invoices or bills.</p>
         </div>
-        <Link href="/dashboard/accounting/payments/new" className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-md text-sm transition">
+        <Link href="/dashboard/accounting/payments/new" className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md text-sm transition">
           ➕ Register Payment
         </Link>
       </div>
@@ -61,7 +61,7 @@ export default function PaymentsPage() {
             <tbody className="divide-y divide-gray-100 text-black">
               {payments.map((p: any) => (
                 <tr key={`${p.source}-${p.id}`} className="hover:bg-gray-50">
-                  <td className="py-4 px-6 font-bold text-teal-700 font-mono">
+                  <td className="py-4 px-6 font-bold text-purple-700 font-mono">
                     <Link href={`/dashboard/accounting/payments/${p.id}?source=${p.source}`} className="hover:underline">
                       {p.paymentNumber || `#${p.id}`}
                     </Link>

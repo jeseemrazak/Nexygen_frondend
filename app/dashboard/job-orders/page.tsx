@@ -23,7 +23,7 @@ const formatDate = (d: string) => new Date(d).toLocaleDateString('en-US', { mont
 const STATUS_STYLES: Record<string, string> = {
   OPEN: 'bg-amber-50 text-amber-700',
   IN_PROGRESS: 'bg-blue-50 text-blue-700',
-  COMPLETED: 'bg-emerald-50 text-emerald-700',
+  COMPLETED: 'bg-purple-50 text-purple-700',
   CANCELLED: 'bg-gray-100 text-gray-500',
 };
 
@@ -35,7 +35,7 @@ export default async function JobOrdersPage({ searchParams }: { searchParams: Pr
       <div className="max-w-2xl mx-auto">
         <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 text-center">
           <p className="text-gray-500">The Job Order module isn&apos;t installed yet.</p>
-          <Link href="/dashboard/settings/apps" className="text-teal-600 hover:text-teal-800 font-bold text-sm mt-3 inline-block">
+          <Link href="/dashboard/settings/apps" className="text-purple-600 hover:text-purple-800 font-bold text-sm mt-3 inline-block">
             ← Go to App Store
           </Link>
         </div>
@@ -54,15 +54,15 @@ export default async function JobOrdersPage({ searchParams }: { searchParams: Pr
           <h1 className="text-2xl font-bold text-gray-800">Job Orders</h1>
           <p className="text-sm text-gray-500 mt-1">Fleet job cards — parts, labor, and status per vehicle visit.</p>
         </div>
-        <Link href="/dashboard/job-orders/new" className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-md shadow-sm">
+        <Link href="/dashboard/job-orders/new" className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md shadow-sm">
           + New Job Order
         </Link>
       </div>
 
       <div className="flex gap-2 flex-wrap">
-        <Link href="/dashboard/job-orders" className={`px-4 py-1.5 rounded-full text-xs font-bold ${!status ? 'bg-teal-600 text-white' : 'bg-white text-gray-600 border border-gray-200'}`}>All</Link>
+        <Link href="/dashboard/job-orders" className={`px-4 py-1.5 rounded-full text-xs font-bold ${!status ? 'bg-purple-600 text-white' : 'bg-white text-gray-600 border border-gray-200'}`}>All</Link>
         {statuses.map((s) => (
-          <Link key={s} href={`/dashboard/job-orders?status=${s}`} className={`px-4 py-1.5 rounded-full text-xs font-bold ${status === s ? 'bg-teal-600 text-white' : 'bg-white text-gray-600 border border-gray-200'}`}>
+          <Link key={s} href={`/dashboard/job-orders?status=${s}`} className={`px-4 py-1.5 rounded-full text-xs font-bold ${status === s ? 'bg-purple-600 text-white' : 'bg-white text-gray-600 border border-gray-200'}`}>
             {s.replace('_', ' ')}
           </Link>
         ))}
@@ -88,7 +88,7 @@ export default async function JobOrdersPage({ searchParams }: { searchParams: Pr
               {jobOrders.map((jo: any) => (
                 <tr key={jo.id} className="hover:bg-gray-50 transition-colors">
                   <td className="py-3 px-6 font-mono">
-                    <Link href={`/dashboard/job-orders/${jo.id}`} className="text-teal-600 hover:text-teal-800 font-bold">{jo.jobNumber}</Link>
+                    <Link href={`/dashboard/job-orders/${jo.id}`} className="text-purple-600 hover:text-purple-800 font-bold">{jo.jobNumber}</Link>
                   </td>
                   <td className="py-3 px-6 text-sm font-mono text-gray-600">{jo.vehicle?.plateNumber}</td>
                   <td className="py-3 px-6 text-sm text-gray-500">{jo.customer?.name || '--'}</td>

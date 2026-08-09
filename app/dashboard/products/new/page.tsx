@@ -145,32 +145,32 @@ export default async function NewProductPage({ searchParams }: { searchParams: P
           </div>
 
           {/* SECTION 2: Initial Stock (Optional) */}
-          <div className="bg-teal-50 p-6 rounded-md border border-teal-100">
-            <h2 className="text-lg font-bold text-teal-900 mb-4">2. Initial Stock (Optional)</h2>
-            <p className="text-sm text-teal-700 mb-4">Leave quantity blank if you do not want to add stock right now.</p>
+          <div className="bg-purple-50 p-6 rounded-md border border-purple-100">
+            <h2 className="text-lg font-bold text-purple-900 mb-4">2. Initial Stock (Optional)</h2>
+            <p className="text-sm text-purple-700 mb-4">Leave quantity blank if you do not want to add stock right now.</p>
             
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="block text-sm font-bold text-teal-900 mb-2">Destination Warehouse</label>
-                <select name="warehouseId" className="w-full border border-teal-200 rounded-md px-4 py-3 text-black bg-white">
+                <label className="block text-sm font-bold text-purple-900 mb-2">Destination Warehouse</label>
+                <select name="warehouseId" className="w-full border border-purple-200 rounded-md px-4 py-3 text-black bg-white">
                   <option value="">Select warehouse...</option>
                   {warehouses.map((w: any) => <option key={w.id} value={w.id}>{w.name}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-bold text-teal-900 mb-2">Initial Quantity</label>
-                <input type="number" name="initialQty" min="1" placeholder="e.g. 100" className="w-full border border-teal-200 rounded-md px-4 py-3 text-black bg-white" />
+                <label className="block text-sm font-bold text-purple-900 mb-2">Initial Quantity</label>
+                <input type="number" name="initialQty" min="1" placeholder="e.g. 100" className="w-full border border-purple-200 rounded-md px-4 py-3 text-black bg-white" />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-bold text-teal-900 mb-2">Batch Number</label>
-                <input type="text" name="batchNumber" placeholder="If left blank, defaults to 'INITIAL'" className="w-full border border-teal-200 rounded-md px-4 py-3 text-black bg-white font-mono" />
+                <label className="block text-sm font-bold text-purple-900 mb-2">Batch Number</label>
+                <input type="text" name="batchNumber" placeholder="If left blank, defaults to 'INITIAL'" className="w-full border border-purple-200 rounded-md px-4 py-3 text-black bg-white font-mono" />
               </div>
               <div>
-                <label className="block text-sm font-bold text-teal-900 mb-2">Expiry Date</label>
-                <input type="date" name="expiryDate" className="w-full border border-teal-200 rounded-md px-4 py-3 text-black bg-white" />
+                <label className="block text-sm font-bold text-purple-900 mb-2">Expiry Date</label>
+                <input type="date" name="expiryDate" className="w-full border border-purple-200 rounded-md px-4 py-3 text-black bg-white" />
               </div>
             </div>
           </div>

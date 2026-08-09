@@ -61,7 +61,7 @@ export default function NewLeadPage() {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <Link href="/dashboard/leads" className="text-teal-600 hover:text-teal-800 text-sm font-bold mb-2 inline-block">← Back to Leads</Link>
+        <Link href="/dashboard/leads" className="text-purple-600 hover:text-purple-800 text-sm font-bold mb-2 inline-block">← Back to Leads</Link>
         <h1 className="text-2xl font-bold text-gray-800">Add Lead</h1>
       </div>
 
@@ -106,7 +106,7 @@ export default function NewLeadPage() {
           <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} className="w-full border border-gray-300 rounded-md px-4 py-2 text-black" />
         </div>
 
-        <button type="submit" disabled={saving} className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition disabled:opacity-50">
+        <button type="submit" disabled={saving} className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition disabled:opacity-50">
           {saving ? 'Creating...' : 'Create Lead'}
         </button>
       </form>

@@ -151,7 +151,7 @@ export default function CurrenciesPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-6 rounded-md text-sm disabled:bg-gray-400"
+            className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-md text-sm disabled:bg-gray-400"
           >
             {isSubmitting ? 'Adding...' : 'Add Currency'}
           </button>
@@ -182,7 +182,7 @@ export default function CurrenciesPage() {
                   <td className="py-4 px-6 text-sm text-gray-600">{c.name}</td>
                   <td className="py-4 px-6 text-sm text-right">{c.exchangeRateToBase}</td>
                   <td className="py-4 px-6 text-sm">
-                    <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${c.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${c.isActive ? 'bg-purple-50 text-purple-700' : 'bg-gray-100 text-gray-500'}`}>
                       {c.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </td>

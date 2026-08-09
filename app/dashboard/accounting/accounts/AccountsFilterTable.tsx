@@ -40,7 +40,7 @@ export default function AccountsFilterTable({ accounts }: { accounts: any[] }) {
             onClick={() => setActiveType(tab.type)}
             className={`px-4 py-2 text-sm font-bold rounded-t-md transition-colors ${
               activeType === tab.type
-                ? 'bg-teal-50 text-teal-700 border-b-2 border-teal-600'
+                ? 'bg-purple-50 text-purple-700 border-b-2 border-purple-600'
                 : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
             }`}
           >
@@ -74,7 +74,7 @@ export default function AccountsFilterTable({ accounts }: { accounts: any[] }) {
                 </td>
                 <td className="py-4 px-6 text-sm text-gray-500">{account.type}</td>
                 <td className="py-4 px-6 text-sm">
-                  <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${account.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
+                  <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${account.isActive ? 'bg-purple-50 text-purple-700' : 'bg-gray-100 text-gray-500'}`}>
                     {account.isActive ? 'Active' : 'Inactive'}
                   </span>
                 </td>

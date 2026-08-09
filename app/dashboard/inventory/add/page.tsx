@@ -27,7 +27,7 @@ export default async function AddInitialStockPage({
       <div className="max-w-xl mx-auto space-y-6">
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-center">
           <p className="text-rose-600 font-bold">Product or warehouse not found.</p>
-          <Link href="/dashboard/inventory" className="text-teal-600 hover:text-teal-800 font-medium mt-2 inline-block">← Back to Inventory</Link>
+          <Link href="/dashboard/inventory" className="text-purple-600 hover:text-purple-800 font-medium mt-2 inline-block">← Back to Inventory</Link>
         </div>
       </div>
     );
@@ -41,12 +41,12 @@ export default async function AddInitialStockPage({
       <div className="flex justify-between items-center bg-white p-6 rounded-lg shadow-sm border border-gray-200">
         <div>
           <h1 className="text-xl font-bold text-gray-800">Add Initial Stock</h1>
-          <p className="text-sm font-bold text-teal-600 mt-1">{product.name} ➔ {warehouse.name}</p>
+          <p className="text-sm font-bold text-purple-600 mt-1">{product.name} ➔ {warehouse.name}</p>
         </div>
         <Link href="/dashboard/inventory" className="text-gray-500 hover:text-gray-700 font-medium">Cancel</Link>
       </div>
 
-      <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 border-t-4 border-t-teal-500">
+      <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 border-t-4 border-t-purple-500">
         <form action={initializeStock} className="space-y-6">
           {/* 🔥 Now these hidden inputs will contain actual numbers instead of empty strings */}
           <input type="hidden" name="productId" value={productId} />
@@ -68,7 +68,7 @@ export default async function AddInitialStockPage({
           </div>
 
           <div className="pt-4 border-t border-gray-100">
-            <button type="submit" className="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-4 rounded-md shadow-sm">
+            <button type="submit" className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-md shadow-sm">
               Initialize Stock
             </button>
           </div>

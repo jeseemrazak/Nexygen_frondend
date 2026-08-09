@@ -31,7 +31,7 @@ export default async function OutletPnlPrintPage({ searchParams }: { searchParam
   return (
     <div>
       <div className="no-print flex justify-between items-center p-4 max-w-6xl mx-auto">
-        <Link href="/dashboard/accounting/reports/outlet-pnl" className="text-teal-600 hover:text-teal-800 text-sm font-bold">← Back to Outlet P&amp;L</Link>
+        <Link href="/dashboard/accounting/reports/outlet-pnl" className="text-purple-600 hover:text-purple-800 text-sm font-bold">← Back to Outlet P&amp;L</Link>
         <PrintButton />
       </div>
       <div className="print-area print-landscape bg-white p-10 max-w-6xl mx-auto text-gray-900">

@@ -42,7 +42,7 @@ export default async function PosSaleReceiptPrintPage({ params }: { params: Prom
   return (
     <div>
       <div className="no-print flex justify-between items-center p-4 max-w-4xl mx-auto">
-        <Link href={`/dashboard/pos/sales/${resolvedParams.id}`} className="text-teal-600 hover:text-teal-800 text-sm font-bold">← Back to Sale</Link>
+        <Link href={`/dashboard/pos/sales/${resolvedParams.id}`} className="text-purple-600 hover:text-purple-800 text-sm font-bold">← Back to Sale</Link>
         <PrintButton />
       </div>
       <DocumentPrintView

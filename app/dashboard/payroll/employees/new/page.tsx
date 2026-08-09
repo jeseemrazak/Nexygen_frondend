@@ -81,28 +81,28 @@ export default async function NewEmployeePage({ searchParams }: { searchParams: 
             </div>
           </div>
 
-          <div className="bg-teal-50 p-6 rounded-md border border-teal-100">
-            <h2 className="text-lg font-bold text-teal-900 mb-4">4. Salary Structure (QAR/month)</h2>
+          <div className="bg-purple-50 p-6 rounded-md border border-purple-100">
+            <h2 className="text-lg font-bold text-purple-900 mb-4">4. Salary Structure (QAR/month)</h2>
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-bold text-teal-900 mb-2">Basic Salary <span className="text-red-500">*</span></label>
-                <input type="number" step="0.01" name="basicSalary" required className="w-full border border-teal-200 rounded-md px-4 py-3 text-black bg-white" />
+                <label className="block text-sm font-bold text-purple-900 mb-2">Basic Salary <span className="text-red-500">*</span></label>
+                <input type="number" step="0.01" name="basicSalary" required className="w-full border border-purple-200 rounded-md px-4 py-3 text-black bg-white" />
               </div>
               <div>
-                <label className="block text-sm font-bold text-teal-900 mb-2">Housing Allowance</label>
-                <input type="number" step="0.01" name="housingAllowance" className="w-full border border-teal-200 rounded-md px-4 py-3 text-black bg-white" />
+                <label className="block text-sm font-bold text-purple-900 mb-2">Housing Allowance</label>
+                <input type="number" step="0.01" name="housingAllowance" className="w-full border border-purple-200 rounded-md px-4 py-3 text-black bg-white" />
               </div>
               <div>
-                <label className="block text-sm font-bold text-teal-900 mb-2">Transportation Allowance</label>
-                <input type="number" step="0.01" name="transportationAllowance" className="w-full border border-teal-200 rounded-md px-4 py-3 text-black bg-white" />
+                <label className="block text-sm font-bold text-purple-900 mb-2">Transportation Allowance</label>
+                <input type="number" step="0.01" name="transportationAllowance" className="w-full border border-purple-200 rounded-md px-4 py-3 text-black bg-white" />
               </div>
               <div>
-                <label className="block text-sm font-bold text-teal-900 mb-2">Telephone Allowance</label>
-                <input type="number" step="0.01" name="telephoneAllowance" className="w-full border border-teal-200 rounded-md px-4 py-3 text-black bg-white" />
+                <label className="block text-sm font-bold text-purple-900 mb-2">Telephone Allowance</label>
+                <input type="number" step="0.01" name="telephoneAllowance" className="w-full border border-purple-200 rounded-md px-4 py-3 text-black bg-white" />
               </div>
               <div>
-                <label className="block text-sm font-bold text-teal-900 mb-2">Other Allowance</label>
-                <input type="number" step="0.01" name="otherAllowance" className="w-full border border-teal-200 rounded-md px-4 py-3 text-black bg-white" />
+                <label className="block text-sm font-bold text-purple-900 mb-2">Other Allowance</label>
+                <input type="number" step="0.01" name="otherAllowance" className="w-full border border-purple-200 rounded-md px-4 py-3 text-black bg-white" />
               </div>
             </div>
           </div>
