@@ -2,12 +2,15 @@ import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { API_BASE_URL } from '@/lib/config';
 
-async function getTrialBalance(asOf?: string) {
+async function getTrialBalance(asOf?: string, warehouseId?: string) {
   const cookieStore = await cookies();
   const token = cookieStore.get('nexygen_token')?.value;
+  const query = new URLSearchParams();
+  if (asOf) query.set('asOf', asOf);
+  if (warehouseId) query.set('warehouseId', warehouseId);
 
   try {
-    const res = await fetch(`${API_BASE_URL}/accounting/trial-balance${asOf ? `?asOf=${asOf}` : ''}`, {
+    const res = await fetch(`${API_BASE_URL}/accounting/trial-balance?${query.toString()}`, {
       headers: { 'Authorization': `Bearer ${token}` },
       cache: 'no-store',
     });
@@ -18,12 +21,30 @@ async function getTrialBalance(asOf?: string) {
   }
 }
 
+async function getWarehouses() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('nexygen_token')?.value;
+  try {
+    const res = await fetch(`${API_BASE_URL}/warehouses`, { headers: { 'Authorization': `Bearer ${token}` }, cache: 'no-store' });
+    if (!res.ok) return [];
+    return await res.json();
+  } catch {
+    return [];
+  }
+}
+
 const formatQAR = (amount: number) => new Intl.NumberFormat('en-QA', { style: 'currency', currency: 'QAR' }).format(amount);
 
-export default async function TrialBalancePage({ searchParams }: { searchParams: Promise<{ asOf?: string }> }) {
+export default async function TrialBalancePage({ searchParams }: { searchParams: Promise<{ asOf?: string; warehouseId?: string }> }) {
   const resolvedParams = await searchParams;
-  const data = await getTrialBalance(resolvedParams.asOf);
+  const [data, warehouses] = await Promise.all([
+    getTrialBalance(resolvedParams.asOf, resolvedParams.warehouseId),
+    getWarehouses(),
+  ]);
   const isBalanced = Math.abs(data.grandTotalDebit - data.grandTotalCredit) < 0.001;
+  const printQuery = new URLSearchParams();
+  if (resolvedParams.asOf) printQuery.set('asOf', resolvedParams.asOf);
+  if (resolvedParams.warehouseId) printQuery.set('warehouseId', resolvedParams.warehouseId);
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -35,10 +56,18 @@ export default async function TrialBalancePage({ searchParams }: { searchParams:
         <div className="flex items-center gap-3">
           <form action="/dashboard/accounting/trial-balance" className="flex items-center gap-3">
             <input type="date" name="asOf" defaultValue={resolvedParams.asOf || ''} className="border border-gray-300 rounded-md px-3 py-2 text-sm text-black" />
-            <button type="submit" className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-md text-sm">As Of</button>
+            {warehouses.length > 0 && (
+              <select name="warehouseId" defaultValue={resolvedParams.warehouseId || ''} className="border border-gray-300 rounded-md px-3 py-2 text-sm text-black bg-white">
+                <option value="">All Outlets</option>
+                {warehouses.map((w: any) => (
+                  <option key={w.id} value={w.id}>{w.name}</option>
+                ))}
+              </select>
+            )}
+            <button type="submit" className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-md text-sm">Filter</button>
           </form>
           <Link
-            href={`/dashboard/accounting/trial-balance/print${resolvedParams.asOf ? `?asOf=${resolvedParams.asOf}` : ''}`}
+            href={`/dashboard/accounting/trial-balance/print?${printQuery.toString()}`}
             className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-md text-sm whitespace-nowrap"
           >
             🖨️ Print

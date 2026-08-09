@@ -5,11 +5,14 @@ import { getCompanySettings } from '@/lib/companySettings';
 import TabularReportView from '@/components/print/TabularReportView';
 import PrintButton from '@/components/print/PrintButton';
 
-async function getTrialBalance(asOf?: string) {
+async function getTrialBalance(asOf?: string, warehouseId?: string) {
   const cookieStore = await cookies();
   const token = cookieStore.get('nexygen_token')?.value;
+  const query = new URLSearchParams();
+  if (asOf) query.set('asOf', asOf);
+  if (warehouseId) query.set('warehouseId', warehouseId);
   try {
-    const res = await fetch(`${API_BASE_URL}/accounting/trial-balance${asOf ? `?asOf=${asOf}` : ''}`, {
+    const res = await fetch(`${API_BASE_URL}/accounting/trial-balance?${query.toString()}`, {
       headers: { 'Authorization': `Bearer ${token}` },
       cache: 'no-store',
     });
@@ -20,9 +23,27 @@ async function getTrialBalance(asOf?: string) {
   }
 }
 
-export default async function TrialBalancePrintPage({ searchParams }: { searchParams: Promise<{ asOf?: string }> }) {
+async function getWarehouseName(warehouseId?: string) {
+  if (!warehouseId) return undefined;
+  const cookieStore = await cookies();
+  const token = cookieStore.get('nexygen_token')?.value;
+  try {
+    const res = await fetch(`${API_BASE_URL}/warehouses/${warehouseId}`, { headers: { 'Authorization': `Bearer ${token}` }, cache: 'no-store' });
+    if (!res.ok) return undefined;
+    const w = await res.json();
+    return w?.name as string | undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+export default async function TrialBalancePrintPage({ searchParams }: { searchParams: Promise<{ asOf?: string; warehouseId?: string }> }) {
   const resolvedParams = await searchParams;
-  const [data, settings] = await Promise.all([getTrialBalance(resolvedParams.asOf), getCompanySettings()]);
+  const [data, settings, warehouseName] = await Promise.all([
+    getTrialBalance(resolvedParams.asOf, resolvedParams.warehouseId),
+    getCompanySettings(),
+    getWarehouseName(resolvedParams.warehouseId),
+  ]);
 
   const rows = data.rows.map((r: any) => ({
     code: r.account.code,
@@ -44,7 +65,7 @@ export default async function TrialBalancePrintPage({ searchParams }: { searchPa
         settings={settings}
         reportKey="trialBalance"
         title="Trial Balance"
-        dateRangeLabel={resolvedParams.asOf ? `As of ${resolvedParams.asOf}` : undefined}
+        dateRangeLabel={[resolvedParams.asOf ? `As of ${resolvedParams.asOf}` : undefined, warehouseName ? `Outlet: ${warehouseName}` : undefined].filter(Boolean).join(' — ') || undefined}
         rows={rows}
         totals={{ debit: data.grandTotalDebit, credit: data.grandTotalCredit, balance: data.grandTotalDebit - data.grandTotalCredit }}
       />

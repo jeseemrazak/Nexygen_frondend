@@ -6,11 +6,12 @@ import Letterhead from '@/components/print/Letterhead';
 import TabularReportView from '@/components/print/TabularReportView';
 import PrintButton from '@/components/print/PrintButton';
 
-async function getBalanceSheet(asOf?: string) {
+async function getBalanceSheet(asOf?: string, warehouseId?: string) {
   const cookieStore = await cookies();
   const token = cookieStore.get('nexygen_token')?.value;
   const query = new URLSearchParams();
   if (asOf) query.set('asOf', asOf);
+  if (warehouseId) query.set('warehouseId', warehouseId);
   try {
     const res = await fetch(`${API_BASE_URL}/accounting/reports/balance-sheet?${query.toString()}`, { headers: { 'Authorization': `Bearer ${token}` }, cache: 'no-store' });
     if (!res.ok) return null;
@@ -20,11 +21,34 @@ async function getBalanceSheet(asOf?: string) {
   }
 }
 
+async function getWarehouseName(warehouseId?: string) {
+  if (!warehouseId) return undefined;
+  const cookieStore = await cookies();
+  const token = cookieStore.get('nexygen_token')?.value;
+  try {
+    const res = await fetch(`${API_BASE_URL}/warehouses/${warehouseId}`, { headers: { 'Authorization': `Bearer ${token}` }, cache: 'no-store' });
+    if (!res.ok) return undefined;
+    const w = await res.json();
+    return w?.name as string | undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 const formatQAR = (n: number) => new Intl.NumberFormat('en-QA', { style: 'currency', currency: 'QAR' }).format(n);
 
-export default async function BalanceSheetPrintPage({ searchParams }: { searchParams: Promise<{ asOf?: string }> }) {
+export default async function BalanceSheetPrintPage({ searchParams }: { searchParams: Promise<{ asOf?: string; warehouseId?: string }> }) {
   const resolvedParams = await searchParams;
-  const [bs, settings] = await Promise.all([getBalanceSheet(resolvedParams.asOf), getCompanySettings()]);
+  const [bs, settings, warehouseName] = await Promise.all([
+    getBalanceSheet(resolvedParams.asOf, resolvedParams.warehouseId),
+    getCompanySettings(),
+    getWarehouseName(resolvedParams.warehouseId),
+  ]);
+
+  const dateAndOutletLabel = [
+    resolvedParams.asOf ? `As of ${resolvedParams.asOf}` : undefined,
+    warehouseName ? `Outlet: ${warehouseName}` : undefined,
+  ].filter(Boolean).join(' — ') || undefined;
 
   const accent = settings?.reportAccentColor || '0D9488';
   const assetRows = (bs?.assetLines || []).map((l: any) => ({ code: l.account.code, name: l.account.name, amount: l.amount }));
@@ -38,7 +62,7 @@ export default async function BalanceSheetPrintPage({ searchParams }: { searchPa
         <PrintButton />
       </div>
       <div className="print-area bg-white p-10 max-w-4xl mx-auto text-gray-900">
-        <Letterhead settings={settings} title="Balance Sheet" subtitle={resolvedParams.asOf ? `As of ${resolvedParams.asOf}` : undefined} accentColor={accent} />
+        <Letterhead settings={settings} title="Balance Sheet" subtitle={dateAndOutletLabel} accentColor={accent} />
         <TabularReportView settings={settings} reportKey="balanceSheet" title="" hideLetterhead sectionLabel="Assets" rows={assetRows} totals={{ amount: bs?.totalAssets || 0 }} />
         <TabularReportView settings={settings} reportKey="balanceSheet" title="" hideLetterhead sectionLabel="Liabilities" rows={liabilityRows} totals={{ amount: bs?.totalLiabilities || 0 }} />
         <TabularReportView settings={settings} reportKey="balanceSheet" title="" hideLetterhead sectionLabel="Equity" rows={equityRows} totals={{ amount: bs?.totalEquity || 0 }} />

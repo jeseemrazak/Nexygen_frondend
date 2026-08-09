@@ -2,7 +2,7 @@ import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { API_BASE_URL } from '@/lib/config';
 
-async function getReports(from?: string, to?: string) {
+async function getReports(from?: string, to?: string, warehouseId?: string) {
   const cookieStore = await cookies();
   const token = cookieStore.get('nexygen_token')?.value;
   const headers = { 'Authorization': `Bearer ${token}` };
@@ -10,14 +10,18 @@ async function getReports(from?: string, to?: string) {
   const plQuery = new URLSearchParams();
   if (from) plQuery.set('from', from);
   if (to) plQuery.set('to', to);
+  if (warehouseId) plQuery.set('warehouseId', warehouseId);
 
   const bsQuery = new URLSearchParams();
   if (to) bsQuery.set('asOf', to);
+  if (warehouseId) bsQuery.set('warehouseId', warehouseId);
 
   try {
     const [plRes, bsRes, cfRes] = await Promise.all([
       fetch(`${API_BASE_URL}/accounting/reports/profit-loss?${plQuery.toString()}`, { headers, cache: 'no-store' }),
       fetch(`${API_BASE_URL}/accounting/reports/balance-sheet?${bsQuery.toString()}`, { headers, cache: 'no-store' }),
+      // Cash Flow Statement is always company-wide — see the note near its card for why a
+      // warehouse filter can't be applied to it without breaking its self-reconciliation.
       from && to
         ? fetch(`${API_BASE_URL}/accounting/reports/cash-flow?from=${from}&to=${to}`, { headers, cache: 'no-store' })
         : Promise.resolve(null),
@@ -32,15 +36,35 @@ async function getReports(from?: string, to?: string) {
   }
 }
 
+async function getWarehouses() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('nexygen_token')?.value;
+  try {
+    const res = await fetch(`${API_BASE_URL}/warehouses`, { headers: { 'Authorization': `Bearer ${token}` }, cache: 'no-store' });
+    if (!res.ok) return [];
+    return await res.json();
+  } catch {
+    return [];
+  }
+}
+
 const formatQAR = (amount: number) => new Intl.NumberFormat('en-QA', { style: 'currency', currency: 'QAR' }).format(amount);
 
-export default async function ReportsPage({ searchParams }: { searchParams: Promise<{ from?: string; to?: string }> }) {
+export default async function ReportsPage({ searchParams }: { searchParams: Promise<{ from?: string; to?: string; warehouseId?: string }> }) {
   const resolvedParams = await searchParams;
-  const { pl, bs, cf } = await getReports(resolvedParams.from, resolvedParams.to);
+  const [{ pl, bs, cf }, warehouses] = await Promise.all([
+    getReports(resolvedParams.from, resolvedParams.to, resolvedParams.warehouseId),
+    getWarehouses(),
+  ]);
   const rangeQuery = new URLSearchParams();
   if (resolvedParams.from) rangeQuery.set('from', resolvedParams.from);
   if (resolvedParams.to) rangeQuery.set('to', resolvedParams.to);
-  const asOfQuery = resolvedParams.to ? `?asOf=${resolvedParams.to}` : '';
+  const plBsQuery = new URLSearchParams(rangeQuery);
+  if (resolvedParams.warehouseId) plBsQuery.set('warehouseId', resolvedParams.warehouseId);
+  const asOfQuery = new URLSearchParams();
+  if (resolvedParams.to) asOfQuery.set('asOf', resolvedParams.to);
+  if (resolvedParams.warehouseId) asOfQuery.set('warehouseId', resolvedParams.warehouseId);
+  const selectedWarehouseName = warehouses.find((w: any) => String(w.id) === resolvedParams.warehouseId)?.name;
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
@@ -52,16 +76,30 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
         <form action="/dashboard/accounting/reports" className="flex items-center gap-3">
           <input type="date" name="from" defaultValue={resolvedParams.from || ''} placeholder="From" className="border border-gray-300 rounded-md px-3 py-2 text-sm text-black" />
           <input type="date" name="to" defaultValue={resolvedParams.to || ''} placeholder="To" className="border border-gray-300 rounded-md px-3 py-2 text-sm text-black" />
+          {warehouses.length > 0 && (
+            <select name="warehouseId" defaultValue={resolvedParams.warehouseId || ''} className="border border-gray-300 rounded-md px-3 py-2 text-sm text-black bg-white">
+              <option value="">All Outlets</option>
+              {warehouses.map((w: any) => (
+                <option key={w.id} value={w.id}>{w.name}</option>
+              ))}
+            </select>
+          )}
           <button type="submit" className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-md text-sm">Filter</button>
         </form>
       </div>
+
+      {selectedWarehouseName && (
+        <div className="bg-teal-50 border-l-4 border-teal-500 p-3 rounded-md text-sm text-teal-800">
+          Showing <strong>{selectedWarehouseName}</strong> only — P&amp;L and Balance Sheet are scoped to this outlet's POS/Invoice/Delivery activity. Purchases, payroll, and manual entries carry no outlet tag and won't appear. Cash Flow Statement below always stays company-wide.
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* PROFIT & LOSS */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
           <div className="bg-gray-50 border-b border-gray-200 px-6 py-4 flex justify-between items-center">
             <h2 className="text-lg font-bold text-gray-800">Profit &amp; Loss</h2>
-            <Link href={`/dashboard/accounting/reports/profit-loss/print?${rangeQuery.toString()}`} className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-1.5 px-3 rounded-md text-xs">🖨️ Print</Link>
+            <Link href={`/dashboard/accounting/reports/profit-loss/print?${plBsQuery.toString()}`} className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-1.5 px-3 rounded-md text-xs">🖨️ Print</Link>
           </div>
           <div className="p-6 space-y-4">
             <div>
@@ -95,7 +133,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
           <div className="bg-gray-50 border-b border-gray-200 px-6 py-4 flex justify-between items-center">
             <h2 className="text-lg font-bold text-gray-800">Balance Sheet</h2>
-            <Link href={`/dashboard/accounting/reports/balance-sheet/print${asOfQuery}`} className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-1.5 px-3 rounded-md text-xs">🖨️ Print</Link>
+            <Link href={`/dashboard/accounting/reports/balance-sheet/print?${asOfQuery.toString()}`} className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-1.5 px-3 rounded-md text-xs">🖨️ Print</Link>
           </div>
           <div className="p-6 space-y-4">
             <div>

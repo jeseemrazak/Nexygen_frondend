@@ -6,12 +6,13 @@ import Letterhead from '@/components/print/Letterhead';
 import TabularReportView from '@/components/print/TabularReportView';
 import PrintButton from '@/components/print/PrintButton';
 
-async function getProfitAndLoss(from?: string, to?: string) {
+async function getProfitAndLoss(from?: string, to?: string, warehouseId?: string) {
   const cookieStore = await cookies();
   const token = cookieStore.get('nexygen_token')?.value;
   const query = new URLSearchParams();
   if (from) query.set('from', from);
   if (to) query.set('to', to);
+  if (warehouseId) query.set('warehouseId', warehouseId);
   try {
     const res = await fetch(`${API_BASE_URL}/accounting/reports/profit-loss?${query.toString()}`, { headers: { 'Authorization': `Bearer ${token}` }, cache: 'no-store' });
     if (!res.ok) return null;
@@ -21,13 +22,34 @@ async function getProfitAndLoss(from?: string, to?: string) {
   }
 }
 
+async function getWarehouseName(warehouseId?: string) {
+  if (!warehouseId) return undefined;
+  const cookieStore = await cookies();
+  const token = cookieStore.get('nexygen_token')?.value;
+  try {
+    const res = await fetch(`${API_BASE_URL}/warehouses/${warehouseId}`, { headers: { 'Authorization': `Bearer ${token}` }, cache: 'no-store' });
+    if (!res.ok) return undefined;
+    const w = await res.json();
+    return w?.name as string | undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 const formatQAR = (n: number) => new Intl.NumberFormat('en-QA', { style: 'currency', currency: 'QAR' }).format(n);
 
-export default async function ProfitAndLossPrintPage({ searchParams }: { searchParams: Promise<{ from?: string; to?: string }> }) {
+export default async function ProfitAndLossPrintPage({ searchParams }: { searchParams: Promise<{ from?: string; to?: string; warehouseId?: string }> }) {
   const resolvedParams = await searchParams;
-  const [pl, settings] = await Promise.all([getProfitAndLoss(resolvedParams.from, resolvedParams.to), getCompanySettings()]);
+  const [pl, settings, warehouseName] = await Promise.all([
+    getProfitAndLoss(resolvedParams.from, resolvedParams.to, resolvedParams.warehouseId),
+    getCompanySettings(),
+    getWarehouseName(resolvedParams.warehouseId),
+  ]);
 
-  const dateRangeLabel = resolvedParams.from || resolvedParams.to ? `${resolvedParams.from || 'Start'} – ${resolvedParams.to || 'Today'}` : undefined;
+  const dateRangeLabel = [
+    resolvedParams.from || resolvedParams.to ? `${resolvedParams.from || 'Start'} – ${resolvedParams.to || 'Today'}` : undefined,
+    warehouseName ? `Outlet: ${warehouseName}` : undefined,
+  ].filter(Boolean).join(' — ') || undefined;
   const accent = settings?.reportAccentColor || '0D9488';
 
   const incomeRows = (pl?.incomeLines || []).map((l: any) => ({ code: l.account.code, name: l.account.name, amount: l.amount }));
