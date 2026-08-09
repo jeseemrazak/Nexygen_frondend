@@ -25,6 +25,8 @@ export default async function BillPrintPage({ params }: { params: Promise<{ id: 
 
   if (!bill) return <div className="p-8 text-center text-rose-500 font-bold">Bill not found.</div>;
 
+  const subtotal = bill.subtotal || bill.totalAmount - (bill.taxAmount || 0);
+
   return (
     <div>
       <div className="no-print flex justify-between items-center p-4 max-w-4xl mx-auto">
@@ -40,6 +42,9 @@ export default async function BillPrintPage({ params }: { params: Promise<{ id: 
         partyLabel="Supplier"
         meta={[{ label: 'Purchase Order', value: `PO-${String(bill.purchaseOrderId).padStart(4, '0')}` }]}
         statusBadge={bill.paymentStatus}
+        subtotal={subtotal}
+        taxLabel={bill.tax?.name ? `Tax (${bill.tax.name})` : 'Tax'}
+        taxAmount={bill.taxAmount}
         totalAmount={bill.totalAmount}
         columns={[
           { key: 'qty', label: 'Qty' },

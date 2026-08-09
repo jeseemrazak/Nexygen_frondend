@@ -27,6 +27,8 @@ export default function DocumentPrintView({
   subtotal,
   discountLabel,
   discountAmount,
+  taxLabel,
+  taxAmount,
   totalAmount,
   statusBadge,
   terms,
@@ -44,6 +46,10 @@ export default function DocumentPrintView({
   subtotal?: number;
   discountLabel?: string;
   discountAmount?: number;
+  // Rendered as its own line above Total whenever set and > 0 — independent of the
+  // Subtotal/Discount breakdown, which only appears when discountAmount is set.
+  taxLabel?: string;
+  taxAmount?: number;
   totalAmount?: number;
   statusBadge?: string;
   // Per-document override — falls back to the company-wide default (settings.termsAndConditions)
@@ -97,17 +103,23 @@ export default function DocumentPrintView({
         </tbody>
         {totalAmount != null && (
           <tfoot>
+            {((discountAmount != null && discountAmount > 0) || (taxAmount != null && taxAmount > 0)) && (
+              <tr>
+                <td className="py-1 px-3 text-right text-gray-500" colSpan={columns.length}>Subtotal</td>
+                <td className="py-1 px-3 text-right text-gray-700">{formatQAR(subtotal ?? totalAmount + (discountAmount || 0) - (taxAmount || 0))}</td>
+              </tr>
+            )}
             {discountAmount != null && discountAmount > 0 && (
-              <>
-                <tr>
-                  <td className="py-1 px-3 text-right text-gray-500" colSpan={columns.length}>Subtotal</td>
-                  <td className="py-1 px-3 text-right text-gray-700">{formatQAR(subtotal ?? totalAmount + discountAmount)}</td>
-                </tr>
-                <tr>
-                  <td className="py-1 px-3 text-right text-gray-500" colSpan={columns.length}>{discountLabel || 'Discount'}</td>
-                  <td className="py-1 px-3 text-right text-rose-600">-{formatQAR(discountAmount)}</td>
-                </tr>
-              </>
+              <tr>
+                <td className="py-1 px-3 text-right text-gray-500" colSpan={columns.length}>{discountLabel || 'Discount'}</td>
+                <td className="py-1 px-3 text-right text-rose-600">-{formatQAR(discountAmount)}</td>
+              </tr>
+            )}
+            {taxAmount != null && taxAmount > 0 && (
+              <tr>
+                <td className="py-1 px-3 text-right text-gray-500" colSpan={columns.length}>{taxLabel || 'Tax'}</td>
+                <td className="py-1 px-3 text-right text-gray-700">{formatQAR(taxAmount)}</td>
+              </tr>
             )}
             <tr className="border-t-2 border-gray-800">
               <td className="py-2 px-3 font-black" colSpan={columns.length}>Total</td>

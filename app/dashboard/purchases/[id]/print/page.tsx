@@ -25,6 +25,8 @@ export default async function PurchaseOrderPrintPage({ params }: { params: Promi
 
   if (!po) return <div className="p-8 text-center text-rose-500 font-bold">Purchase order not found.</div>;
 
+  const subtotal = po.totalAmount - (po.taxAmount || 0);
+
   return (
     <div>
       <div className="no-print flex justify-between items-center p-4 max-w-4xl mx-auto">
@@ -43,6 +45,9 @@ export default async function PurchaseOrderPrintPage({ params }: { params: Promi
           ...(po.reference ? [{ label: 'Reference', value: po.reference }] : []),
         ]}
         statusBadge={po.status}
+        subtotal={subtotal}
+        taxLabel={po.tax?.name ? `Tax (${po.tax.name})` : 'Tax'}
+        taxAmount={po.taxAmount}
         totalAmount={po.totalAmount}
         columns={[
           { key: 'qty', label: 'Qty' },

@@ -26,7 +26,7 @@ export default async function SalesOrderPrintPage({ params }: { params: Promise<
   if (!order) return <div className="p-8 text-center text-rose-500 font-bold">Sales Order not found.</div>;
 
   const subtotal = order.subtotal || order.totalAmount;
-  const discountAmount = subtotal - order.totalAmount;
+  const discountAmount = subtotal - order.totalAmount + (order.taxAmount || 0);
 
   return (
     <div>
@@ -49,6 +49,8 @@ export default async function SalesOrderPrintPage({ params }: { params: Promise<
         subtotal={subtotal}
         discountLabel={order.discountType === 'PERCENT' ? `Discount (${order.discountValue}%)` : 'Discount'}
         discountAmount={discountAmount}
+        taxLabel={order.tax?.name ? `Tax (${order.tax.name})` : 'Tax'}
+        taxAmount={order.taxAmount}
         totalAmount={order.totalAmount}
         terms={order.termsAndConditions}
         columns={[

@@ -196,7 +196,13 @@ export default function QuotationDetailsPage() {
             {quotation.discountType && quotation.discountValue > 0 && (
               <p className="flex justify-between text-sm text-rose-600">
                 <span>Discount {quotation.discountType === 'PERCENT' ? `(${quotation.discountValue}%)` : ''}</span>
-                <span className="font-semibold">-{formatQAR((quotation.subtotal || quotation.totalAmount) - quotation.totalAmount)}</span>
+                <span className="font-semibold">-{formatQAR((quotation.subtotal || quotation.totalAmount) - quotation.totalAmount + (quotation.taxAmount || 0))}</span>
+              </p>
+            )}
+            {quotation.taxAmount > 0 && (
+              <p className="flex justify-between text-sm text-slate-600">
+                <span>Tax{quotation.tax?.name ? ` (${quotation.tax.name})` : ''}</span>
+                <span className="font-semibold">{formatQAR(quotation.taxAmount)}</span>
               </p>
             )}
             <p className="flex justify-between text-base font-extrabold text-slate-900 pt-1.5 border-t border-slate-200"><span>Total</span> <span>{formatQAR(quotation.totalAmount)}</span></p>

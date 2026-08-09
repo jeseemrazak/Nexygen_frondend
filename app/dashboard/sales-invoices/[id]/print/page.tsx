@@ -25,6 +25,8 @@ export default async function InvoicePrintPage({ params }: { params: Promise<{ i
 
   if (!invoice) return <div className="p-8 text-center text-rose-500 font-bold">Invoice not found.</div>;
 
+  const subtotal = invoice.subtotal || invoice.totalAmount - (invoice.taxAmount || 0);
+
   return (
     <div>
       <div className="no-print flex justify-between items-center p-4 max-w-4xl mx-auto">
@@ -43,6 +45,9 @@ export default async function InvoicePrintPage({ params }: { params: Promise<{ i
           ...(invoice.salesOrder?.customerReference ? [{ label: 'Customer Ref', value: invoice.salesOrder.customerReference }] : []),
         ]}
         statusBadge={invoice.paymentStatus}
+        subtotal={subtotal}
+        taxLabel={invoice.tax?.name ? `Tax (${invoice.tax.name})` : 'Tax'}
+        taxAmount={invoice.taxAmount}
         totalAmount={invoice.totalAmount}
         terms={invoice.salesOrder?.termsAndConditions}
         columns={[

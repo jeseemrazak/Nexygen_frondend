@@ -26,7 +26,7 @@ export default async function QuotationPrintPage({ params }: { params: Promise<{
   if (!quotation) return <div className="p-8 text-center text-rose-500 font-bold">Quotation not found.</div>;
 
   const subtotal = quotation.subtotal || quotation.totalAmount;
-  const discountAmount = subtotal - quotation.totalAmount;
+  const discountAmount = subtotal - quotation.totalAmount + (quotation.taxAmount || 0);
 
   return (
     <div>
@@ -50,6 +50,8 @@ export default async function QuotationPrintPage({ params }: { params: Promise<{
         subtotal={subtotal}
         discountLabel={quotation.discountType === 'PERCENT' ? `Discount (${quotation.discountValue}%)` : 'Discount'}
         discountAmount={discountAmount}
+        taxLabel={quotation.tax?.name ? `Tax (${quotation.tax.name})` : 'Tax'}
+        taxAmount={quotation.taxAmount}
         totalAmount={quotation.totalAmount}
         terms={quotation.termsAndConditions}
         columns={[
